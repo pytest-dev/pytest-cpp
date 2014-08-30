@@ -9,7 +9,7 @@ Supports both `Google Test <https://code.google.com/p/googletest>`_ and
 
 .. image:: https://raw.githubusercontent.com/nicoddemus/pytest-cpp/master/images/screenshot.png
 
-|version| |downloads| |ci| |coverage|
+|version| |downloads| |ci| |coverage| |python|
 
 .. |version| image:: http://img.shields.io/pypi/v/pytest-cpp.png
   :target: https://crate.io/packages/pytest-cpp
@@ -23,7 +23,7 @@ Supports both `Google Test <https://code.google.com/p/googletest>`_ and
 .. |coverage| image:: http://img.shields.io/coveralls/nicoddemus/pytest-cpp.png
   :target: https://coveralls.io/r/nicoddemus/pytest-cpp
 
-.. image:: https://pypip.in/py_versions/pytest-cpp/badge.svg
+.. |python| image:: https://pypip.in/py_versions/pytest-cpp/badge.svg
     :target: https://pypi.python.org/pypi/pytest-cpp/
     :alt: Supported Python versions
 
