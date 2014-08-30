@@ -23,6 +23,10 @@ Supports both `Google Test <https://code.google.com/p/googletest>`_ and
 .. |coverage| image:: http://img.shields.io/coveralls/nicoddemus/pytest-cpp.png
   :target: https://coveralls.io/r/nicoddemus/pytest-cpp
 
+.. image:: https://pypip.in/py_versions/pytest-cpp/badge.svg
+    :target: https://pypi.python.org/pypi/pytest-cpp/
+    :alt: Supported Python versions
+
 This brings several benefits:
 
 * Allows you to run all your tests in multi-language projects with a single
