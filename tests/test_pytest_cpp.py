@@ -172,19 +172,19 @@ def test_google_run(testdir, suites):
         ('FooTest.DISABLED_test_disabled', 'skipped'),
     ])
 
-def test_unknown_error(testdir, suites, mock):
-    mock.patch.object(GoogleTestFacade, 'run_test',
+def test_unknown_error(testdir, suites, mocker):
+    mocker.patch.object(GoogleTestFacade, 'run_test',
                       side_effect=RuntimeError('unknown error'))
     result = testdir.inline_run('-v', suites.get('gtest', 'test_gtest'))
     rep = result.matchreport('FooTest.test_success', 'pytest_runtest_logreport')
     assert 'unknown error' in str(rep.longrepr)
 
 
-def test_google_internal_errors(mock, testdir, suites, tmpdir):
-    mock.patch.object(GoogleTestFacade, 'is_test_suite', return_value=True)
-    mock.patch.object(GoogleTestFacade, 'list_tests',
+def test_google_internal_errors(mocker, testdir, suites, tmpdir):
+    mocker.patch.object(GoogleTestFacade, 'is_test_suite', return_value=True)
+    mocker.patch.object(GoogleTestFacade, 'list_tests',
                       return_value=['FooTest.test_success'])
-    mocked = mock.patch.object(subprocess, 'check_output', autospec=True,
+    mocked = mocker.patch.object(subprocess, 'check_output', autospec=True,
                                return_value='')
 
     def raise_error(*args, **kwargs):
@@ -198,7 +198,7 @@ def test_google_internal_errors(mock, testdir, suites, tmpdir):
     mocked.side_effect = None
     xml_file = tmpdir.join('results.xml')
     xml_file.write('<empty/>')
-    mock.patch.object(GoogleTestFacade, '_get_temp_xml_filename',
+    mocker.patch.object(GoogleTestFacade, '_get_temp_xml_filename',
                       return_value=str(xml_file))
     result = testdir.inline_run('-v', suites.get('gtest', 'test_gtest'))
     rep = result.matchreport(exe_name('test_gtest'),
@@ -218,21 +218,21 @@ def test_boost_run(testdir, suites):
     ])
 
 
-def mock_popen(mock, return_code, stdout, stderr):
+def mock_popen(mocker, return_code, stdout, stderr):
     mocked_popen = MagicMock()
     mocked_popen.__enter__ = mocked_popen
     mocked_popen.communicate.return_value = stdout, stderr
     mocked_popen.return_code = return_code
     mocked_popen.poll.return_value = return_code
-    mock.patch.object(subprocess, 'Popen', return_value=mocked_popen)
+    mocker.patch.object(subprocess, 'Popen', return_value=mocked_popen)
     return mocked_popen
 
 
-def test_boost_internal_error(testdir, suites, mock):
+def test_boost_internal_error(testdir, suites, mocker):
     exe = suites.get('boost_success', 'test_boost_success')
-    mock_popen(mock, return_code=100, stderr=None, stdout=None)
-    mock.patch.object(BoostTestFacade, 'is_test_suite', return_value=True)
-    mock.patch.object(GoogleTestFacade, 'is_test_suite', return_value=False)
+    mock_popen(mocker, return_code=100, stderr=None, stdout=None)
+    mocker.patch.object(BoostTestFacade, 'is_test_suite', return_value=True)
+    mocker.patch.object(GoogleTestFacade, 'is_test_suite', return_value=False)
     result = testdir.inline_run(exe)
     rep = result.matchreport(exe_name('test_boost_success'),
                              'pytest_runtest_logreport')
