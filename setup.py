@@ -17,7 +17,7 @@ setup(
     long_description=open('README.rst').read(),
     license="MIT",
     keywords="pytest test unittest",
-    url="http://github.com/nicoddemus/pytest-cpp",
+    url="http://github.com/pytest-dev/pytest-cpp",
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',

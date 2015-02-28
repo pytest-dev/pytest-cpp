@@ -7,7 +7,7 @@ Use `pytest <https://pypi.python.org/pypi/pytest>`_ runner to discover and execu
 Supports both `Google Test <https://code.google.com/p/googletest>`_ and
 `Boost::Test <http://www.boost.org/doc/libs/release/libs/test>`_:
 
-.. image:: https://raw.githubusercontent.com/nicoddemus/pytest-cpp/master/images/screenshot.png
+.. image:: https://raw.githubusercontent.com/pytest-dev/pytest-cpp/master/images/screenshot.png
 
 |python| |version| |downloads| |ci| |coverage|
 
@@ -17,11 +17,11 @@ Supports both `Google Test <https://code.google.com/p/googletest>`_ and
 .. |downloads| image:: http://img.shields.io/pypi/dm/pytest-cpp.png
   :target: https://crate.io/packages/pytest-cpp
 
-.. |ci| image:: http://img.shields.io/travis/nicoddemus/pytest-cpp.png
-  :target: https://travis-ci.org/nicoddemus/pytest-cpp
+.. |ci| image:: http://img.shields.io/travis/pytest-dev/pytest-cpp.png
+  :target: https://travis-ci.org/pytest-dev/pytest-cpp
 
-.. |coverage| image:: http://img.shields.io/coveralls/nicoddemus/pytest-cpp.png
-  :target: https://coveralls.io/r/nicoddemus/pytest-cpp
+.. |coverage| image:: http://img.shields.io/coveralls/pytest-dev/pytest-cpp.png
+  :target: https://coveralls.io/r/pytest-dev/pytest-cpp
 
 .. |python| image:: https://pypip.in/py_versions/pytest-cpp/badge.svg
     :target: https://pypi.python.org/pypi/pytest-cpp/
@@ -51,7 +51,7 @@ ini configuration::
     [pytest]
     cpp_files=test_suite*
 
-Default is to match ``test_*`` and ``*_test`` file names.
+By default matches ``test_*`` and ``*_test`` executable files.
 
 Requirements
 ============
@@ -71,11 +71,11 @@ Install using `pip <http://pip-installer.org/>`_:
 Changelog
 =========
 
-Please consult `releases <https://github.com/nicoddemus/pytest-cpp/releases>`_.
+Please consult `releases <https://github.com/pytest-dev/pytest-cpp/releases>`_.
 
 Support
 =======
 
 All feature requests and bugs are welcome, so please make sure to add
 feature requests and bugs to the
-`issues <https://github.com/nicoddemus/pytest-cpp/issues>`_ page!
+`issues <https://github.com/pytest-dev/pytest-cpp/issues>`_ page!
