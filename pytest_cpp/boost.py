@@ -9,7 +9,7 @@ from pytest_cpp.error import CppTestFailure
 
 class BoostTestFacade(object):
     """
-    Facade for GoogleTests.
+    Facade for BoostTests.
     """
 
     @classmethod
