@@ -1,8 +1,6 @@
 import os
 import shutil
 import sys
-from mock import MagicMock
-
 import pytest
 import subprocess
 from pytest_cpp import error
@@ -219,7 +217,7 @@ def test_boost_run(testdir, suites):
 
 
 def mock_popen(mocker, return_code, stdout, stderr):
-    mocked_popen = MagicMock()
+    mocked_popen = mocker.MagicMock()
     mocked_popen.__enter__ = mocked_popen
     mocked_popen.communicate.return_value = stdout, stderr
     mocked_popen.return_code = return_code
