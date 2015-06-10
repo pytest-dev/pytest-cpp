@@ -4,12 +4,12 @@ pytest-cpp
 
 Use `pytest <https://pypi.python.org/pypi/pytest>`_ runner to discover and execute C++ tests.
 
+|python| |version| |downloads| |ci| |coverage|
+
 Supports both `Google Test <https://code.google.com/p/googletest>`_ and
 `Boost::Test <http://www.boost.org/doc/libs/release/libs/test>`_:
 
 .. image:: https://raw.githubusercontent.com/pytest-dev/pytest-cpp/master/images/screenshot.png
-
-|python| |version| |downloads| |ci| |coverage|
 
 .. |version| image:: http://img.shields.io/pypi/v/pytest-cpp.png
   :target: https://crate.io/packages/pytest-cpp
