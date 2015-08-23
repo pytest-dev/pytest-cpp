@@ -8,17 +8,19 @@ else:
     CCFLAGS = ''
     LIBS = ['pthread']
 
-Program(
-    'gtest.cpp', 
+env = Environment(
     CPPPATH=os.environ.get('INCLUDE'),
     CCFLAGS=CCFLAGS,
     LIBPATH=os.environ.get('LIBPATH'),
-    LIBS=['gtest'] + LIBS,
+    LIBS=LIBS,
 )
+genv = env.Clone(LIBS=['gtest'] + LIBS)
+
+Export('env genv')
+
+genv.Program('gtest.cpp')
 
 for filename in ('boost_success.cpp', 'boost_failure.cpp', 'boost_error.cpp'):
-    Program(
-        filename,
-        CPPPATH=os.environ.get('INCLUDE'),
-        CCFLAGS=CCFLAGS,
-    )
+    env.Program(filename)
+
+SConscript('acceptance/googletest-samples/SConscript')
