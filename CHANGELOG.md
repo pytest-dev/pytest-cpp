@@ -1,3 +1,8 @@
+# 0.4.0.dev #
+
+- Now any executable passed explicitly to py.test in the 
+  command-line will run as a test, regardless of the `cpp_files` option.
+
 # 0.3.1 #
 
 - Now capturing standard error while collecting tests, otherwise 

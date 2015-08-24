@@ -262,6 +262,12 @@ def test_cpp_files_option(testdir, suites):
     assert len(result.matchreport(exe_name('gtest')).result) == 4
 
 
+def test_passing_files_directly_in_command_line(testdir, suites):
+    f = suites.get('boost_success')
+    result = testdir.runpytest(f)
+    result.stdout.fnmatch_lines(['*1 passed*'])
+
+
 class TestError:
 
     def test_get_whitespace(self):
