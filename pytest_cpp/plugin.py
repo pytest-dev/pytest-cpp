@@ -11,16 +11,22 @@ from pytest_cpp.google import GoogleTestFacade
 FACADES = [GoogleTestFacade, BoostTestFacade]
 DEFAULT_MASKS = ('test_*', '*_test')
 
+
 def pytest_collect_file(parent, path):
     is_executable = os.stat(str(path)).st_mode & stat.S_IXUSR
     if not is_executable:
         return
     masks = parent.config.getini('cpp_files') or DEFAULT_MASKS
-    for mask in masks:
-        if fnmatch.fnmatch(path.basename, mask):
-            for facade_class in FACADES:
-                if facade_class.is_test_suite(str(path)):
-                    return CppFile(path, parent, facade_class())
+    if not parent.session.isinitpath(path):
+        for pat in masks:
+            if path.fnmatch(pat):
+                break
+        else:
+            return
+    for facade_class in FACADES:
+        if facade_class.is_test_suite(str(path)):
+            return CppFile(path, parent, facade_class())
+
 
 def pytest_addoption(parser):
     parser.addini("cpp_files", type="args",

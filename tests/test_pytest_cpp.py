@@ -1,36 +1,9 @@
-import os
-import shutil
-import sys
 import pytest
 import subprocess
 from pytest_cpp import error
 from pytest_cpp.boost import BoostTestFacade
 from pytest_cpp.error import CppTestFailure, CppFailureRepr
 from pytest_cpp.google import GoogleTestFacade
-
-
-pytest_plugins = 'pytester'
-
-@pytest.fixture
-def suites(testdir):
-
-    class Suites:
-
-        def get(self, name, new_name=None):
-            if not new_name:
-                new_name = name
-            source = os.path.join(os.path.dirname(__file__), exe_name(name))
-            dest = testdir.tmpdir.join(exe_name(new_name))
-            shutil.copy(str(source), str(dest))
-            return str(dest)
-
-    return Suites()
-
-
-def exe_name(name):
-    if sys.platform.startswith('win'):
-        name += '.exe'
-    return name
 
 
 def assert_outcomes(result, expected_outcomes):
@@ -70,8 +43,8 @@ def dummy_failure():
     (BoostTestFacade(), 'boost_success', ['boost_success']),
     (BoostTestFacade(), 'boost_error', ['boost_error']),
 ])
-def test_list_tests(facade, name, expected, suites):
-    obtained = facade.list_tests(suites.get(name))
+def test_list_tests(facade, name, expected, exes):
+    obtained = facade.list_tests(exes.get(name))
     assert obtained == expected
 
 
@@ -79,9 +52,9 @@ def test_list_tests(facade, name, expected, suites):
     (GoogleTestFacade(), 'gtest', 'boost_success'),
     (BoostTestFacade(), 'boost_success', 'gtest'),
 ])
-def test_is_test_suite(facade, name, other_name, suites, tmpdir):
-    assert facade.is_test_suite(suites.get(name))
-    assert not facade.is_test_suite(suites.get(other_name))
+def test_is_test_suite(facade, name, other_name, exes, tmpdir):
+    assert facade.is_test_suite(exes.get(name))
+    assert not facade.is_test_suite(exes.get(other_name))
     tmpdir.ensure('foo.txt')
     assert not facade.is_test_suite(str(tmpdir.join('foo.txt')))
 
@@ -90,13 +63,13 @@ def test_is_test_suite(facade, name, other_name, suites, tmpdir):
     (GoogleTestFacade(), 'gtest', 'FooTest.test_success'),
     (BoostTestFacade(), 'boost_success', '<unused>'),
 ])
-def test_success(facade, name, test_id, suites):
-    assert facade.run_test(suites.get(name), test_id) is None
+def test_success(facade, name, test_id, exes):
+    assert facade.run_test(exes.get(name), test_id) is None
 
 
-def test_google_failure(suites):
+def test_google_failure(exes):
     facade = GoogleTestFacade()
-    failures = facade.run_test(suites.get('gtest'), 'FooTest.test_failure')
+    failures = facade.run_test(exes.get('gtest'), 'FooTest.test_failure')
     assert len(failures) == 2
     colors = ('red', 'bold')
     assert failures[0].get_lines() == [
@@ -114,9 +87,9 @@ def test_google_failure(suites):
     assert failures[1].get_file_reference() == ('gtest.cpp', 18)
 
 
-def test_google_error(suites):
+def test_google_error(exes):
     facade = GoogleTestFacade()
-    failures = facade.run_test(suites.get('gtest'), 'FooTest.test_error')
+    failures = facade.run_test(exes.get('gtest'), 'FooTest.test_error')
     assert len(failures) == 1
     colors = ('red', 'bold')
     assert failures[0].get_lines() == [
@@ -125,15 +98,15 @@ def test_google_error(suites):
             ' thrown in the test body.', colors)]
 
 
-def test_google_disabled(suites):
+def test_google_disabled(exes):
     facade = GoogleTestFacade()
     with pytest.raises(pytest.skip.Exception):
-        facade.run_test(suites.get('gtest'), 'FooTest.DISABLED_test_disabled')
+        facade.run_test(exes.get('gtest'), 'FooTest.DISABLED_test_disabled')
 
 
-def test_boost_failure(suites):
+def test_boost_failure(exes):
     facade = BoostTestFacade()
-    failures = facade.run_test(suites.get('boost_failure'), '<unused>')
+    failures = facade.run_test(exes.get('boost_failure'), '<unused>')
     assert len(failures) == 2
 
     fail1, fail2 = failures
@@ -145,9 +118,9 @@ def test_boost_failure(suites):
     assert fail2.get_file_reference() == ("boost_failure.cpp", 14)
 
 
-def test_boost_error(suites):
+def test_boost_error(exes):
     facade = BoostTestFacade()
-    failures = facade.run_test(suites.get('boost_error'), '<unused>')
+    failures = facade.run_test(exes.get('boost_error'), '<unused>')
     assert len(failures) == 2
 
     fail1, fail2 = failures
@@ -161,8 +134,8 @@ def test_boost_error(suites):
     assert fail2.get_file_reference() == ("unknown location", 0)
 
 
-def test_google_run(testdir, suites):
-    result = testdir.inline_run('-v', suites.get('gtest', 'test_gtest'))
+def test_google_run(testdir, exes):
+    result = testdir.inline_run('-v', exes.get('gtest', 'test_gtest'))
     assert_outcomes(result, [
         ('FooTest.test_success', 'passed'),
         ('FooTest.test_failure', 'failed'),
@@ -170,15 +143,15 @@ def test_google_run(testdir, suites):
         ('FooTest.DISABLED_test_disabled', 'skipped'),
     ])
 
-def test_unknown_error(testdir, suites, mocker):
+def test_unknown_error(testdir, exes, mocker):
     mocker.patch.object(GoogleTestFacade, 'run_test',
                       side_effect=RuntimeError('unknown error'))
-    result = testdir.inline_run('-v', suites.get('gtest', 'test_gtest'))
+    result = testdir.inline_run('-v', exes.get('gtest', 'test_gtest'))
     rep = result.matchreport('FooTest.test_success', 'pytest_runtest_logreport')
     assert 'unknown error' in str(rep.longrepr)
 
 
-def test_google_internal_errors(mocker, testdir, suites, tmpdir):
+def test_google_internal_errors(mocker, testdir, exes, tmpdir):
     mocker.patch.object(GoogleTestFacade, 'is_test_suite', return_value=True)
     mocker.patch.object(GoogleTestFacade, 'list_tests',
                       return_value=['FooTest.test_success'])
@@ -188,8 +161,8 @@ def test_google_internal_errors(mocker, testdir, suites, tmpdir):
     def raise_error(*args, **kwargs):
         raise subprocess.CalledProcessError(returncode=100, cmd='')
     mocked.side_effect = raise_error
-    result = testdir.inline_run('-v', suites.get('gtest', 'test_gtest'))
-    rep = result.matchreport(exe_name('test_gtest'),
+    result = testdir.inline_run('-v', exes.get('gtest', 'test_gtest'))
+    rep = result.matchreport(exes.exe_name('test_gtest'),
                              'pytest_runtest_logreport')
     assert 'Internal Error: calling' in str(rep.longrepr)
 
@@ -198,16 +171,16 @@ def test_google_internal_errors(mocker, testdir, suites, tmpdir):
     xml_file.write('<empty/>')
     mocker.patch.object(GoogleTestFacade, '_get_temp_xml_filename',
                       return_value=str(xml_file))
-    result = testdir.inline_run('-v', suites.get('gtest', 'test_gtest'))
-    rep = result.matchreport(exe_name('test_gtest'),
+    result = testdir.inline_run('-v', exes.get('gtest', 'test_gtest'))
+    rep = result.matchreport(exes.exe_name('test_gtest'),
                              'pytest_runtest_logreport')
 
     assert 'Internal Error: could not find test' in str(rep.longrepr)
 
 
-def test_boost_run(testdir, suites):
+def test_boost_run(testdir, exes):
     all_names = ['boost_success', 'boost_error', 'boost_failure']
-    all_files = [suites.get(n, 'test_' + n) for n in all_names]
+    all_files = [exes.get(n, 'test_' + n) for n in all_names]
     result = testdir.inline_run('-v', *all_files)
     assert_outcomes(result, [
         ('test_boost_success', 'passed'),
@@ -226,13 +199,13 @@ def mock_popen(mocker, return_code, stdout, stderr):
     return mocked_popen
 
 
-def test_boost_internal_error(testdir, suites, mocker):
-    exe = suites.get('boost_success', 'test_boost_success')
+def test_boost_internal_error(testdir, exes, mocker):
+    exe = exes.get('boost_success', 'test_boost_success')
     mock_popen(mocker, return_code=100, stderr=None, stdout=None)
     mocker.patch.object(BoostTestFacade, 'is_test_suite', return_value=True)
     mocker.patch.object(GoogleTestFacade, 'is_test_suite', return_value=False)
     result = testdir.inline_run(exe)
-    rep = result.matchreport(exe_name('test_boost_success'),
+    rep = result.matchreport(exes.exe_name('test_boost_success'),
                              'pytest_runtest_logreport')
     assert 'Internal Error:' in str(rep.longrepr)
 
@@ -244,9 +217,9 @@ def test_cpp_failure_repr(dummy_failure):
     assert str(failure_repr) == 'error message\ntest_suite:20: C++ failure'
 
 
-def test_cpp_files_option(testdir, suites):
-    suites.get('boost_success')
-    suites.get('gtest')
+def test_cpp_files_option(testdir, exes):
+    exes.get('boost_success')
+    exes.get('gtest')
     
     result = testdir.inline_run('--collect-only')
     reps = result.getreports()
@@ -258,8 +231,14 @@ def test_cpp_files_option(testdir, suites):
         cpp_files = gtest* boost*
     ''')
     result = testdir.inline_run('--collect-only')
-    assert len(result.matchreport(exe_name('boost_success')).result) == 1
-    assert len(result.matchreport(exe_name('gtest')).result) == 4
+    assert len(result.matchreport(exes.exe_name('boost_success')).result) == 1
+    assert len(result.matchreport(exes.exe_name('gtest')).result) == 4
+
+
+def test_passing_files_directly_in_command_line(testdir, exes):
+    f = exes.get('boost_success')
+    result = testdir.runpytest(f)
+    result.stdout.fnmatch_lines(['*1 passed*'])
 
 
 class TestError:

@@ -1,0 +1,12 @@
+Import('genv')
+
+genv.Program('sample1_unittest', ['sample1_unittest.cc', 'sample1.cc', 'main.cc'])
+genv.Program('sample2_unittest', ['sample2_unittest.cc', 'sample2.cc', 'main.cc'])
+genv.Program('sample3_unittest', ['sample3_unittest.cc', 'main.cc'])
+genv.Program('sample4_unittest', ['sample4_unittest.cc', 'sample4.cc', 'main.cc'])
+genv.Program('sample5_unittest', ['sample5_unittest.cc', 'sample1.cc', 'main.cc'])
+genv.Program('sample6_unittest', ['sample6_unittest.cc', 'main.cc'])
+genv.Program('sample7_unittest', ['sample7_unittest.cc', 'main.cc'])
+genv.Program('sample8_unittest', ['sample8_unittest.cc', 'main.cc'])
+genv.Program('sample9_unittest', ['sample9_unittest.cc'])
+genv.Program('sample10_unittest', ['sample10_unittest.cc'])
