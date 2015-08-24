@@ -24,16 +24,33 @@ class GoogleTestFacade(object):
             return '--gtest_list_tests' in output
 
     def list_tests(self, executable):
+        """
+        Executes google-test with "--gtest_list_tests" and gets list of tests
+        parsing output like this:
+
+        PrimeTableTest/0.  # TypeParam = class OnTheFlyPrimeTable
+          ReturnsFalseForNonPrimes
+          ReturnsTrueForPrimes
+          CanGetNextPrime
+        """
         output = subprocess.check_output([executable, '--gtest_list_tests'],
                                          stderr=subprocess.STDOUT,
                                          universal_newlines=True)
+
+        def strip_comment(x):
+            comment_start = x.find('#')
+            if comment_start != -1:
+                x = x[:comment_start]
+            return x
+
         test_suite = None
         result = []
         for line in output.splitlines():
-            if line.endswith('.'):
-                test_suite = line
-            elif line.startswith('  '):
-                result.append(test_suite + line.strip())
+            has_indent = line.startswith(' ')
+            if not has_indent and '.' in line:
+                test_suite = strip_comment(line).strip()
+            elif has_indent:
+                result.append(test_suite + strip_comment(line).strip())
         return result
 
     def run_test(self, executable, test_id):

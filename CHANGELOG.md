@@ -1,5 +1,11 @@
 # 0.4.0.dev #
 
+- Integrated all the official Google Test examples into the `pytest-cpp` test
+  suite, ensuring that Google Test is fully covered. 
+  
+- Fixed #17: supporting Type-Parametrized tests in Google Test. Thanks 
+  @joarbe for the report. 
+
 - Now any executable passed explicitly to py.test in the 
   command-line will run as a test, regardless of the `cpp_files` option.
 
