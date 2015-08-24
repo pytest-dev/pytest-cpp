@@ -24,3 +24,4 @@ for filename in ('boost_success.cpp', 'boost_failure.cpp', 'boost_error.cpp'):
     env.Program(filename)
 
 SConscript('acceptance/googletest-samples/SConscript')
+SConscript('acceptance/boosttest-samples/SConscript')

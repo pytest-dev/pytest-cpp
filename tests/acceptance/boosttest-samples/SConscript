@@ -1,0 +1,12 @@
+Import('env')
+
+tests = range(1, 13+1)
+tests.remove(9)
+
+for i in tests:
+    env.Program('unit_test_example_%02d.cpp' % i)
+
+env.Program('unit_test_example_09_1.cpp')
+env.Program('unit_test_example_09_2.cpp')
+env.Program('test_case_template_example.cpp')
+
