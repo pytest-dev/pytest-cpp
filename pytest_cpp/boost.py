@@ -52,7 +52,7 @@ class BoostTestFacade(object):
         log = read_file(log_xml)
         report = read_file(report_xml)
 
-        if p.returncode not in (0, 201):
+        if p.returncode not in (0, 200, 201):
             msg = ('Internal Error: calling {executable} '
                    'for test {test_id} failed (returncode={returncode}):\n'
                    'output:{stdout}\n'
@@ -69,15 +69,35 @@ class BoostTestFacade(object):
                                     returncode=p.returncode))
             return [failure]
 
-        results = self._parse_xml(log=log, report=report)
+        results = self._parse_log(log=log)
         shutil.rmtree(temp_dir)
         if results:
             return results
 
-    def _parse_xml(self, log, report):
-        root = ElementTree.fromstring(log)
+    def _parse_log(self, log):
+        """
+        Parse the "log" section produced by BoostTest.
+
+        This is always a XML file, and from this we produce most of the
+        failures possible when running BoostTest.
+        """
+        # Fatal errors apparently generate invalid xml in the form:
+        # <FatalError>...</FatalError><TestLog>...</TestLog>
+        # so we have to manually split it into two xmls if that's the case.
+        parsed_elements = []
+        if log.startswith('<FatalError'):
+            fatal, log = log.split('</FatalError>')
+            fatal += '</FatalError>'  # put it back, removed by split()
+            fatal_root = ElementTree.fromstring(fatal)
+            fatal_root.text = 'Fatal Error: %s' % fatal_root.text
+            parsed_elements.append(fatal_root)
+
+        log_root = ElementTree.fromstring(log)
+        parsed_elements.extend(log_root.findall('Exception'))
+        parsed_elements.extend(log_root.findall('Error'))
+
         result = []
-        for elem in root.findall('Exception') + root.findall('Error'):
+        for elem in parsed_elements:
             filename = elem.attrib['file']
             linenum = int(elem.attrib['line'])
             result.append(BoostTestFailure(filename, linenum, elem.text))

@@ -1,5 +1,9 @@
 # 0.4.0.dev #
 
+- Integrated most of the examples found in boost-1.55 for Boost Test into the
+  `pytest-cpp` test suite. This uncovered a problem when Fatal Errors were 
+  produced and which would break py.test. 
+  
 - Integrated all the official Google Test examples into the `pytest-cpp` test
   suite, ensuring that Google Test is fully covered. 
   
