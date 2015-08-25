@@ -71,7 +71,7 @@ Install using `pip <http://pip-installer.org/>`_:
 Changelog
 =========
 
-Please consult `releases <https://github.com/pytest-dev/pytest-cpp/releases>`_.
+Please consult `CHANGELOG <https://github.com/pytest-dev/pytest-cpp/blob/master/CHANGELOG.md>`_.
 
 Support
 =======
