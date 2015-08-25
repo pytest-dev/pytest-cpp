@@ -1,4 +1,4 @@
-# 0.4.0.dev #
+# 0.4.0 #
 
 - Integrated most of the examples found in boost-1.55 for Boost Test into the
   `pytest-cpp` test suite. This uncovered a problem when Fatal Errors were 
