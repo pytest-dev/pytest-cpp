@@ -9,11 +9,9 @@ import pytest
     ('unit_test_example_05', 0, 1),
     ('unit_test_example_06', 0, 1),
     ('unit_test_example_07', 1, 0),
-    ('unit_test_example_08', 1, 0),
+    ('unit_test_example_08', 0, 1),
     ('unit_test_example_09_1', 1, 0),
     ('unit_test_example_09_2', 1, 0),
-    ('unit_test_example_10', 0, 1),
-    ('unit_test_example_11', 0, 1),
     ('unit_test_example_13', 1, 0),
 ])
 def test_samples(exes, testdir, name, passed, failed):
@@ -26,3 +24,19 @@ def test_samples(exes, testdir, name, passed, failed):
     line = ', '.join(phrases) + ' in '
     result.stdout.fnmatch_lines(['*%s*' % line])
     assert 'Internal Error' not in result.stdout.str()
+
+
+def test_example_11(exes, testdir):
+    """
+    "unit_test_example_11" generates an invalid XML by having two XML roots:
+    <FatalError> and <TestLog>. --'
+    """
+    example = 'boosttest-samples/unit_test_example_11'
+    result = testdir.runpytest(exes.get(example))
+    result.stdout.fnmatch_lines([
+        '*Fatal Error: something happened*',
+        '*check s.substr*',
+        '*1 failed in*',
+    ])
+
+
