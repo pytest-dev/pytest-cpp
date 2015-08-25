@@ -13,6 +13,7 @@ import pytest
     ('unit_test_example_09_1', 1, 0),
     ('unit_test_example_09_2', 1, 0),
     ('unit_test_example_13', 1, 0),
+    ('utest_case_template_example', 0, 1),
 ])
 def test_samples(exes, testdir, name, passed, failed):
     result = testdir.runpytest(exes.get('boosttest-samples/%s' % name))
