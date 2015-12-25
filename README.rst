@@ -23,7 +23,7 @@ Supports both `Google Test <https://code.google.com/p/googletest>`_ and
 .. |coverage| image:: http://img.shields.io/coveralls/pytest-dev/pytest-cpp.png
   :target: https://coveralls.io/r/pytest-dev/pytest-cpp
 
-.. |python| image:: https://pypip.in/py_versions/pytest-cpp/badge.svg
+.. |python| image:: https://img.shields.io/pypi/pyversions/pytest-cpp.svg
     :target: https://pypi.python.org/pypi/pytest-cpp/
     :alt: Supported Python versions
 
