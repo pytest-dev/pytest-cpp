@@ -4,6 +4,7 @@ from pytest_cpp import error
 from pytest_cpp.boost import BoostTestFacade
 from pytest_cpp.error import CppTestFailure, CppFailureRepr
 from pytest_cpp.google import GoogleTestFacade
+from pytest_cpp.qt import QTestLibFacade
 
 
 def assert_outcomes(result, expected_outcomes):
@@ -143,9 +144,10 @@ def test_google_run(testdir, exes):
         ('FooTest.DISABLED_test_disabled', 'skipped'),
     ])
 
+
 def test_unknown_error(testdir, exes, mocker):
     mocker.patch.object(GoogleTestFacade, 'run_test',
-                      side_effect=RuntimeError('unknown error'))
+                        side_effect=RuntimeError('unknown error'))
     result = testdir.inline_run('-v', exes.get('gtest', 'test_gtest'))
     rep = result.matchreport('FooTest.test_success', 'pytest_runtest_logreport')
     assert 'unknown error' in str(rep.longrepr)
@@ -154,9 +156,9 @@ def test_unknown_error(testdir, exes, mocker):
 def test_google_internal_errors(mocker, testdir, exes, tmpdir):
     mocker.patch.object(GoogleTestFacade, 'is_test_suite', return_value=True)
     mocker.patch.object(GoogleTestFacade, 'list_tests',
-                      return_value=['FooTest.test_success'])
+                        return_value=['FooTest.test_success'])
     mocked = mocker.patch.object(subprocess, 'check_output', autospec=True,
-                               return_value='')
+                                 return_value='')
 
     def raise_error(*args, **kwargs):
         raise subprocess.CalledProcessError(returncode=100, cmd='')
@@ -170,7 +172,7 @@ def test_google_internal_errors(mocker, testdir, exes, tmpdir):
     xml_file = tmpdir.join('results.xml')
     xml_file.write('<empty/>')
     mocker.patch.object(GoogleTestFacade, '_get_temp_xml_filename',
-                      return_value=str(xml_file))
+                        return_value=str(xml_file))
     result = testdir.inline_run('-v', exes.get('gtest', 'test_gtest'))
     rep = result.matchreport(exes.exe_name('test_gtest'),
                              'pytest_runtest_logreport')
@@ -220,7 +222,7 @@ def test_cpp_failure_repr(dummy_failure):
 def test_cpp_files_option(testdir, exes):
     exes.get('boost_success')
     exes.get('gtest')
-    
+
     result = testdir.inline_run('--collect-only')
     reps = result.getreports()
     assert len(reps) == 1
