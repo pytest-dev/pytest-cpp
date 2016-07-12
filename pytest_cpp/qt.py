@@ -15,13 +15,18 @@ class QTestLibFacade(object):
     @classmethod
     def is_test_suite(cls, executable):
         try:
-            output = subprocess.check_output([executable, '--help'],
+            output = subprocess.check_output([executable, '-help'],
                                              stderr=subprocess.STDOUT,
                                              universal_newlines=True)
         except (subprocess.CalledProcessError, OSError):
             return False
         else:
             return '-csv' in output
+
+    def list_tests(self, executable):
+        # unfortunately boost doesn't provide us with a way to list the tests
+        # inside the executable, so the test_id is a dummy placeholder :(
+        return [os.path.basename(os.path.splitext(executable)[0])]
 
     def run_test(self, executable, test_id):
 
@@ -36,7 +41,8 @@ class QTestLibFacade(object):
         log_xml = os.path.join(temp_dir, 'log.xml')
         args = [
             executable,
-            '-o log_xml, xml',
+            "-o",
+            "{xml_file},xunitxml".format(xml_file=log_xml),
         ]
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         stdout, _ = p.communicate()
