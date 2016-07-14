@@ -53,9 +53,7 @@ class QTestLibFacade(object):
             for filename in filenames:
                 if filename.endswith('.xml'):
                     matches.append(os.path.join(root, filename))
-        failures = 0
-        tests = 0
-        errors = 0
+
         cases = []
         suites = []
 
@@ -106,18 +104,11 @@ class QTestLibFacade(object):
         root = tree.getroot()
         if log:
             for suite in root:
-                if len([case for case in root.iter('Incident') if case.get('type') != "pass"]) > 0:
+                failed_cases = [case for case in root.iter('Incident') if case.get('type') != "pass"]
+                if failed_cases:
                     failed_suites = []
-                    failed_cases = [case for case in root.iter('Incident') if case.get('type') != "pass"]
-                    updated_attrib = copy.deepcopy(suite.attrib)
-                    updated_attrib.update(tests=len(failed_cases))
-                    #fail_suite = ET.Element(suite.tag, attrib=updated_attrib)
-                    #fail_suite.extend(failed_cases)
-                    #failed_suites.append(fail_suite)
-                    failed_suites = []
-                    failInfo = [(case.get('file'), case.get('line'), list(case)) for case in root.iter('Incident') if case.get('type') != "pass"]
-                    import ipdb; ipdb.set_trace();
-                    failed_suites.append(QTestFailure(failInfo[0][0], int(failInfo[0][1]), failInfo[0][2]))
+                    for case in failed_cases:
+                        failed_suites.append(QTestFailure(case.attrib['file'], int(case.attrib['line']), case.find('Description').text))
         return failed_suites
 
 
@@ -125,7 +116,7 @@ class QTestFailure(CppTestFailure):
     def __init__(self, filename, linenum, contents):
         self.filename = filename
         self.linenum = linenum
-        self.lines = contents
+        self.lines = contents.splitlines()
 
     def get_lines(self):
         m = ('red', 'bold')
