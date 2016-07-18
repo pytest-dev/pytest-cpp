@@ -48,6 +48,36 @@ class QTestLibFacade(object):
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         stdout, _ = p.communicate()
 
+        if len(os.listdir(temp_dir)) > 1:
+            self.merge_xml_report(temp_dir)
+            log_xml = os.path.join(temp_dir, "result-merged.xml")
+            log = read_file(log_xml)
+        else:
+            log_xml = os.path.join(temp_dir, os.listdir(temp_dir)[0])
+            log = read_file(log_xml)
+
+        if p.returncode not in (0, 1):
+            msg = ('Internal Error: calling {executable} '
+                   'for test {test_id} failed (returncode={returncode}):\n'
+                   'output:{stdout}\n'
+                   'log:{log}\n')
+            failure = QTestFailure(
+                '<no source file>',
+                linenum=0,
+                contents=msg.format(executable=executable,
+                                    test_id=test_id,
+                                    stdout=stdout,
+                                    log=log,
+                                    returncode=p.returncode))
+            return [failure]
+
+        results = self._parse_log(log=log_xml)
+        shutil.rmtree(temp_dir)
+
+        if results:
+            return results
+
+    def merge_xml_report(self, temp_dir):
         matches = []
         for root, dirnames, filenames in os.walk(temp_dir):
             for filename in filenames:
@@ -72,31 +102,6 @@ class QTestLibFacade(object):
         new_tree.write(os.path.join(temp_dir, "result-merged.xml"),
                        encoding="UTF-8",
                        xml_declaration=True)
-
-        log_xml = os.path.join(temp_dir, "result-merged.xml")
-
-        log = read_file(log_xml)
-
-        if p.returncode not in (0, 1):
-            msg = ('Internal Error: calling {executable} '
-                   'for test {test_id} failed (returncode={returncode}):\n'
-                   'output:{stdout}\n'
-                   'log:{log}\n')
-            failure = QTestFailure(
-                '<no source file>',
-                linenum=0,
-                contents=msg.format(executable=executable,
-                                    test_id=test_id,
-                                    stdout=stdout,
-                                    log=log,
-                                    returncode=p.returncode))
-            return [failure]
-
-        results = self._parse_log(log=log_xml)
-        shutil.rmtree(temp_dir)
-
-        if results:
-            return results
 
     def _parse_log(self, log):
         failed_suites = []
