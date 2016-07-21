@@ -6,8 +6,8 @@ Use `pytest <https://pypi.python.org/pypi/pytest>`_ runner to discover and execu
 
 |python| |version| |downloads| |ci| |coverage|
 
-Supports both `Google Test <https://code.google.com/p/googletest>`_ and
-`Boost::Test <http://www.boost.org/doc/libs/release/libs/test>`_:
+Supports `Google Test <https://code.google.com/p/googletest>`_ ,
+`Boost::Test <http://www.boost.org/doc/libs/release/libs/test>`_ and `QTest <http://doc.qt.io/qt-5/qtest.html>`_:
 
 .. image:: https://raw.githubusercontent.com/pytest-dev/pytest-cpp/master/images/screenshot.png
 
@@ -43,7 +43,7 @@ Usage
 
 Once installed, when py.test runs it will search and run tests
 founds in executable files, detecting if the suites are
-Google or Boost tests automatically.
+Google, Boost or Qt tests automatically.
 
 You can configure which files are tested for suites by using the ``cpp_files``
 ini configuration::
