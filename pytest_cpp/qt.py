@@ -3,8 +3,6 @@ import subprocess
 import tempfile
 import io
 import shutil
-import copy
-import fnmatch
 from pytest_cpp.error import CppTestFailure
 import xml.etree.ElementTree as ET
 
@@ -23,7 +21,7 @@ class QTestLibFacade(object):
         except (subprocess.CalledProcessError, OSError):
             return False
         else:
-            return '-csv' in output
+            return '-datatags' in output
 
     def list_tests(self, executable):
         # unfortunately boost doesn't provide us with a way to list the tests
@@ -48,15 +46,18 @@ class QTestLibFacade(object):
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         stdout, _ = p.communicate()
 
-        if len(os.listdir(temp_dir)) > 1:
+        num_reports = len(os.listdir(temp_dir))
+        if num_reports > 1:
             self.merge_xml_report(temp_dir)
             log_xml = os.path.join(temp_dir, "result-merged.xml")
             log = read_file(log_xml)
-        else:
+        elif num_reports == 1:
             log_xml = os.path.join(temp_dir, os.listdir(temp_dir)[0])
             log = read_file(log_xml)
+        else:
+            log_xml = log = None
 
-        if p.returncode not in (0, 1):
+        if p.returncode < 0 and p.returncode not in(-6, ):
             msg = ('Internal Error: calling {executable} '
                    'for test {test_id} failed (returncode={returncode}):\n'
                    'output:{stdout}\n'
@@ -118,6 +119,7 @@ class QTestLibFacade(object):
 
 
 class QTestFailure(CppTestFailure):
+
     def __init__(self, filename, linenum, contents):
         self.filename = filename
         self.linenum = linenum

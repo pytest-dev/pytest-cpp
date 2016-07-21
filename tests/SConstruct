@@ -9,19 +9,37 @@ else:
     LIBS = ['pthread']
 
 env = Environment(
-    CPPPATH=os.environ.get('INCLUDE'),
+    CPPPATH=os.environ.get('INCLUDE', []),
     CCFLAGS=CCFLAGS,
-    LIBPATH=os.environ.get('LIBPATH'),
+    LIBPATH=os.environ.get('LIBPATH', []),
     LIBS=LIBS,
 )
+
+# google test env
 genv = env.Clone(LIBS=['gtest'] + LIBS)
 
-Export('env genv')
+# qt5 env
+QT5DIR = "/opt/Qt5.7.0/5.7/gcc_64"
+qtenv = env.Clone(QT5DIR=QT5DIR,
+                  CCFLAGS="-std=c++11 -fPIC",
+                  tools=['default','qt5'])
+qtenv['ENV']['PKG_CONFIG_PATH'] = os.path.join(QT5DIR, 'lib/pkgconfig')
+qtenv.EnableQt5Modules([
+                      'QtTest'
+                     ])
 
+Export('env genv qtenv')
+
+# build google test target
 genv.Program('gtest.cpp')
 
+# build boost target
 for filename in ('boost_success.cpp', 'boost_failure.cpp', 'boost_error.cpp'):
     env.Program(filename)
+
+# build qt5 target
+for filename in ('qt_success.cpp', 'qt_failure.cpp', 'qt_error.cpp'):
+    qtenv.Program(filename)
 
 SConscript('acceptance/googletest-samples/SConscript')
 SConscript('acceptance/boosttest-samples/SConscript')
