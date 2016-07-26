@@ -1,0 +1,6 @@
+import qtenv
+
+qtEnv = qtenv.createQtEnvironment()
+Export('qtEnv')
+SConscript('SConscript')
+    

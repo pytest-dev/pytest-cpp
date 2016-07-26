@@ -1,0 +1,8 @@
+Import("qtEnv dup")
+
+qtEnv.EnableQt5Modules(['QtCore','QtGui'])
+
+if dup == 0: qtEnv.Append(CPPPATH=['.', '#build_dup0'])
+qtEnv.Program('aaa', 'aaa.cpp', 
+              QT5_MOCHPREFIX = 'moc_',
+              QT5_MOCHSUFFIX = '.cc')

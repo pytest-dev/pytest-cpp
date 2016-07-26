@@ -1,0 +1,6 @@
+Import("qtEnv")
+
+env = qtEnv.Clone()
+env.EnableQt5Modules(['QtCore','QtWidgets'])
+
+env.Program('main', Glob('*.cpp'))

@@ -1,0 +1,20 @@
+Import("qtEnv")
+sources = ['aaa.cpp', 'bbb.cpp', 'ddd.cpp', 'eee.cpp', 'main.cpp']
+
+qtEnv.EnableQt5Modules(['QtCore','QtGui'])
+
+# normal invocation
+sources.append(qtEnv.Moc5('include/aaa.h'))
+sources.append(qtEnv.Moc5('ui/ccc.h'))
+qtEnv.Moc5('bbb.cpp')
+qtEnv.Uic5('ui/ccc.ui')
+
+# manual target specification
+sources.append(qtEnv.ExplicitMoc5('moc-ddd.cpp','include/ddd.h'))
+qtEnv.ExplicitMoc5('moc_eee.cpp','eee.cpp')
+qtEnv.ExplicitUic5('include/uic_fff.hpp','ui/fff.ui')
+
+qtEnv.Program(target='aaa',
+              source=sources,
+              CPPPATH=['$CPPPATH', './include'],
+              QT5_AUTOSCAN=0)

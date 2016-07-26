@@ -1,0 +1,10 @@
+Import("qtEnv")
+
+env = qtEnv.Clone()
+env.EnableQt5Modules(['QtCore','QtWidgets'])
+env['QT5_AUTOSCAN']=0
+
+env.ExplicitMoc5('explicitly_moced_FromHeader.cpp','mocFromH.h')
+env.ExplicitMoc5('explicitly_moced_FromCpp.strange_cpp_moc_prefix','mocFromCpp.cpp')
+
+env.Program('main', Glob('*.cpp'))

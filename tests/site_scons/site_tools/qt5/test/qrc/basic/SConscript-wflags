@@ -1,0 +1,9 @@
+Import('qtEnv')
+
+env = qtEnv.Clone()
+env.EnableQt5Modules(['QtCore','QtWidgets'])
+
+source_files = Glob('*.cpp')+Glob('*.qrc')
+env['QT5_QRCFLAGS'] = ['-name', 'icons']
+
+env.Program('main', source_files)
