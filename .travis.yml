@@ -11,7 +11,7 @@ install:
  - pip install tox coveralls
 
 script:
- - scons -C tests
+ - scons -j4 -C tests
  - tox
 
 after_success:
