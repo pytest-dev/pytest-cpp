@@ -1,7 +1,7 @@
 import os
 import sys
 
-ENABLE_QT_TEST = True
+ENABLE_QT_TEST = False
 
 if sys.platform.startswith('win'):
     CCFLAGS = ['/EHsc', '/nologo']

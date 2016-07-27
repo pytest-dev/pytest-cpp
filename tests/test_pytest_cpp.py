@@ -6,7 +6,7 @@ from pytest_cpp.error import CppTestFailure, CppFailureRepr
 from pytest_cpp.google import GoogleTestFacade
 from pytest_cpp.qt import QTestLibFacade
 
-ENABLE_QT_TEST = True
+ENABLE_QT_TEST = False
 
 
 def assert_outcomes(result, expected_outcomes):
