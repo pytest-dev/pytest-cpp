@@ -1,4 +1,0 @@
-import qtenv
-
-qtEnv = qtenv.createQtEnvironment()
-qtEnv.Program('main', 'main.cpp', CPPDEFINES=['FOO'], LIBS=[])

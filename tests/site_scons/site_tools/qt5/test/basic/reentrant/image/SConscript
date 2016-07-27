@@ -1,4 +1,0 @@
-Import("qtEnv")
-env = qtEnv.Clone(tool='qt5')
-
-env.Program('main', 'main.cpp', CPPDEFINES=['FOO'], LIBS=[])

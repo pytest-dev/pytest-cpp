@@ -6,6 +6,9 @@ from pytest_cpp.error import CppTestFailure, CppFailureRepr
 from pytest_cpp.google import GoogleTestFacade
 from pytest_cpp.qt import QTestLibFacade
 
+
+# To enable QT support plugin tests, set ENABLE_QT_TEST to True in this file
+# and in the tests/SConstruct file.
 ENABLE_QT_TEST = False
 
 

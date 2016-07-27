@@ -1,6 +1,11 @@
 import os
 import sys
 
+# In order to build the tests for QT, you need to:
+# - Download and install qt from https://www.qt.io/download/
+# - Set the QT5DIR variable below
+# - Install the Scons Qt5 tools from https://bitbucket.org/dirkbaechle/scons_qt5
+#   First install option worked for me (installing it directly in the pytest-cpp/tests directory)
 ENABLE_QT_TEST = False
 
 if sys.platform.startswith('win'):

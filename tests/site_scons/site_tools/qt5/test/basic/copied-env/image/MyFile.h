@@ -1,2 +1,0 @@
-
-void aaa(void) {};

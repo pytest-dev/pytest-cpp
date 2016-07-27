@@ -1,2 +1,0 @@
-
-SConscript('sub/SConscript')

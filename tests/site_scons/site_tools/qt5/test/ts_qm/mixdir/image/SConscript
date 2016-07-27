@@ -1,3 +1,0 @@
-Import("qtEnv")
-
-qtEnv.Ts5('my_en', ['MyFile.cpp','subdir'])
