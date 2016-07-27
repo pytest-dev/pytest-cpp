@@ -58,7 +58,7 @@ By default matches ``test_*`` and ``*_test`` executable files.
 Requirements
 ============
 
-* Python 2.7+, Python 3.2+
+* Python 2.7+, Python 3.4+
 * pytest
 
 Install
