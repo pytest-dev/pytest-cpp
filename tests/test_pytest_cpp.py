@@ -241,6 +241,22 @@ def test_passing_files_directly_in_command_line(testdir, exes):
     result.stdout.fnmatch_lines(['*1 passed*'])
 
 
+def test_race_condition_on_collect(tmpdir):
+    """
+    Check that collection correctly handles when a path no longer is valid.
+
+    This might happen in some situations when xdist is collecting multiple files, and that
+    causes temporary .pyc files to be generated; in those situations, pytest may obtain that
+    filename and ask plugins if they can collect it, but by the time a plugin is called
+    the file may be gone already:
+
+    OSError: [Errno 2] No such file or directory:
+        '/../test_duplicate_filenames.cpython-27-PYTEST.pyc.21746'
+    """
+    import pytest_cpp.plugin
+    assert not pytest_cpp.plugin.pytest_collect_file(None, tmpdir / 'invalid-file')
+
+
 class TestError:
 
     def test_get_whitespace(self):

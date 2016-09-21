@@ -1,3 +1,7 @@
+# 0.4.1 #
+
+- Fix error that may happen during collection when using xdist (#25).
+
 # 0.4.0 #
 
 - Integrated most of the examples found in boost-1.55 for Boost Test into the

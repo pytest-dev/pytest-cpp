@@ -13,7 +13,11 @@ DEFAULT_MASKS = ('test_*', '*_test')
 
 
 def pytest_collect_file(parent, path):
-    is_executable = os.stat(str(path)).st_mode & stat.S_IXUSR
+    try:
+        is_executable = os.stat(str(path)).st_mode & stat.S_IXUSR
+    except OSError:
+        # in some situations the file might not be available anymore at this point
+        return False
     if not is_executable:
         return
     masks = parent.config.getini('cpp_files') or DEFAULT_MASKS
