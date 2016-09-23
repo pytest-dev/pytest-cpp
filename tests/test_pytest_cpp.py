@@ -254,7 +254,7 @@ def test_race_condition_on_collect(tmpdir):
         '/../test_duplicate_filenames.cpython-27-PYTEST.pyc.21746'
     """
     import pytest_cpp.plugin
-    assert not pytest_cpp.plugin.pytest_collect_file(None, tmpdir / 'invalid-file')
+    assert pytest_cpp.plugin.pytest_collect_file(None, tmpdir / 'invalid-file') is None
 
 
 class TestError:

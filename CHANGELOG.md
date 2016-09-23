@@ -1,3 +1,7 @@
+# 0.4.2 #
+
+- Proper fix for #25, the fix made in `0.4.1` was incorrect.
+
 # 0.4.1 #
 
 - Fix error that may happen during collection when using xdist (#25).
