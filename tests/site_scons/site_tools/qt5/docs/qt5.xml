@@ -1,0 +1,600 @@
+<!--
+  Copyright (c) 2001-2010,2011,2012 The SCons Foundation
+
+This file is processed by the bin/SConsDoc.py module.
+See its __doc__ string for a discussion of the format.
+-->
+<tool name="qt5">
+<summary>
+Sets construction variables for building Qt5 applications.
+</summary>
+<sets>
+QT5DIR
+QT5_BINPATH
+QT5_MOC
+QT5_UIC
+QT5_RCC
+QT5_AUTOSCAN
+QT5_AUTOSCAN_STRATEGY
+QT5_AUTOMOC_CPPPATH
+QT5_AUTOMOC_SCANCPPPATH
+QT5_UICFLAGS
+QT5_MOCFROMHFLAGS
+QT5_MOCFROMCXXFLAGS
+QT5_UICDECLPREFIX
+QT5_UICDECLSUFFIX
+QT5_MOCHPREFIX
+QT5_MOCHSUFFIX
+QT5_MOCCXXPREFIX
+QT5_MOCCXXSUFFIX
+QT5_MOCDEFPREFIX
+QT5_MOCDEFSUFFIX
+QT5_UISUFFIX
+QT5_UICCOM
+QT5_GOBBLECOMMENTS
+QT5_CPPDEFINES_PASSTOMOC
+QT5_CLEAN_TS
+QT5_DEBUG
+QT5_XMOCHPREFIX
+QT5_XMOCHSUFFIX
+QT5_XMOCCXXPREFIX
+QT5_XMOCCXXSUFFIX
+QT5_LUPDATE
+QT5_LRELEASE
+QT5_LUPDATEFLAGS
+QT5_LRELEASEFLAGS
+QT5_QRCFLAGS
+QT5_UICDECLPREFIX
+QT5_UICDECLSUFFIX
+QT5_MOCINCPREFIX
+QT5_QRCSUFFIX
+QT5_QRCCXXSUFFIX
+QT5_QRCCXXPREFIX
+QT5_MOCDEFINES
+QT5_MOCCPPPATH
+QT5_MOCINCFLAGS
+QT5_LUPDATECOM
+QT5_LRELEASECOM
+</sets>
+<uses>
+</uses>
+</tool>
+
+<builder name="Moc5">
+<summary>
+Builds an output file from a moc input file. Moc input files are either
+header files or cxx files. This builder is only available after using the
+tool 'qt5'. It should be your first choice when manually Mocing files
+and is the builder for the Q_OBJECT driven Automoc strategy (#0, the default).
+It can can be controlled via the QT5_MOC* variables. See the &cv-link-QT5DIR; and
+&cv-link-QT5_AUTOSCAN_STRATEGY; variables for more information.
+Example:
+
+<example>
+env.Moc5('foo.h') # generates moc_foo.cc
+env.Moc5('foo.cpp') # generates foo.moc
+</example>
+</summary>
+</builder>
+
+<builder name="XMoc5">
+<summary>
+Just like the &b-Moc5; builder, it builds an output file from a moc input file.
+Moc input files are either header files or cxx files. This builder is only available after using the
+tool 'qt5'. It is defined separately for the include driven Automoc strategy (#1)
+and can be controlled via the QT5_XMOC* variables. See the &cv-link-QT5DIR; and
+&cv-link-QT5_AUTOSCAN_STRATEGY; variables for more information.
+Example:
+
+<example>
+env.XMoc5('foo.h') # generates moc_foo.cpp
+env.XMoc5('foo.cpp') # generates foo.moc
+</example>
+</summary>
+</builder>
+
+<builder name="ExplicitMoc5">
+<summary>
+Just like the &b-Moc5; builder, it builds an output file from a moc input file.
+However, it does not use any default prefix or suffix for the filenames.
+You can, and have to, specify the full source and target names explicitly.
+This builder is only available after using the
+tool 'qt5'. It can be your last resort, when you have to moc single files
+from/to exotic filenames.
+Example:
+
+<example>
+env.ExplicitMoc5('moced_foo.cxx','foo.h') # generates moced_foo.cxx
+</example>
+</summary>
+</builder>
+
+
+<builder name="Uic5">
+<summary>
+Builds a header file from an .ui file, where the former
+contains the setup code for a GUI class.
+This builder is only available after using the tool 'qt5'.
+Using this builder lets you override the standard
+naming conventions (be careful: prefixes are always prepended to names of
+built files; if you don't want prefixes, you may set them to ``).
+See the &cv-link-QT5DIR; variable for more information.
+Example:
+
+<example>
+env.Uic5('foo.ui') # -> 'ui_foo.h'
+</example>
+</summary>
+</builder>
+
+<builder name="ExplicitUic5">
+<summary>
+Just like the &b-Uic5; builder, it builds a header file from a .ui input file.
+However, it does not use any default prefix or suffix for the filenames.
+You can, and have to, specify the full source and target names explicitly.
+This builder is only available after using the
+tool 'qt5'. It can be your last resort, when you have to convert .ui
+files to exotic filenames.
+Example:
+
+<example>
+env.ExplicitUic5('uiced_foo.hpp','foo.ui') # generates uiced_foo.hpp
+</example>
+</summary>
+</builder>
+
+<builder name="Qrc5">
+<summary>
+Builds a cxx file, containing all resources from the given
+.qrc file.
+This builder is only available after using the tool 'qt5'.
+
+Example:
+
+<example>
+env.Qrc5('foo.qrc') # -> ['qrc_foo.cc']
+</example>
+</summary>
+</builder>
+
+<builder name="Ts5">
+<summary>
+Scans the source files in the given path for tr() marked strings,
+that should get translated. Writes a .ts file for the Qt Linguist.
+This builder is only available after using the tool 'qt5'.
+
+Example:
+
+<example>
+env.Ts5('foo.ts','.') # -> ['foo.ts']
+</example>
+</summary>
+</builder>
+
+
+<builder name="Qm5">
+<summary>
+Compiles a given .ts file (Qt Linguist) into a binary .qm file.
+This builder is only available after using the tool 'qt5'.
+
+Example:
+
+<example>
+env.Qm5('foo.ts') # -> ['foo.qm']
+</example>
+</summary>
+</builder>
+
+
+<cvar name="QT5DIR">
+<summary>
+The Qt5 tool tries to read this from the current Environment and then from os.environ.
+If it is not set and found, the value of QTDIR (in the Environment and os.environ) is
+used as a fallback.
+It also initializes all QT5_*
+construction variables listed below.
+(Note that all paths are constructed
+with python's os.path.join() method,
+but are listed here with the '/' separator
+for easier reading.)
+In addition, the construction environment
+variables &cv-link-CPPPATH;,
+&cv-link-LIBPATH; and
+&cv-link-LIBS; may be modified
+and the variables
+PROGEMITTER, SHLIBEMITTER and LIBEMITTER
+are modified. Because the build-performance is affected when using this tool,
+you have to explicitly specify it at Environment creation:
+
+<example>
+Environment(tools=['default','qt5'])
+</example>
+
+The Qt5 tool supports the following operations:
+
+<emphasis Role="strong">Automatic moc file generation from header files.</emphasis>
+You do not have to specify moc files explicitly, the tool does it for you.
+However, there are a few preconditions to do so: Your header file must have
+the same filebase as your implementation file and must stay in the same
+directory. It must have one of the suffixes .h, .hpp, .H, .hxx, .hh. You
+can turn off automatic moc file generation by setting &cv-link-QT5_AUTOSCAN; to 0.
+See also the corresponding builder method
+&b-Moc5;().
+
+<emphasis Role="strong">Automatic moc file generation from cxx files.</emphasis>
+As stated in the Qt documentation, include the moc file at the end of
+the cxx file. Note that you have to include the file, which is generated
+by the transformation ${QT5_MOCCXXPREFIX}&lt;basename&gt;${QT5_MOCCXXSUFFIX}, by default
+&lt;basename&gt;.moc. A warning is generated after building the moc file, if you
+do not include the correct file. If you are using VariantDir, you may
+need to specify duplicate=1. You can turn off automatic moc file generation
+by setting &cv-link-QT5_AUTOSCAN; to 0. See also the corresponding
+&b-Moc5;
+builder method.
+
+<emphasis Role="strong">Handling of .ui files.</emphasis>
+TODO: describe a little
+See also the corresponding
+&b-Uic5;
+builder method.
+
+<emphasis Role="strong">Handling translation files (.ts and .qm).</emphasis>
+TODO: describe a little
+See also the corresponding
+builder methods &b-Ts5; and &b-Qm5;.
+
+<emphasis Role="strong">Compiling resource files (.qrc).</emphasis>
+TODO: describe a little
+See also the corresponding
+&b-Qrc5; builder method.
+
+</summary>
+</cvar>
+
+<cvar name="QT5_AUTOSCAN">
+<summary>
+The default is '1', which means that the tool is automatically 
+scanning for mocable files (see also &cv-link-QT5_AUTOSCAN_STRATEGY;).
+You can set this variable to '0' to
+switch it off, and then use the &b-Moc5; Builder to explicitly
+specify files to run moc on.
+</summary>
+</cvar>
+
+<cvar name="QT5_BINPATH">
+<summary>
+The path where the Qt5 binaries are installed.
+The default value is '&cv-link-QT5DIR;/bin'.
+</summary>
+</cvar>
+
+<cvar name="QT5_MOCCPPPATH">
+<summary>
+The path where the Qt5 header files are installed.
+The default value is '&cv-link-QT5DIR;/include'.
+Note: If you set this variable to None,
+the tool won't change the &cv-link-CPPPATH;
+construction variable.
+</summary>
+</cvar>
+
+<cvar name="QT5_DEBUG">
+<summary>
+Prints lots of debugging information while scanning for moc files.
+</summary>
+</cvar>
+
+<cvar name="QT5_MOC">
+<summary>
+The path to the Qt5 moc executable.
+Default value is '&cv-link-QT5_BINPATH;/moc'.
+</summary>
+</cvar>
+
+<cvar name="QT5_MOCCXXPREFIX">
+<summary>
+Default value is ''. Prefix for moc output files, when source is a cxx file and the 
+Automoc strategy #0 (Q_OBJECT driven) is used.
+</summary>
+</cvar>
+
+<cvar name="QT5_MOCCXXSUFFIX">
+<summary>
+Default value is '.moc'. Suffix for moc output files, when source is a cxx file and the
+Automoc strategy #0 (Q_OBJECT driven) is used.
+</summary>
+</cvar>
+
+<cvar name="QT5_MOCFROMCXXFLAGS">
+<summary>
+Default value is '-i'. These flags are passed to moc, when moccing a
+C++ file.
+</summary>
+</cvar>
+
+<cvar name="QT5_MOCFROMHFLAGS">
+<summary>
+Default value is ''. These flags are passed to moc, when moccing a header
+file.
+</summary>
+</cvar>
+
+<cvar name="QT5_MOCHPREFIX">
+<summary>
+Default value is 'moc_'. Prefix for moc output files, when the source file is a header
+and the Automoc strategy #0 (Q_OBJECT driven) is used.
+</summary>
+</cvar>
+
+<cvar name="QT5_MOCHSUFFIX">
+<summary>
+Default value is '&cv-link-CXXFILESUFFIX;'. Suffix for moc output files, when 
+the source file is a header and the Automoc strategy #0 (Q_OBJECT driven) is used.
+</summary>
+</cvar>
+
+<cvar name="QT5_UIC">
+<summary>
+Default value is '&cv-link-QT5_BINPATH;/uic'. The path to the Qt5 uic executable.
+</summary>
+</cvar>
+
+<cvar name="QT5_UICCOM">
+<summary>
+Command to generate the required header and source files from .ui form files.
+Is compiled from &cv-link-QT5_UIC; and &cv-link-QT5_UICFLAGS;.
+</summary>
+</cvar>
+
+<cvar name="QT5_UICCOMSTR">
+<summary>
+The string displayed when generating header and source files from .ui form files.
+If this is not set, then &cv-link-QT5_UICCOM; (the command line) is displayed.
+</summary>
+</cvar>
+
+<cvar name="QT5_UICFLAGS">
+<summary>
+Default value is ''. These flags are passed to the Qt5 uic executable, when creating header
+and source files from a .ui form file.
+</summary>
+</cvar>
+
+<cvar name="QT5_UICDECLPREFIX">
+<summary>
+Default value is 'ui_'. Prefix for uic generated header files.
+</summary>
+</cvar>
+
+<cvar name="QT5_UICDECLSUFFIX">
+<summary>
+Default value is '.h'. Suffix for uic generated header files.
+</summary>
+</cvar>
+
+<cvar name="QT5_UISUFFIX">
+<summary>
+Default value is '.ui'. Suffix of designer input files (form files) in Qt5.
+</summary>
+</cvar>
+
+<cvar name="QT5_AUTOSCAN_STRATEGY">
+<summary>
+Default value is '0'. When using the Automoc feature of the Qt5 tool, you
+can select different strategies for detecting which files should get moced.
+The simple approach ('0' as the default) scans header and source files for
+the Q_OBJECT macro, so the trigger 'moc or not' is Q_OBJECT driven. If it is
+found, the corresponding file gets moced with
+the &b-Moc5; builder. This results in the files 'moc_foo.cc' and 'foo.moc' for header
+and source file, respectively. They get added to the list of sources, for compiling
+the current library or program.
+
+In older Qt manuals, a different technique for mocing is recommended. A cxx file
+includes the moced output of itself or its header at the end. This approach is somewhat
+deprecated, but the 'qtsolutions' by Qt are still based on it, for example. You also
+might have to switch older Qt sources to a new version 5.x.y. Then you can set
+this variable to '1', for 'include driven' mocing. This means that the tool searches
+for '#include' statements in all cxx files, containing a file pattern 'moc_foo.cpp'
+and 'foo.moc' for header and source file, respectively. If the file 'foo.h/foo.cpp'
+then contains a Q_OBJECT macro, it gets moced but is NOT added to the list of sources.
+This is the important difference between the two strategies. If no matching
+include patterns are found for the current cxx file, the Q_OBJECT driven method (#0)
+is tried as fallback.
+</summary>
+</cvar>
+
+<cvar name="QT5_AUTOMOC_SCANCPPPATH">
+<summary>
+The default is '1', meaning that the tool scans 
+for mocable files not only in the current directory, but
+also in all CPPPATH folders (see also &cv-link-QT5_AUTOMOC_CPPPATH;).
+You can set this variable to '0' to
+switch it off on rare occasions, e.g. when too many search
+folders give you a bad performance in large projects.
+</summary>
+</cvar>
+
+<cvar name="QT5_AUTOMOC_CPPPATH">
+<summary>
+The list of paths to scan for mocable files
+(see also &cv-link-QT5_AUTOMOC_SCANCPPPATH;), it is empty by default
+which means that the CPPPATH variable is used.
+You can set this variable to a subset of CPPPATH in order
+to improve performance, i.e. to minimize the search space.
+</summary>
+</cvar>
+
+<cvar name="QT5_GOBBLECOMMENTS">
+<summary>
+Default value is '0' (disabled). When you set this variable to '1',
+you enable the automatic removal of C/C++ comments, while searching for
+the Q_OBJECT keyword during the Automoc process. This can be helpful if you
+have the string Q_OBJECT in one of your comments, but don't want this
+file to get moced.
+</summary>
+</cvar>
+
+<cvar name="QT5_CPPDEFINES_PASSTOMOC">
+<summary>
+Default value is '1' (enabled). When you set this variable to '1',
+all currently set CPPDEFINES get passed to the moc executable. It does not matter
+which strategy you selected with &cv-link-QT5_AUTOSCAN_STRATEGY; or whether you
+call the &b-Moc5; builder directly.
+</summary>
+</cvar>
+
+<cvar name="QT5_CLEAN_TS">
+<summary>
+Default value is '0' (disabled). When you set this variable to '1',
+the &b-Ts5; builder will delete your .ts files on a 'scons -c'. Normally,
+these files for the QtLinguist are treated as 'precious' (they are not removed
+prior to a rebuild) and do not get cleaned.
+</summary>
+</cvar>
+
+<cvar name="QT5_XMOCHPREFIX">
+<summary>
+Default value is 'moc_'. 
+Like &cv-link-QT5_MOCHPREFIX;, this is the prefix for moc output files, when
+the source file is a header
+and the Automoc strategy #1 (include driven) is used.
+</summary>
+</cvar>
+
+<cvar name="QT5_XMOCHSUFFIX">
+<summary>
+Default value is '.cpp'. 
+Like &cv-link-QT5_MOCHSUFFIX;, this is the suffix for moc output files, when 
+the source file is a header and the Automoc strategy #1
+(include driven) is used.
+</summary>
+</cvar>
+
+<cvar name="QT5_XMOCCXXPREFIX">
+<summary>
+Default value is ''. 
+Like &cv-link-QT5_MOCCXXPREFIX;, this is the
+prefix for moc output files, when source is a cxx file and the 
+Automoc strategy #1 (include driven) is used.
+</summary>
+</cvar>
+
+<cvar name="QT5_XMOCCXXSUFFIX">
+<summary>
+Default value is '.moc'. 
+Like &cv-link-QT5_MOCCXXSUFFIX;, this is the 
+suffix for moc output files, when source is a cxx file and the
+Automoc strategy #1 (include driven) is used.
+</summary>
+</cvar>
+
+<cvar name="QT5_RCC">
+<summary>
+Default value is '&cv-link-QT5_BINPATH;/rcc'. The path to the Qt5 rcc
+executable (resource file compiler).
+</summary>
+</cvar>
+
+<cvar name="QT5_LUPDATE">
+<summary>
+Default value is '&cv-link-QT5_BINPATH;/lupdate'. The path to the Qt5 lupdate
+executable (updates the .ts files from sources).
+</summary>
+</cvar>
+
+<cvar name="QT5_LRELEASE">
+<summary>
+Default value is '&cv-link-QT5_BINPATH;/lrelease'. The path to the Qt5 lrelease
+executable (converts .ts files to binary .qm files).
+</summary>
+</cvar>
+
+<cvar name="QT5_QRCFLAGS">
+<summary>
+Default value is ''. These flags are passed to the Qt5 rcc executable,
+when compiling a resource file.
+</summary>
+</cvar>
+
+<cvar name="QT5_LUPDATEFLAGS">
+<summary>
+Default value is ''. These flags are passed to the Qt5 lupdate executable,
+when updating .ts files from sources.
+</summary>
+</cvar>
+
+<cvar name="QT5_LRELEASEFLAGS">
+<summary>
+Default value is ''. These flags are passed to the Qt5 lrelease executable,
+when compiling .ts files into binary .qm files.
+</summary>
+</cvar>
+
+<cvar name="QT5_MOCINCPREFIX">
+<summary>
+Default value is '-I'. The prefix for specifying include directories to the
+Qt5 moc executable.
+</summary>
+</cvar>
+
+<cvar name="QT5_QRCSUFFIX">
+<summary>
+Default value is '.qrc'. Suffix of Qt5 resource files.
+</summary>
+</cvar>
+
+<cvar name="QT5_QRCCXXSUFFIX">
+<summary>
+Default value is '$CXXFILESUFFIX'. 
+This is the suffix for compiled .qrc resource files.
+</summary>
+</cvar>
+
+<cvar name="QT5_QRCCXXPREFIX">
+<summary>
+Default value is 'qrc_'.
+This is the prefix for compiled .qrc resource files.
+</summary>
+</cvar>
+
+<cvar name="QT5_MOCINCFLAGS">
+<summary>
+List of include paths for the Qt5 moc executable, is compiled from
+&cv-link-QT5_MOCINCPREFIX;, &cv-link-QT5_MOCCPPPATH; and &cv-link-INCSUFFIX;.
+</summary>
+</cvar>
+
+<cvar name="QT5_MOCDEFINES">
+<summary>
+List of CPP defines that are passed to the Qt5 moc executable,
+is compiled from &cv-link-QT5_MOCDEFPREFIX;, &cv-link-CPPDEFINES; and &cv-link-QT5_MOCDEFSUFFIX;.
+</summary>
+</cvar>
+
+<cvar name="QT5_LUPDATECOM">
+<summary>
+Command to update .ts files for translation from the sources.
+</summary>
+</cvar>
+
+<cvar name="QT5_LUPDATECOMSTR">
+<summary>
+The string displayed when updating .ts files from the sources.
+If this is not set, then &cv-link-QT5_LUPDATECOM; (the command line) is displayed.
+</summary>
+</cvar>
+
+<cvar name="QT5_LRELEASECOM">
+<summary>
+Command to convert .ts files to binary .qm files.
+</summary>
+</cvar>
+
+<cvar name="QT5_LRELEASECOMSTR">
+<summary>
+The string displayed when converting .ts files to binary .qm files.
+If this is not set, then &cv-link-QT5_RCC; (the command line) is displayed.
+</summary>
+</cvar>
+
+

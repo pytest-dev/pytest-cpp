@@ -1,0 +1,6 @@
+
+Import("qtEnv")
+qtEnv.Append(CPPPATH=['./local_include'])
+qtEnv.EnableQt5Modules(['QtCore'])
+qtEnv.Program(target = 'aaa', source = 'aaa.cpp')
+

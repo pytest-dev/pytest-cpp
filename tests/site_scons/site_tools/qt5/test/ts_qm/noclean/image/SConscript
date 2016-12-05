@@ -1,0 +1,4 @@
+Import("qtEnv")
+
+qtEnv.Ts5('my_en.ts', Glob('*.cpp'))
+qtEnv.Qm5('my_en','my_en')

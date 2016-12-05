@@ -1,0 +1,12 @@
+import qtenv
+
+qtEnv = qtenv.createQtEnvironment()
+qtEnv.EnableQt5Modules(['QtCore','QtWidgets'])
+
+qtEnv.VariantDir('bld', '.')
+qtEnv.Uic5('bld/anUiFile.ui')
+qtEnv.Program('bld/test_realqt', ['bld/mocFromCpp.cpp',
+                                  'bld/mocFromH.cpp',
+                                  'bld/MyForm.cpp',
+                                  'bld/main.cpp'])
+

@@ -1,0 +1,6 @@
+Import("qtEnv dup")
+
+qtEnv.EnableQt5Modules(['QtCore','QtGui'])
+
+if dup == 0: qtEnv.Append(CPPPATH=['.'])
+qtEnv.Program('aaa','aaa.cpp')

@@ -1,0 +1,11 @@
+Import("qtEnv")
+qtEnv.Append(CPPDEFINES = ['FOOBAZ'])
+
+copy = qtEnv.Clone()
+copy.Append(CPPDEFINES = ['MYLIB_IMPL'])
+copy.EnableQt5Modules(['QtCore'])
+
+copy.SharedLibrary(
+   target = 'MyLib',
+   source = ['MyFile.cpp']
+)

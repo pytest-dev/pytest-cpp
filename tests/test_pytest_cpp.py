@@ -4,6 +4,9 @@ from pytest_cpp import error
 from pytest_cpp.boost import BoostTestFacade
 from pytest_cpp.error import CppTestFailure, CppFailureRepr
 from pytest_cpp.google import GoogleTestFacade
+from pytest_cpp.qt import QTestLibFacade
+
+ENABLE_QT_TEST = True
 
 
 def assert_outcomes(result, expected_outcomes):
@@ -41,6 +44,7 @@ def dummy_failure():
         'FooTest.DISABLED_test_disabled'
     ]),
     (BoostTestFacade(), 'boost_success', ['boost_success']),
+    (BoostTestFacade(), 'boost_failure', ['boost_failure']),
     (BoostTestFacade(), 'boost_error', ['boost_error']),
 ])
 def test_list_tests(facade, name, expected, exes):
@@ -143,9 +147,10 @@ def test_google_run(testdir, exes):
         ('FooTest.DISABLED_test_disabled', 'skipped'),
     ])
 
+
 def test_unknown_error(testdir, exes, mocker):
     mocker.patch.object(GoogleTestFacade, 'run_test',
-                      side_effect=RuntimeError('unknown error'))
+                        side_effect=RuntimeError('unknown error'))
     result = testdir.inline_run('-v', exes.get('gtest', 'test_gtest'))
     rep = result.matchreport('FooTest.test_success', 'pytest_runtest_logreport')
     assert 'unknown error' in str(rep.longrepr)
@@ -154,9 +159,9 @@ def test_unknown_error(testdir, exes, mocker):
 def test_google_internal_errors(mocker, testdir, exes, tmpdir):
     mocker.patch.object(GoogleTestFacade, 'is_test_suite', return_value=True)
     mocker.patch.object(GoogleTestFacade, 'list_tests',
-                      return_value=['FooTest.test_success'])
+                        return_value=['FooTest.test_success'])
     mocked = mocker.patch.object(subprocess, 'check_output', autospec=True,
-                               return_value='')
+                                 return_value='')
 
     def raise_error(*args, **kwargs):
         raise subprocess.CalledProcessError(returncode=100, cmd='')
@@ -170,7 +175,7 @@ def test_google_internal_errors(mocker, testdir, exes, tmpdir):
     xml_file = tmpdir.join('results.xml')
     xml_file.write('<empty/>')
     mocker.patch.object(GoogleTestFacade, '_get_temp_xml_filename',
-                      return_value=str(xml_file))
+                        return_value=str(xml_file))
     result = testdir.inline_run('-v', exes.get('gtest', 'test_gtest'))
     rep = result.matchreport(exes.exe_name('test_gtest'),
                              'pytest_runtest_logreport')
@@ -193,7 +198,7 @@ def mock_popen(mocker, return_code, stdout, stderr):
     mocked_popen = mocker.MagicMock()
     mocked_popen.__enter__ = mocked_popen
     mocked_popen.communicate.return_value = stdout, stderr
-    mocked_popen.return_code = return_code
+    mocked_popen.returncode = return_code
     mocked_popen.poll.return_value = return_code
     mocker.patch.object(subprocess, 'Popen', return_value=mocked_popen)
     return mocked_popen
@@ -220,7 +225,7 @@ def test_cpp_failure_repr(dummy_failure):
 def test_cpp_files_option(testdir, exes):
     exes.get('boost_success')
     exes.get('gtest')
-    
+
     result = testdir.inline_run('--collect-only')
     reps = result.getreports()
     assert len(reps) == 1
@@ -236,9 +241,9 @@ def test_cpp_files_option(testdir, exes):
 
 
 def test_passing_files_directly_in_command_line(testdir, exes):
-    f = exes.get('boost_success')
-    result = testdir.runpytest(f)
-    result.stdout.fnmatch_lines(['*1 passed*'])
+    boost_exe = exes.get('boost_success')
+    result_boost = testdir.runpytest(boost_exe)
+    result_boost.stdout.fnmatch_lines(['*1 passed*'])
 
 
 def test_race_condition_on_collect(tmpdir):
@@ -280,3 +285,91 @@ class TestError:
 
         invalid = str(tmpdir.join('invalid'))
         assert error.get_code_context_around_line(invalid, 10) == []
+
+
+if ENABLE_QT_TEST:
+    @pytest.mark.parametrize('facade, name, expected', [
+        (QTestLibFacade(), 'qt_success', ['qt_success']),
+        (QTestLibFacade(), 'qt_failure', ['qt_failure']),
+        (QTestLibFacade(), 'qt_error', ['qt_error'])
+    ])
+    def test_qt_list_tests(facade, name, expected, exes):
+        obtained = facade.list_tests(exes.get(name))
+        assert obtained == expected
+
+    @pytest.mark.parametrize('facade, name, other_name', [
+        (QTestLibFacade(), 'qt_success', 'gtest'),
+    ])
+    def test_qt_is_test_suite(facade, name, other_name, exes, tmpdir):
+        assert facade.is_test_suite(exes.get(name))
+        assert not facade.is_test_suite(exes.get(other_name))
+        tmpdir.ensure('foo.txt')
+        assert not facade.is_test_suite(str(tmpdir.join('foo.txt')))
+
+    @pytest.mark.parametrize('facade, name, test_id', [
+        (QTestLibFacade(), 'qt_success', '<unused>'),
+    ])
+    def test_qt_success(facade, name, test_id, exes):
+        assert facade.run_test(exes.get(name), test_id) is None
+
+    def test_qt_failure(exes):
+        facade = QTestLibFacade()
+        failures = facade.run_test(exes.get('qt_failure'), '<unused>')
+        assert len(failures) == 2
+
+        fail1 = failures[0]
+        colors = ('red', 'bold')
+        assert fail1.get_lines() == [('Compared values are not the same', colors), ('   Actual   (2 * 3): 6', colors), ('   Expected (5)    : 5', colors)]
+        assert fail1.get_file_reference() == ('qt_failure.cpp', 13)
+
+    def test_qt_error(exes):
+        facade = QTestLibFacade()
+        failures = facade.run_test(exes.get('qt_error'), '<unused>')
+        assert len(failures) == 1  # qt abort at first unhandled exception
+
+        fail1 = failures[0]
+        colors = ('red', 'bold')
+
+        assert fail1.get_lines() == [
+            ('Caught unhandled exception', colors)]
+
+    def test_qt_run(testdir, exes):
+        all_names = ['qt_success', 'qt_error', 'qt_failure']
+        all_files = [exes.get(n, 'test_' + n) for n in all_names]
+        result = testdir.inline_run('-v', *all_files)
+        assert_outcomes(result, [
+            ('test_qt_success', 'passed'),
+            ('test_qt_error', 'failed'),
+            ('test_qt_failure', 'failed'),
+        ])
+
+    def test_qt_internal_error(testdir, exes, mocker):
+        exe = exes.get('qt_success', 'test_qt_success')
+        mock_popen(mocker, return_code=-10, stderr=None, stdout=None)
+        mocker.patch.object(QTestLibFacade, 'is_test_suite', return_value=True)
+        mocker.patch.object(GoogleTestFacade, 'is_test_suite', return_value=False)
+        mocker.patch.object(BoostTestFacade, 'is_test_suite', return_value=False)
+        result = testdir.inline_run(exe)
+        rep = result.matchreport(exes.exe_name('test_qt_success'),
+                                 'pytest_runtest_logreport')
+        assert 'Internal Error:' in str(rep.longrepr)
+
+    def test_qt_cpp_files_option(testdir, exes):
+        exes.get('qt_success')
+
+        result = testdir.inline_run('--collect-only')
+        reps = result.getreports()
+        assert len(reps) == 1
+        assert reps[0].result == []
+
+        testdir.makeini('''
+            [pytest]
+            cpp_files = qt*
+        ''')
+        result = testdir.inline_run('--collect-only')
+        assert len(result.matchreport(exes.exe_name('qt_success')).result) == 1
+
+    def test_qt_passing_files_directly_in_command_line(testdir, exes):
+        qt_exe = exes.get('qt_success')
+        result_qt = testdir.runpytest(qt_exe)
+        result_qt.stdout.fnmatch_lines(['*1 passed*'])

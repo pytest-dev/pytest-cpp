@@ -1,0 +1,25 @@
+import qtenv
+
+qtEnv = qtenv.createQtEnvironment()
+
+reverted=int(ARGUMENTS.get('reverted', 0))
+dup = 1
+if ARGUMENTS.get('variant_dir', 0):
+    if ARGUMENTS.get('chdir', 0):
+        SConscriptChdir(1)
+    else:
+        SConscriptChdir(0)
+    dup=int(ARGUMENTS.get('dup', 1))
+    if dup == 0:
+        builddir = 'build_dup0'
+        qtEnv['QT5_DEBUG'] = 1
+    else:
+        builddir = 'build'
+    VariantDir(builddir, '.', duplicate=dup)
+    print builddir, dup
+    sconscript = Dir(builddir).File('SConscript')
+else:
+    sconscript = File('SConscript')
+
+Export("qtEnv dup reverted")
+SConscript( sconscript )

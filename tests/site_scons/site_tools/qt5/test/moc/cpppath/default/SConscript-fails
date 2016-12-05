@@ -1,0 +1,9 @@
+Import("qtEnv")
+
+env = qtEnv.Clone()
+env.EnableQt5Modules(['QtCore','QtWidgets'])
+env.Append(CPPPATH=['include'])
+env['QT5_AUTOMOC_SCANCPPPATH']='0'
+
+env.Program('main', Glob('src/*.cpp'))
+
