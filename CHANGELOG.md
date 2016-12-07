@@ -1,3 +1,8 @@
+# 0.4.3
+
+- Use XML in CAPS since beginning at Boost 1.61 the parameter value is case sensitive (#29).
+  Thanks @edisongustavo for the PR.
+
 # 0.4.2 #
 
 - Proper fix for #25, the fix made in `0.4.1` was incorrect.
