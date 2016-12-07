@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name="pytest-cpp",
-    version='0.4.2',
+    version='0.4.3',
     packages=['pytest_cpp'],
     entry_points={
         'pytest11': ['cpp = pytest_cpp.plugin'],
