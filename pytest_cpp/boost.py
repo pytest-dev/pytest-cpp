@@ -42,7 +42,7 @@ class BoostTestFacade(object):
         report_xml = os.path.join(temp_dir, 'report.xml')
         args = [
             executable,
-            '--output_format=xml',
+            '--output_format=XML',
             '--log_sink=%s' % log_xml,
             '--report_sink=%s' % report_xml,
         ]
