@@ -8,7 +8,9 @@ from pytest_cpp.error import CppFailureRepr, CppFailureError
 
 from pytest_cpp.google import GoogleTestFacade
 
-FACADES = [GoogleTestFacade, BoostTestFacade]
+from pytest_cpp.qt import QTestLibFacade
+
+FACADES = [GoogleTestFacade, BoostTestFacade, QTestLibFacade]
 DEFAULT_MASKS = ('test_*', '*_test')
 
 
