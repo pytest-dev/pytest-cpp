@@ -7,11 +7,12 @@ install:
  - sudo apt-get update
  - sudo apt-get install libboost-test-dev
 
- - wget https://pypi.io/packages/source/s/scons/scons-2.5.1.tar.gz
- - tar -zxvf scons-2.5.1.tar.gz
- - "cd scons-2.5.1 && python2.7 setup.py install ; cd -"
+# - wget https://pypi.io/packages/source/s/scons/scons-2.5.1.tar.gz
+# - tar -zxvf scons-2.5.1.tar.gz
+# - "cd scons-2.5.1 && python2.7 setup.py install ; cd -"
+ - sudo apt-get install scons
 
- - scons-2.5.1 -j4 -C tests
+ - scons -j4 -C tests
 
  - wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz
  - tar -zxvf release-1.8.0.tar.gz
