@@ -69,6 +69,13 @@ class BoostTestFacade(object):
                                     returncode=p.returncode))
             return [failure]
 
+        if report is not None and (
+                report.startswith('Boost.Test framework internal error: ') or
+                report.startswith('Test setup error: ')):
+            # boost.test doesn't do XML output on fatal-enough errors.
+            failure = BoostTestFailure('unknown location', 0, report)
+            return [failure]
+
         results = self._parse_log(log=log)
         shutil.rmtree(temp_dir)
         if results:

@@ -20,7 +20,7 @@ Export('env genv')
 
 genv.Program('gtest.cpp')
 
-for filename in ('boost_success.cpp', 'boost_failure.cpp', 'boost_error.cpp'):
+for filename in ('boost_success.cpp', 'boost_failure.cpp', 'boost_error.cpp', 'boost_fixture_setup_error.cpp'):
     env.Program(filename)
 
 SConscript('acceptance/googletest-samples/SConscript')

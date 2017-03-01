@@ -42,6 +42,7 @@ def dummy_failure():
     ]),
     (BoostTestFacade(), 'boost_success', ['boost_success']),
     (BoostTestFacade(), 'boost_error', ['boost_error']),
+    (BoostTestFacade(), 'boost_fixture_setup_error', ['boost_fixture_setup_error']),
 ])
 def test_list_tests(facade, name, expected, exes):
     obtained = facade.list_tests(exes.get(name))
@@ -134,6 +135,18 @@ def test_boost_error(exes):
     assert fail2.get_file_reference() == ("unknown location", 0)
 
 
+def test_boost_fixture_setup_error(exes):
+    facade = BoostTestFacade()
+    failures = facade.run_test(exes.get('boost_fixture_setup_error'), '<unused>')
+    assert len(failures) == 1
+
+    [fail1] = failures
+    colors = ('red', 'bold')
+    assert fail1.get_lines() == [
+        ('Test setup error: std::runtime_error: This is a global fixture init failure', colors)]
+    assert fail1.get_file_reference() == ("unknown location", 0)
+
+
 def test_google_run(testdir, exes):
     result = testdir.inline_run('-v', exes.get('gtest', 'test_gtest'))
     assert_outcomes(result, [
@@ -179,12 +192,13 @@ def test_google_internal_errors(mocker, testdir, exes, tmpdir):
 
 
 def test_boost_run(testdir, exes):
-    all_names = ['boost_success', 'boost_error', 'boost_failure']
+    all_names = ['boost_success', 'boost_error', 'boost_fixture_setup_error', 'boost_failure']
     all_files = [exes.get(n, 'test_' + n) for n in all_names]
     result = testdir.inline_run('-v', *all_files)
     assert_outcomes(result, [
         ('test_boost_success', 'passed'),
         ('test_boost_error', 'failed'),
+        ('test_boost_fixture_setup_error', 'failed'),
         ('test_boost_failure', 'failed'),
     ])
 
