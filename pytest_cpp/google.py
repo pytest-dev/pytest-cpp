@@ -46,6 +46,11 @@ class GoogleTestFacade(object):
         test_suite = None
         result = []
         for line in output.splitlines():
+            stripped = line.strip()
+            if (stripped.startswith('int main') or
+                stripped.startswith('/') or
+                stripped.startswith('-')):
+                continue
             has_indent = line.startswith(' ')
             if not has_indent and '.' in line:
                 test_suite = strip_comment(line).strip()
