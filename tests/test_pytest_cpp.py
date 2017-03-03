@@ -140,7 +140,7 @@ def test_boost_fixture_setup_error(exes):
     failures = facade.run_test(exes.get('boost_fixture_setup_error'), '<unused>')
     assert len(failures) == 1
 
-    [fail1] = failures
+    fail1 = failures[0]
     colors = ('red', 'bold')
     assert fail1.get_lines() == [
         ('Test setup error: std::runtime_error: This is a global fixture init failure', colors)]
