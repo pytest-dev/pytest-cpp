@@ -1,3 +1,8 @@
+# 0.4.4
+
+- Properly handle fixture failures in Boost.Test.
+  Thanks @fj128 for the PR.
+
 # 0.4.3
 
 - Use XML in CAPS since beginning at Boost 1.61 the parameter value is case sensitive (#29).
