@@ -102,6 +102,7 @@ class BoostTestFacade(object):
         log_root = ElementTree.fromstring(log)
         parsed_elements.extend(log_root.findall('Exception'))
         parsed_elements.extend(log_root.findall('Error'))
+        parsed_elements.extend(log_root.findall('FatalError'))
 
         result = []
         for elem in parsed_elements:

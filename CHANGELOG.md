@@ -1,3 +1,9 @@
+# 0.4.5
+
+- Properly handle fatal errors in Boost.Test.
+  Thanks @dplucenio for the report.
+
+
 # 0.4.4
 
 - Properly handle fixture failures in Boost.Test.
