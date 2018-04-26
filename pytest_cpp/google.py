@@ -61,7 +61,9 @@ class GoogleTestFacade(object):
             '--gtest_output=xml:%s' % xml_filename,
         ]
         try:
-            subprocess.check_output(args, stderr=subprocess.STDOUT)
+            subprocess.check_output(args,
+                                    stderr=subprocess.STDOUT,
+                                    universal_newlines=True)
         except subprocess.CalledProcessError as e:
             if e.returncode != 1:
                 msg = ('Internal Error: calling {executable} '
