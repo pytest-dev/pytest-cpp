@@ -1,3 +1,8 @@
+# 1.0.1
+
+- Use universal newlines for running Google tests (#33).
+  Thanks @elkin for the PR.
+
 # 0.4.5
 
 - Properly handle fatal errors in Boost.Test.
