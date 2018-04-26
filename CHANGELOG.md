@@ -1,4 +1,4 @@
-# 1.0.0
+# 1.0.1
 
 - Use universal newlines for running Google tests (#33).
   Thanks @elkin for the PR.
