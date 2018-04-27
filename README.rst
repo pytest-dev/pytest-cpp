@@ -14,7 +14,7 @@ Supports both `Google Test <https://code.google.com/p/googletest>`_ and
 .. |version| image:: http://img.shields.io/pypi/v/pytest-cpp.png
   :target: https://crate.io/packages/pytest-cpp
 
-.. |anaconda| image:: https://anaconda.org/conda-forge/pytest-cpp/badges/version.svg
+.. |anaconda| image:: https://img.shields.io/conda/vn/conda-forge/pytest-cpp.svg
     :target: https://anaconda.org/conda-forge/pytest-cpp
 
 .. |ci| image:: http://img.shields.io/travis/pytest-dev/pytest-cpp.png
