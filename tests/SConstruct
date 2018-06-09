@@ -19,6 +19,7 @@ genv = env.Clone(LIBS=['gtest'] + LIBS)
 Export('env genv')
 
 genv.Program('gtest.cpp')
+genv.Program('gtest_args.cpp')
 
 boost_files = [
     'boost_success.cpp',
@@ -26,6 +27,8 @@ boost_files = [
     'boost_fatal_error.cpp',
     'boost_error.cpp',
     'boost_fixture_setup_error.cpp',
+    'boost_one_argument.cpp',
+    'boost_two_arguments.cpp'
 ]
 
 for filename in boost_files:
