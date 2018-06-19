@@ -53,13 +53,14 @@ class GoogleTestFacade(object):
                 result.append(test_suite + strip_comment(line).strip())
         return result
 
-    def run_test(self, executable, test_id):
+    def run_test(self, executable, test_id, test_args=()):
         xml_filename = self._get_temp_xml_filename()
         args = [
             executable,
             '--gtest_filter=' + test_id,
             '--gtest_output=xml:%s' % xml_filename,
         ]
+        args.extend(test_args)
         try:
             subprocess.check_output(args,
                                     stderr=subprocess.STDOUT,

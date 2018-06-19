@@ -28,7 +28,7 @@ class BoostTestFacade(object):
         # inside the executable, so the test_id is a dummy placeholder :(
         return [os.path.basename(os.path.splitext(executable)[0])]
 
-    def run_test(self, executable, test_id):
+    def run_test(self, executable, test_id, test_args=()):
 
         def read_file(name):
             try:
@@ -46,6 +46,7 @@ class BoostTestFacade(object):
             '--log_sink=%s' % log_xml,
             '--report_sink=%s' % report_xml,
         ]
+        args.extend(test_args)
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         stdout, _ = p.communicate()
 
