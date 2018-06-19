@@ -1,3 +1,9 @@
+# 1.1.0
+
+- New `cpp_arguments` ini option allows customization of the command-line 
+  used to run tests, for example to enable logging and verbosity.
+  Thanks @elkin for the PR.
+
 # 1.0.1
 
 - Use universal newlines for running Google tests (#33).

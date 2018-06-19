@@ -58,6 +58,8 @@ By default matches ``test_*`` and ``*_test`` executable files.
 Additional arguments to the C++ tests can be provided with the
 ``cpp_arguments`` ini configuration.
 
+*New in version 1.1*.
+
 For example:
 
 .. code-block:: ini
