@@ -245,7 +245,7 @@ def test_cpp_failure_repr(dummy_failure):
 def test_cpp_files_option(testdir, exes):
     exes.get('boost_success')
     exes.get('gtest')
-    
+
     result = testdir.inline_run('--collect-only')
     reps = result.getreports()
     assert len(reps) == 1
@@ -290,7 +290,7 @@ def test_google_one_argument_via_option(testdir, exes):
     result = testdir.inline_run(exes.get('gtest_args'),
                                 '-k',
                                 'ArgsTest.one_argument',
-                                '--cpp-arguments', 'argument1')
+                                '-o', 'cpp_arguments=argument1')
     assert_outcomes(result,
                     [('ArgsTest.one_argument', 'passed')])
 
@@ -299,8 +299,7 @@ def test_google_two_arguments_via_option(testdir, exes):
     result = testdir.inline_run(exes.get('gtest_args'),
                                 '-k',
                                 'ArgsTest.two_arguments',
-                                '--cpp-arguments',
-                                'argument1 argument2')
+                                '-o', 'cpp_arguments=argument1 argument2')
     assert_outcomes(result,
                     [('ArgsTest.two_arguments', 'passed')])
 
@@ -313,7 +312,7 @@ def test_argument_option_priority(testdir, exes):
     result = testdir.inline_run(exes.get('gtest_args'),
                                 '-k',
                                 'ArgsTest.one_argument',
-                                '--cpp-arguments', 'argument1')
+                                '-o', 'cpp_arguments=argument1')
     assert_outcomes(result,
                     [('ArgsTest.one_argument', 'passed')])
 
@@ -342,15 +341,14 @@ def test_boost_two_arguments(testdir, exes):
 
 def test_boost_one_argument_via_option(testdir, exes):
     result = testdir.inline_run(exes.get('boost_one_argument'),
-                                '--cpp-arguments',
-                                'argument1')
+                                '-o', 'cpp_arguments=argument1')
     assert_outcomes(result,
                     [('boost_one_argument', 'passed')])
 
 
 def test_boost_two_arguments_via_option(testdir, exes):
     result = testdir.inline_run(exes.get('boost_two_arguments'),
-                                '--cpp-arguments=argument1 argument2')
+                                '-o', 'cpp_arguments=argument1 argument2')
     assert_outcomes(result,
                     [('boost_two_arguments', 'passed')])
 
