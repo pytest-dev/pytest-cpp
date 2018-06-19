@@ -55,8 +55,9 @@ ini configuration:
 
 By default matches ``test_*`` and ``*_test`` executable files.
 
-Additional arguments to the C++ tests can be provided with the option
-``--cpp-arguments`` or with the ``cpp_arguments`` ini configuration.
+Additional arguments to the C++ tests can be provided with the
+``cpp_arguments`` ini configuration.
+
 For example:
 
 .. code-block:: ini
@@ -64,11 +65,12 @@ For example:
     [pytest]
     cpp_arguments=-v --log-dir=logs
 
-Or the same with the command line option:
+You can change this option directly in the command-line using
+pytest's ``-o`` option:
 
 .. code-block:: console
 
-    $ pytest --cpp-arguments='-v --log-dir=logs'
+    $ pytest -o cpp_arguments='-v --log-dir=logs'
 
 
 Requirements
@@ -83,7 +85,7 @@ Install
 Install using `pip <http://pip-installer.org/>`_:
 
 .. code-block:: console
-    
+
     $ pip install pytest-cpp
 
 Changelog

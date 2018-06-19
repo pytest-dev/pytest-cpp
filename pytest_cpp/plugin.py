@@ -25,11 +25,7 @@ def pytest_collect_file(parent, path):
     config = parent.config
     masks = config.getini('cpp_files') or DEFAULT_MASKS
 
-    test_args = config.getoption(_ARGUMENTS)
-    if test_args:
-        test_args = test_args.split()
-    else:
-        test_args = config.getini(_ARGUMENTS) or ()
+    test_args = config.getini(_ARGUMENTS) or ()
 
     if not parent.session.isinitpath(path):
         for pat in masks:
@@ -50,9 +46,6 @@ def pytest_addoption(parser):
                   type='args',
                   default='',
                   help='Additional arguments for test executables')
-
-    group = parser.getgroup('cpp tests')
-    group.addoption('--cpp-arguments', help='Additional test arguments')
 
 
 class CppFile(pytest.File):
