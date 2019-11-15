@@ -256,8 +256,9 @@ def test_cpp_files_option(testdir, exes):
         cpp_files = gtest* boost*
     ''')
     result = testdir.inline_run('--collect-only')
-    assert len(result.matchreport(exes.exe_name('boost_success')).result) == 1
-    assert len(result.matchreport(exes.exe_name('gtest')).result) == 4
+    print(result)
+    assert len(result.matchreport(exes.exe_name('boost_success'), when='collect').result) == 1
+    assert len(result.matchreport(exes.exe_name('gtest'), when='collect').result) == 4
 
 
 def test_google_one_argument(testdir, exes):
