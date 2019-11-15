@@ -9,6 +9,7 @@ else:
     LIBS = ['pthread']
 
 env = Environment(
+    CXX=os.environ.get('CXX'),
     CPPPATH=os.environ.get('INCLUDE'),
     CCFLAGS=CCFLAGS,
     LIBPATH=os.environ.get('LIBPATH'),
