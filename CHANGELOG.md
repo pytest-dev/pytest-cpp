@@ -1,3 +1,7 @@
+# 1.2.0
+
+- `pytest-cpp` no longer supports Python 3.4.
+
 # 1.1.0
 
 - New `cpp_arguments` ini option allows customization of the command-line 
