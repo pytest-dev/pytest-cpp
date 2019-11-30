@@ -10,9 +10,12 @@ jobs:
       python: '3.5'
     - env: TOXENV=py36
       python: '3.6'
+    - env: TOXENV=py37
+      python: '3.7'
+    - env: TOXENV=py38
+      python: '3.8'
     - stage: deploy
-      python: '3.6'
-      env:
+      python: '3.8'
       install: pip install -U setuptools setuptools_scm
       script: skip
       deploy:
@@ -33,7 +36,7 @@ install:
  - tar -zxvf release-1.8.0.tar.gz
  - "cd googletest-release-1.8.0/googletest && cmake . && sudo make install; cd -"
  - rm -rf googletest-release-1.8.0
- - pip install tox coveralls
+ - pip install tox coveralls scons
 
 script:
  - scons -j4 -C tests
