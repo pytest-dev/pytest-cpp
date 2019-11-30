@@ -1,3 +1,4 @@
+import sys
 import pytest
 import subprocess
 from pytest_cpp import error
@@ -258,6 +259,30 @@ def test_cpp_files_option(testdir, exes):
         "*CppFile boost_success*",
         "*CppFile gtest*",
     ])
+
+
+# skip to avoid dealing with exes.get appending extension
+@pytest.mark.skipif(sys.platform.startswith('win'), reason='This is not a problem on Windows')
+def test_cpp_ignore_py_files(testdir, exes):
+    file_name = 'cpptest_success.py'
+    exes.get('gtest', 'cpptest_success.py')
+    testdir.makeini('''
+        [pytest]
+        cpp_files = cpptest_*
+    ''')
+
+    result = testdir.runpytest('--collect-only')
+    result.stdout.fnmatch_lines('* no tests ran *')
+
+    result = testdir.runpytest('--collect-only', '-o', 'cpp_ignore_py_files=False')
+    result.stdout.fnmatch_lines("*CppFile cpptest_success.py*")
+
+    # running directly skips out machinery as well.
+    result = testdir.runpytest('--collect-only', file_name)
+    result.stdout.fnmatch_lines('*1 error in*')
+
+    result = testdir.runpytest('--collect-only', '-o', 'cpp_ignore_py_files=False', file_name)
+    result.stdout.fnmatch_lines("*CppFile cpptest_success.py*")
 
 
 def test_google_one_argument(testdir, exes):

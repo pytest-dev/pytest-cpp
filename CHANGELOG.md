@@ -1,6 +1,8 @@
 # 1.2.0
 
 - `pytest-cpp` no longer supports Python 3.4.
+- New `cpp_ignore_py_files` option that makes the plugin ignore `*.py` files even if they
+  would otherwise match the `cpp_files` option (defaults to `True`).
 
 # 1.1.0
 

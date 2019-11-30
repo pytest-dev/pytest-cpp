@@ -23,10 +23,13 @@ def pytest_collect_file(parent, path):
         return
 
     config = parent.config
-    masks = config.getini('cpp_files') or DEFAULT_MASKS
+    masks = config.getini('cpp_files')
+    test_args = config.getini('cpp_arguments')
+    cpp_ignore_py_files = config.getini('cpp_ignore_py_files')
 
-    test_args = config.getini(_ARGUMENTS) or ()
-
+    # don't attempt to check *.py files even if they were given as explicit arguments
+    if cpp_ignore_py_files and path.fnmatch('*.py'):
+        return
     if not parent.session.isinitpath(path):
         for pat in masks:
             if path.fnmatch(pat):
@@ -39,13 +42,18 @@ def pytest_collect_file(parent, path):
 
 
 def pytest_addoption(parser):
-    parser.addini("cpp_files", type="args",
-        default=DEFAULT_MASKS,
-        help="glob-style file patterns for C++ test module discovery")
-    parser.addini(_ARGUMENTS,
-                  type='args',
-                  default='',
-                  help='Additional arguments for test executables')
+    parser.addini('cpp_files',
+            type='args',
+            default=DEFAULT_MASKS,
+            help="glob-style file patterns for C++ test module discovery")
+    parser.addini('cpp_arguments',
+            type='args',
+            default=(),
+            help='additional arguments for test executables')
+    parser.addini('cpp_ignore_py_files',
+            type='bool',
+            default=True,
+            help='ignore *.py files that otherwise match "cpp_files" patterns')
 
 
 class CppFile(pytest.File):
