@@ -8,13 +8,16 @@ else:
     CCFLAGS = ''
     LIBS = ['pthread']
 
-env = Environment(
-    CXX=os.environ.get('CXX'),
-    CPPPATH=os.environ.get('INCLUDE'),
-    CCFLAGS=CCFLAGS,
-    LIBPATH=os.environ.get('LIBPATH'),
-    LIBS=LIBS,
-)
+kwargs = {
+    'CPPPATH': os.environ.get('INCLUDE'),
+    'CCFLAGS': CCFLAGS,
+    'LIBPATH': os.environ.get('LIBPATH'),
+    'LIBS': LIBS,
+}
+if 'CXX' in os.environ:
+    kwargs['CXX'] = os.environ['CXX']
+    
+env = Environment(**kwargs)
 genv = env.Clone(LIBS=['gtest'] + LIBS)
 
 Export('env genv')
