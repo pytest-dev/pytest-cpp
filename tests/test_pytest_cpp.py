@@ -246,18 +246,18 @@ def test_cpp_files_option(testdir, exes):
     exes.get('boost_success')
     exes.get('gtest')
 
-    result = testdir.inline_run('--collect-only')
-    reps = result.getreports()
-    assert len(reps) == 1
-    assert reps[0].result == []
+    result = testdir.runpytest('--collect-only')
+    result.stdout.fnmatch_lines('* no tests ran *')
 
     testdir.makeini('''
         [pytest]
         cpp_files = gtest* boost*
     ''')
-    result = testdir.inline_run('--collect-only')
-    assert len(result.matchreport(exes.exe_name('boost_success')).result) == 1
-    assert len(result.matchreport(exes.exe_name('gtest')).result) == 4
+    result = testdir.runpytest('--collect-only')
+    result.stdout.fnmatch_lines([
+        "*CppFile boost_success*",
+        "*CppFile gtest*",
+    ])
 
 
 def test_google_one_argument(testdir, exes):
