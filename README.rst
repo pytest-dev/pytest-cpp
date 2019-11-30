@@ -45,27 +45,34 @@ Once installed, when py.test runs it will search and run tests
 found in executable files, detecting if the suites are
 Google or Boost tests automatically.
 
+Configuration Options
+~~~~~~~~~~~~~~~~~~~~~
+
+**cpp_files**
+
 You can configure which files are tested for suites by using the ``cpp_files``
-ini configuration:
+ini configuration option:
 
 .. code-block:: ini
 
     [pytest]
-    cpp_files=test_suite*
+    cpp_files = test_suite*
 
 By default matches ``test_*`` and ``*_test`` executable files.
 
-Additional arguments to the C++ tests can be provided with the
-``cpp_arguments`` ini configuration.
+**cpp_arguments**
 
 *New in version 1.1*.
+
+Arguments to the C++ tests can be provided with the
+``cpp_arguments`` ini configuration option.
 
 For example:
 
 .. code-block:: ini
 
     [pytest]
-    cpp_arguments=-v --log-dir=logs
+    cpp_arguments =-v --log-dir=logs
 
 You can change this option directly in the command-line using
 pytest's ``-o`` option:
@@ -74,12 +81,19 @@ pytest's ``-o`` option:
 
     $ pytest -o cpp_arguments='-v --log-dir=logs'
 
+**cpp_ignore_py_files**
 
-Requirements
-============
+*New in version 1.2*.
 
-* Python 2.7+, Python 3.4+
-* pytest
+This option defaults to ``True`` and configures the plugin to ignore ``*.py`` files that
+would otherwise match the ``cpp_files`` option.
+
+Set it to ``False`` if you have C++ executable files that end with the ``*.py`` extension.
+
+.. code-block:: ini
+
+    [pytest]
+    cpp_ignore_py_files = False
 
 Install
 =======

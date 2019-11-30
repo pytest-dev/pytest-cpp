@@ -271,24 +271,18 @@ def test_cpp_ignore_py_files(testdir, exes):
         cpp_files = cpptest_*
     ''')
 
-    result = testdir.inline_run('--collect-only')
-    reps = result.getreports()
-    print(reps)
-    assert len(reps) == 1
-    assert reps[0].result == []
+    result = testdir.runpytest('--collect-only')
+    result.stdout.fnmatch_lines('* no tests ran *')
 
-    result = testdir.inline_run('--collect-only', '-o', 'cpp_ignore_py_files=False')
-    assert len(result.matchreport(exes.exe_name(file_name), when='collect').result) == 4
+    result = testdir.runpytest('--collect-only', '-o', 'cpp_ignore_py_files=False')
+    result.stdout.fnmatch_lines("*CppFile cpptest_success.py*")
 
     # running directly skips out machinery as well.
-    result = testdir.inline_run('--collect-only', file_name)
-    assert len(result.matchreport(exes.exe_name(file_name), when='collect').result) == 0
+    result = testdir.runpytest('--collect-only', file_name)
+    result.stdout.fnmatch_lines('*1 error in*')
 
-    result = testdir.inline_run('--collect-only', '-o', 'cpp_ignore_py_files=False', file_name)
-    # assert len(result.matchreport(exes.exe_name(file_name)).result) == 4
-    # workaround for a pytest bug
-    print([(rep.nodeid.split("::"), len(rep.result)) for rep in result.getreports()])
-    assert any(file_name in rep.nodeid.split("::") and len(rep.result) == 4 for rep in result.getreports())
+    result = testdir.runpytest('--collect-only', '-o', 'cpp_ignore_py_files=False', file_name)
+    result.stdout.fnmatch_lines("*CppFile cpptest_success.py*")
 
 
 def test_google_one_argument(testdir, exes):
