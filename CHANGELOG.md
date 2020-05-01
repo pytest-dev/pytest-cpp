@@ -1,6 +1,6 @@
 # 1.2.1
 
-- Remove `from_parent()` warnings in pytest 5.4+.
+- Remove `from_parent()` warnings in pytest 5.4.2+.
 
 # 1.2.0
 
