@@ -1,6 +1,10 @@
 # 1.2.1
 
-- Remove `from_parent()` warnings in pytest 5.4.2+.
+- Remove `from_parent()`-related warnings in pytest 5.4.2+.
+
+- Masks like `*_test` now work correctly on Windows by automatically appending the
+  expected `".exe"` suffix (#45).
+  Thanks @1fabrism for the report.
 
 # 1.2.0
 
