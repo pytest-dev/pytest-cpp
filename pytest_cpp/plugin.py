@@ -13,6 +13,10 @@ DEFAULT_MASKS = ('test_*', '*_test')
 _ARGUMENTS = 'cpp_arguments'
 
 
+# pytest 5.4 introduced the 'from_parent' constructor
+needs_from_parent = hasattr(pytest.Item, "from_parent")
+
+
 def pytest_collect_file(parent, path):
     try:
         is_executable = os.stat(str(path)).st_mode & stat.S_IXUSR
@@ -38,7 +42,10 @@ def pytest_collect_file(parent, path):
             return
     for facade_class in FACADES:
         if facade_class.is_test_suite(str(path)):
-            return CppFile(path, parent, facade_class(), test_args)
+            if needs_from_parent:
+                return CppFile.from_parent(fspath=path, parent=parent, facade=facade_class(), arguments=test_args)
+            else:
+                return CppFile(path, parent, facade_class(), test_args)
 
 
 def pytest_addoption(parser):
@@ -57,21 +64,34 @@ def pytest_addoption(parser):
 
 
 class CppFile(pytest.File):
-    def __init__(self, path, parent, facade, arguments):
-        pytest.File.__init__(self, path, parent)
+    def __init__(self, fspath, parent, facade, arguments):
+        pytest.File.__init__(self, fspath, parent)
         self.facade = facade
         self._arguments = arguments
+
+    @classmethod
+    def from_parent(cls, parent, fspath, facade, arguments):
+        # TODO: after dropping python 2, change to keyword only after 'parent'
+        return super().from_parent(parent=parent, fspath=fspath, facade=facade, arguments=arguments)
 
     def collect(self):
         for test_id in self.facade.list_tests(str(self.fspath)):
-            yield CppItem(test_id, self, self.facade, self._arguments)
+            if needs_from_parent:
+                yield CppItem.from_parent(parent=self, name=test_id, facade=self.facade, arguments=self._arguments)
+            else:
+                yield CppItem(test_id, self, self.facade, self._arguments)
 
 
 class CppItem(pytest.Item):
-    def __init__(self, name, collector, facade, arguments):
-        pytest.Item.__init__(self, name, collector)
+    def __init__(self, name, parent, facade, arguments):
+        pytest.Item.__init__(self, name, parent)
         self.facade = facade
         self._arguments = arguments
+
+    @classmethod
+    def from_parent(cls, parent, name, facade, arguments):
+        # TODO: after dropping python 2, change to keyword only after 'parent'
+        return super().from_parent(name=name, parent=parent, facade=facade, arguments=arguments)
 
     def runtest(self):
         failures = self.facade.run_test(str(self.fspath),
