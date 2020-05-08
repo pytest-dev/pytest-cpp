@@ -1,5 +1,6 @@
 import os
 import stat
+import sys
 
 import pytest
 
@@ -15,6 +16,12 @@ _ARGUMENTS = 'cpp_arguments'
 
 # pytest 5.4 introduced the 'from_parent' constructor
 needs_from_parent = hasattr(pytest.Item, "from_parent")
+
+def matches_any_mask(path, masks):
+    """Return True if the given path matches any of the masks given"""
+    if sys.platform.startswith("win"):
+        masks = [m + ".exe" for m in masks]
+    return any(path.fnmatch(m) for m in masks)
 
 
 def pytest_collect_file(parent, path):
@@ -34,12 +41,10 @@ def pytest_collect_file(parent, path):
     # don't attempt to check *.py files even if they were given as explicit arguments
     if cpp_ignore_py_files and path.fnmatch('*.py'):
         return
-    if not parent.session.isinitpath(path):
-        for pat in masks:
-            if path.fnmatch(pat):
-                break
-        else:
-            return
+
+    if not parent.session.isinitpath(path) and not matches_any_mask(path, masks):
+        return
+        
     for facade_class in FACADES:
         if facade_class.is_test_suite(str(path)):
             if needs_from_parent:

@@ -400,6 +400,23 @@ def test_race_condition_on_collect(tmpdir):
     assert pytest_cpp.plugin.pytest_collect_file(None, tmpdir / 'invalid-file') is None
 
 
+def test_exe_mask_on_windows(tmpdir, monkeypatch):
+    """
+    Test for #45: C++ tests not collected due to '*_test' mask on Windows
+    """
+    import pytest_cpp.plugin
+    monkeypatch.setattr(sys, "platform", "win32")
+
+    fn = tmpdir.join("generator_demo_test.exe").ensure(file=1)
+    assert pytest_cpp.plugin.matches_any_mask(fn, ["test_*", "*_test"])
+
+    fn = tmpdir.join("test_generator_demo.exe").ensure(file=1)
+    assert pytest_cpp.plugin.matches_any_mask(fn, ["test_*", "*_test"])
+
+    fn = tmpdir.join("my_generator_test_demo.exe").ensure(file=1)
+    assert not pytest_cpp.plugin.matches_any_mask(fn, ["test_*", "*_test"])
+
+
 class TestError:
 
     def test_get_whitespace(self):
