@@ -7,4 +7,3 @@ BOOST_AUTO_TEST_CASE( test_failure_1 )
 {
     BOOST_REQUIRE( 2 * 3 == 5 );
 }
-

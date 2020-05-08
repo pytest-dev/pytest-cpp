@@ -1,6 +1,6 @@
 //  (C) Copyright Gennadiy Rozental 2005-2008.
 //  Distributed under the Boost Software License, Version 1.0.
-//  (See accompanying file LICENSE_1_0.txt or copy at 
+//  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 //  See http://www.boost.org/libs/test for the library home page.
@@ -16,7 +16,7 @@
 struct F {
     F() : i( 9 ) { BOOST_TEST_MESSAGE( "setup fixture" ); }
     ~F()         { BOOST_TEST_MESSAGE( "teardown fixture" ); }
-   
+
     int i;
 };
 
@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( my_test, T, test_types )
 {
     T t = static_cast<T>(i);
 
-    // usually it's a bad idea to use BOOST_CHECK_EQUAL for checking equality values of 
+    // usually it's a bad idea to use BOOST_CHECK_EQUAL for checking equality values of
     // floating point types. This check may or may not produce an error report
     BOOST_CHECK_EQUAL( (t*t+t)/10, 9 );
 }

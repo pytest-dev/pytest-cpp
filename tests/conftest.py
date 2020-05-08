@@ -3,7 +3,7 @@ import shutil
 import pytest
 import sys
 
-pytest_plugins = 'pytester'
+pytest_plugins = "pytester"
 
 
 @pytest.fixture
@@ -16,19 +16,17 @@ def exes(testdir, request):
     """
 
     class Executables:
-
         def get(self, name, new_name=None):
             if not new_name:
                 new_name = os.path.basename(name)
-            source = os.path.join(request.node.fspath.dirname,
-                                  self.exe_name(name))
+            source = os.path.join(request.node.fspath.dirname, self.exe_name(name))
             dest = testdir.tmpdir.join(self.exe_name(new_name))
             shutil.copy(str(source), str(dest))
             return str(dest)
 
         def exe_name(self, name):
-            if sys.platform.startswith('win'):
-                name += '.exe'
+            if sys.platform.startswith("win"):
+                name += ".exe"
             return name
 
     return Executables()

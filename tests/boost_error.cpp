@@ -11,4 +11,3 @@ BOOST_AUTO_TEST_CASE( test_error_2 )
 {
     throw std::runtime_error("another unexpected exception");
 }
-

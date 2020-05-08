@@ -9,13 +9,14 @@ from pytest_cpp.error import CppFailureRepr, CppFailureError
 from pytest_cpp.google import GoogleTestFacade
 
 FACADES = [GoogleTestFacade, BoostTestFacade]
-DEFAULT_MASKS = ('test_*', '*_test')
+DEFAULT_MASKS = ("test_*", "*_test")
 
-_ARGUMENTS = 'cpp_arguments'
+_ARGUMENTS = "cpp_arguments"
 
 
 # pytest 5.4 introduced the 'from_parent' constructor
 needs_from_parent = hasattr(pytest.Item, "from_parent")
+
 
 def matches_any_mask(path, masks):
     """Return True if the given path matches any of the masks given"""
@@ -34,38 +35,49 @@ def pytest_collect_file(parent, path):
         return
 
     config = parent.config
-    masks = config.getini('cpp_files')
-    test_args = config.getini('cpp_arguments')
-    cpp_ignore_py_files = config.getini('cpp_ignore_py_files')
+    masks = config.getini("cpp_files")
+    test_args = config.getini("cpp_arguments")
+    cpp_ignore_py_files = config.getini("cpp_ignore_py_files")
 
     # don't attempt to check *.py files even if they were given as explicit arguments
-    if cpp_ignore_py_files and path.fnmatch('*.py'):
+    if cpp_ignore_py_files and path.fnmatch("*.py"):
         return
 
     if not parent.session.isinitpath(path) and not matches_any_mask(path, masks):
         return
-        
+
     for facade_class in FACADES:
         if facade_class.is_test_suite(str(path)):
             if needs_from_parent:
-                return CppFile.from_parent(fspath=path, parent=parent, facade=facade_class(), arguments=test_args)
+                return CppFile.from_parent(
+                    fspath=path,
+                    parent=parent,
+                    facade=facade_class(),
+                    arguments=test_args,
+                )
             else:
                 return CppFile(path, parent, facade_class(), test_args)
 
 
 def pytest_addoption(parser):
-    parser.addini('cpp_files',
-            type='args',
-            default=DEFAULT_MASKS,
-            help="glob-style file patterns for C++ test module discovery")
-    parser.addini('cpp_arguments',
-            type='args',
-            default=(),
-            help='additional arguments for test executables')
-    parser.addini('cpp_ignore_py_files',
-            type='bool',
-            default=True,
-            help='ignore *.py files that otherwise match "cpp_files" patterns')
+    parser.addini(
+        "cpp_files",
+        type="args",
+        default=DEFAULT_MASKS,
+        help="glob-style file patterns for C++ test module discovery",
+    )
+    parser.addini(
+        "cpp_arguments",
+        type="args",
+        default=(),
+        help="additional arguments for test executables",
+    )
+    parser.addini(
+        "cpp_ignore_py_files",
+        type="bool",
+        default=True,
+        help='ignore *.py files that otherwise match "cpp_files" patterns',
+    )
 
 
 class CppFile(pytest.File):
@@ -77,12 +89,19 @@ class CppFile(pytest.File):
     @classmethod
     def from_parent(cls, parent, fspath, facade, arguments):
         # TODO: after dropping python 2, change to keyword only after 'parent'
-        return super().from_parent(parent=parent, fspath=fspath, facade=facade, arguments=arguments)
+        return super().from_parent(
+            parent=parent, fspath=fspath, facade=facade, arguments=arguments
+        )
 
     def collect(self):
         for test_id in self.facade.list_tests(str(self.fspath)):
             if needs_from_parent:
-                yield CppItem.from_parent(parent=self, name=test_id, facade=self.facade, arguments=self._arguments)
+                yield CppItem.from_parent(
+                    parent=self,
+                    name=test_id,
+                    facade=self.facade,
+                    arguments=self._arguments,
+                )
             else:
                 yield CppItem(test_id, self, self.facade, self._arguments)
 
@@ -96,12 +115,12 @@ class CppItem(pytest.Item):
     @classmethod
     def from_parent(cls, parent, name, facade, arguments):
         # TODO: after dropping python 2, change to keyword only after 'parent'
-        return super().from_parent(name=name, parent=parent, facade=facade, arguments=arguments)
+        return super().from_parent(
+            name=name, parent=parent, facade=facade, arguments=arguments
+        )
 
     def runtest(self):
-        failures = self.facade.run_test(str(self.fspath),
-                                        self.name,
-                                        self._arguments)
+        failures = self.facade.run_test(str(self.fspath), self.name, self._arguments)
         if failures:
             raise CppFailureError(failures)
 
