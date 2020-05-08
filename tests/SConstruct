@@ -16,7 +16,7 @@ kwargs = {
 }
 if 'CXX' in os.environ:
     kwargs['CXX'] = os.environ['CXX']
-    
+
 env = Environment(**kwargs)
 genv = env.Clone(LIBS=['gtest'] + LIBS)
 

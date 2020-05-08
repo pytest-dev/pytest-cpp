@@ -1,7 +1,7 @@
 //  (C) Copyright Gennadiy Rozental 2002-2008.
 //  (C) Copyright Gennadiy Rozental & Ullrich Koethe 2001.
 //  Distributed under the Boost Software License, Version 1.0.
-//  (See accompanying file LICENSE_1_0.txt or copy at 
+//  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 //  See http://www.boost.org/libs/test for the library home page.
@@ -33,7 +33,7 @@ init_unit_test_suite( int, char* [] ) {
     framework::master_test_suite().p_name.value = "Unit test example 02";
 
     // register the test case in test tree and specify number of expected failures so
-    // this example will pass at runtime. We expect 2 errors: one from failed check and 
+    // this example will pass at runtime. We expect 2 errors: one from failed check and
     // one from memory acces violation
     framework::master_test_suite().add( BOOST_TEST_CASE( &free_test_function ), 2 );
 

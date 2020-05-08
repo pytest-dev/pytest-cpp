@@ -10,6 +10,7 @@ class CppFailureError(Exception):
 
     Contains a list of `CppFailure` instances.
     """
+
     def __init__(self, failures):
         self.failures = failures
 
@@ -45,7 +46,8 @@ class CppFailureRepr(object):
     "repr" object for pytest that knows how to print a CppFailure instance
     into both terminal and files.
     """
-    failure_sep = '---'
+
+    failure_sep = "---"
 
     def __init__(self, failures):
         self.failures = failures
@@ -53,14 +55,14 @@ class CppFailureRepr(object):
     def __str__(self):
         reprs = []
         for failure in self.failures:
-            pure_lines = '\n'.join(x[0] for x in failure.get_lines())
+            pure_lines = "\n".join(x[0] for x in failure.get_lines())
             repr_loc = self._get_repr_file_location(failure)
             reprs.append("%s\n%s" % (pure_lines, repr_loc))
         return self.failure_sep.join(reprs)
 
     def _get_repr_file_location(self, failure):
         filename, linenum = failure.get_file_reference()
-        return ReprFileLocation(filename, linenum, 'C++ failure')
+        return ReprFileLocation(filename, linenum, "C++ failure")
 
     def toterminal(self, tw):
         for index, failure in enumerate(self.failures):
@@ -69,7 +71,7 @@ class CppFailureRepr(object):
             for line in code_lines:
                 tw.line(line, white=True, bold=True)  # pragma: no cover
 
-            indent = get_left_whitespace(code_lines[-1]) if code_lines else ''
+            indent = get_left_whitespace(code_lines[-1]) if code_lines else ""
 
             for line, markup in failure.get_lines():
                 markup_params = {m: True for m in markup}
@@ -92,18 +94,15 @@ def get_code_context_around_line(filename, linenum):
         with open(filename) as f:
             index_above = index - 2
             index_above = index_above if index_above >= 0 else 0
-            return [x.rstrip() for x in f.readlines()[index_above:index + 1]]
+            return [x.rstrip() for x in f.readlines()[index_above : index + 1]]
     return []
 
 
 def get_left_whitespace(line):
-    result = ''
+    result = ""
     for c in line:
         if c in string.whitespace:
             result += c
         else:
             break
     return result
-
-
-

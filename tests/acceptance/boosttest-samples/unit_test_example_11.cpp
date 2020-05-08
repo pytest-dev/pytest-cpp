@@ -1,7 +1,7 @@
 //  (C) Copyright Gennadiy Rozental 2002-2008.
 //  (C) Copyright Gennadiy Rozental & Ullrich Koethe 2001.
 //  Distributed under the Boost Software License, Version 1.0.
-//  (See accompanying file LICENSE_1_0.txt or copy at 
+//  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 //  See http://www.boost.org/libs/test for the library home page.
@@ -38,10 +38,10 @@ init_unit_test_suite( int /*argc*/, char* /*argv*/[] ) {
     // parameters have no requirements to stay alive beyond the next statement
     std::string const params[] = { "hdr1 ", "hdr2", "3  " };
 
-    framework::master_test_suite().add( 
+    framework::master_test_suite().add(
         BOOST_PARAM_TEST_CASE( &check_string, (std::string const*)params, params+3 ) );
 
-    return 0; 
+    return 0;
 }
 
 //____________________________________________________________________________//
