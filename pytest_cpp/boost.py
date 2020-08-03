@@ -30,7 +30,9 @@ class BoostTestFacade(object):
         # inside the executable, so the test_id is a dummy placeholder :(
         return [os.path.basename(os.path.splitext(executable)[0])]
 
-    def run_test(self, executable, test_id, test_args=()):
+    def run_test(self, executable, test_id, test_args=(), harness=None):
+        harness = harness or []
+
         def read_file(name):
             try:
                 with io.open(name) as f:
@@ -41,7 +43,7 @@ class BoostTestFacade(object):
         temp_dir = tempfile.mkdtemp()
         log_xml = os.path.join(temp_dir, "log.xml")
         report_xml = os.path.join(temp_dir, "report.xml")
-        args = [
+        args = harness + [
             executable,
             "--output_format=XML",
             "--log_sink=%s" % log_xml,
