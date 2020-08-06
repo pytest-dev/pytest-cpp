@@ -4,7 +4,11 @@ import tempfile
 from xml.etree import ElementTree
 import io
 import shutil
+from logging import getLogger
+
 from pytest_cpp.error import CppTestFailure
+
+log = getLogger(__name__)
 
 
 class BoostTestFacade(object):
@@ -50,8 +54,9 @@ class BoostTestFacade(object):
         args.extend(test_args)
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         stdout, _ = p.communicate()
+        log.info(stdout)
 
-        log = read_file(log_xml)
+        test_log = read_file(log_xml)
         report = read_file(report_xml)
 
         if p.returncode not in (0, 200, 201):
@@ -59,7 +64,7 @@ class BoostTestFacade(object):
                 "Internal Error: calling {executable} "
                 "for test {test_id} failed (returncode={returncode}):\n"
                 "output:{stdout}\n"
-                "log:{log}\n"
+                "log:{test_log}\n"
                 "report:{report}"
             )
             failure = BoostTestFailure(
@@ -69,7 +74,7 @@ class BoostTestFacade(object):
                     executable=executable,
                     test_id=test_id,
                     stdout=stdout,
-                    log=log,
+                    test_log=test_log,
                     report=report,
                     returncode=p.returncode,
                 ),
@@ -84,12 +89,12 @@ class BoostTestFacade(object):
             failure = BoostTestFailure("unknown location", 0, report)
             return [failure]
 
-        results = self._parse_log(log=log)
+        results = self._parse_log(test_log=test_log)
         shutil.rmtree(temp_dir)
         if results:
             return results
 
-    def _parse_log(self, log):
+    def _parse_log(self, test_log):
         """
         Parse the "log" section produced by BoostTest.
 
@@ -100,14 +105,14 @@ class BoostTestFacade(object):
         # <FatalError>...</FatalError><TestLog>...</TestLog>
         # so we have to manually split it into two xmls if that's the case.
         parsed_elements = []
-        if log.startswith("<FatalError"):
-            fatal, log = log.split("</FatalError>")
+        if test_log.startswith("<FatalError"):
+            fatal, test_log = test_log.split("</FatalError>")
             fatal += "</FatalError>"  # put it back, removed by split()
             fatal_root = ElementTree.fromstring(fatal)
             fatal_root.text = "Fatal Error: %s" % fatal_root.text
             parsed_elements.append(fatal_root)
 
-        log_root = ElementTree.fromstring(log)
+        log_root = ElementTree.fromstring(test_log)
         parsed_elements.extend(log_root.findall("Exception"))
         parsed_elements.extend(log_root.findall("Error"))
         parsed_elements.extend(log_root.findall("FatalError"))

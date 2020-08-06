@@ -1,10 +1,14 @@
 import os
 import subprocess
 import tempfile
+from logging import getLogger
 from xml.etree import ElementTree
 
 import pytest
 from pytest_cpp.error import CppTestFailure
+
+
+log = getLogger(__name__)
 
 
 class GoogleTestFacade(object):
@@ -66,10 +70,13 @@ class GoogleTestFacade(object):
         ]
         args.extend(test_args)
         try:
-            subprocess.check_output(
-                args, stderr=subprocess.STDOUT, universal_newlines=True
+            log.info(
+                subprocess.check_output(
+                    args, stderr=subprocess.STDOUT, universal_newlines=True
+                )
             )
         except subprocess.CalledProcessError as e:
+            log.info(e.output)
             if e.returncode != 1:
                 msg = (
                     "Internal Error: calling {executable} "
