@@ -78,6 +78,12 @@ def pytest_addoption(parser):
         default=True,
         help='ignore *.py files that otherwise match "cpp_files" patterns',
     )
+    parser.addini(
+        "cpp_harness",
+        type="args",
+        default=(),
+        help="command that wraps the cpp binary",
+    )
 
 
 class CppFile(pytest.File):
@@ -120,7 +126,12 @@ class CppItem(pytest.Item):
         )
 
     def runtest(self):
-        failures = self.facade.run_test(str(self.fspath), self.name, self._arguments)
+        failures = self.facade.run_test(
+            str(self.fspath),
+            self.name,
+            self._arguments,
+            harness=self.config.getini("cpp_harness"),
+        )
         if failures:
             raise CppFailureError(failures)
 

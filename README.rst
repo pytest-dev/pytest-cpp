@@ -98,6 +98,18 @@ Set it to ``False`` if you have C++ executable files that end with the ``*.py`` 
     [pytest]
     cpp_ignore_py_files = False
 
+**cpp_harness**
+
+*New in version 1.3*.
+
+This option allows the usage of tools that are used by invoking them on the console
+wrapping the test binary, like valgrind and memcheck:
+
+.. code-block:: ini
+
+    [pytest]
+    cpp_harness = valgrind --tool=memcheck
+
 Install
 =======
 

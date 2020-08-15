@@ -5,6 +5,7 @@ from pytest_cpp import error
 from pytest_cpp.boost import BoostTestFacade
 from pytest_cpp.error import CppTestFailure, CppFailureRepr
 from pytest_cpp.google import GoogleTestFacade
+from distutils.spawn import find_executable
 
 
 def assert_outcomes(result, expected_outcomes):
@@ -390,6 +391,21 @@ def test_argument_option_priority(testdir, exes):
     assert_outcomes(result, [("ArgsTest.one_argument", "passed")])
 
 
+@pytest.mark.skipif(
+    not find_executable("valgrind") or not find_executable("catchsegv"),
+    reason="Environment does not have required tools",
+)
+def test_google_cpp_harness_via_option(testdir, exes):
+    result = testdir.inline_run(
+        exes.get("gtest"),
+        "-k",
+        "FooTest.test_success",
+        "-o",
+        "cpp_harness=catchsegv valgrind --tool=memcheck",
+    )
+    assert_outcomes(result, [("FooTest.test_success", "passed")])
+
+
 def test_boost_one_argument(testdir, exes):
     testdir.makeini(
         """
@@ -426,6 +442,22 @@ def test_boost_two_arguments_via_option(testdir, exes):
         exes.get("boost_two_arguments"), "-o", "cpp_arguments=argument1 argument2"
     )
     assert_outcomes(result, [("boost_two_arguments", "passed")])
+
+
+@pytest.mark.skipif(
+    not find_executable("valgrind") or not find_executable("catchsegv"),
+    reason="Environment does not have required tools",
+)
+def test_boost_cpp_harness_via_option(testdir, exes):
+    result = testdir.inline_run(
+        exes.get("boost_success"),
+        "-s",
+        "-k",
+        "boost_success",
+        "-o",
+        "cpp_harness=catchsegv valgrind --tool=memcheck",
+    )
+    assert_outcomes(result, [("boost_success", "passed")])
 
 
 def test_passing_files_directly_in_command_line(testdir, exes):

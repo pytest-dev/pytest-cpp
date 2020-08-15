@@ -1,3 +1,7 @@
+# 1.3.0
+
+- New `cpp_harness` configuration option allows users to add prefix arguments when running the C++ test runner, allowing to use tools like `valgrind`. Thanks to @dajose for contributing!
+
 # 1.2.1
 
 - Remove `from_parent()`-related warnings in pytest 5.4.2+.
