@@ -126,12 +126,15 @@ class CppItem(pytest.Item):
         )
 
     def runtest(self):
-        failures = self.facade.run_test(
+        failures, output = self.facade.run_test(
             str(self.fspath),
             self.name,
             self._arguments,
             harness=self.config.getini("cpp_harness"),
         )
+        # Report the c++ output in its own sections
+        self.add_report_section("call", "c++", output)
+
         if failures:
             raise CppFailureError(failures)
 

@@ -1,0 +1,10 @@
+*
+
+!.gitignore
+!*.h
+!*.cpp
+!*.cc
+!*.py
+!*.xml
+!README*
+!SCons*

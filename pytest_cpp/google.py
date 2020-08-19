@@ -59,6 +59,7 @@ class GoogleTestFacade(object):
 
     def run_test(self, executable, test_id, test_args=(), harness=None):
         harness = harness or []
+        output = ""
         xml_filename = self._get_temp_xml_filename()
         args = harness + [
             executable,
@@ -66,11 +67,13 @@ class GoogleTestFacade(object):
             "--gtest_output=xml:%s" % xml_filename,
         ]
         args.extend(test_args)
+
         try:
-            subprocess.check_output(
+            output = subprocess.check_output(
                 args, stderr=subprocess.STDOUT, universal_newlines=True
             )
         except subprocess.CalledProcessError as e:
+            output = e.output
             if e.returncode != 1:
                 msg = (
                     "Internal Error: calling {executable} "
@@ -85,23 +88,24 @@ class GoogleTestFacade(object):
                         returncode=e.returncode,
                     )
                 )
-                return [failure]
+
+                return [failure], output
 
         results = self._parse_xml(xml_filename)
         os.remove(xml_filename)
         for (executed_test_id, failures, skipped) in results:
             if executed_test_id == test_id:
                 if failures:
-                    return [GoogleTestFailure(x) for x in failures]
+                    return [GoogleTestFailure(x) for x in failures], output
                 elif skipped:
                     pytest.skip()
                 else:
-                    return None
+                    return None, output
 
         msg = "Internal Error: could not find test " "{test_id} in results:\n{results}"
         results_list = "\n".join(x for (x, f) in results)
         failure = GoogleTestFailure(msg.format(test_id=test_id, results=results_list))
-        return [failure]
+        return [failure], output
 
     def _get_temp_xml_filename(self):
         return tempfile.mktemp()

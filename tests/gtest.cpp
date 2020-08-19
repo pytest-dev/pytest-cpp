@@ -14,6 +14,7 @@ TEST_F(FooTest, test_success) {
 
 // Tests that the Foo::Bar() method does Abc.
 TEST_F(FooTest, test_failure) {
+  printf("Just saying hi from gtest\n");
   EXPECT_EQ(2 * 3, 5);
   EXPECT_EQ(2 * 6, 15);
 }

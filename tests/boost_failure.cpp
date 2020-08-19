@@ -5,6 +5,7 @@
 
 BOOST_AUTO_TEST_CASE( test_failure_1 )
 {
+    printf("Just saying hi from boost\n");
     BOOST_CHECK( 2 * 3 == 5 );
 }
 
