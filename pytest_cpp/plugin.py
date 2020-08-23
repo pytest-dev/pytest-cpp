@@ -84,6 +84,12 @@ def pytest_addoption(parser):
         default=(),
         help="command that wraps the cpp binary",
     )
+    parser.addini(
+        "cpp_verbose",
+        type="bool",
+        default=False,
+        help="print the test output right after it ran, requieres -s",
+    )
 
 
 class CppFile(pytest.File):
@@ -134,6 +140,9 @@ class CppItem(pytest.Item):
         )
         # Report the c++ output in its own sections
         self.add_report_section("call", "c++", output)
+
+        if self.config.getini("cpp_verbose"):
+            print(output)
 
         if failures:
             raise CppFailureError(failures)

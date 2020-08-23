@@ -521,6 +521,22 @@ def test_output_section(testdir, exes):
     )
 
 
+def test_cpp_verbose(testdir, exes):
+    exes.get("boost_success")
+    exes.get("gtest")
+
+    testdir.makeini(
+        """
+        [pytest]
+        cpp_files = gtest* boost*
+    """
+    )
+    result = testdir.runpytest("-k", "success", "-s", "-o", "cpp_verbose=true")
+    result.stdout.fnmatch_lines(
+        ["*Just saying hi from boost", "*Just saying hi from gtest"]
+    )
+
+
 class TestError:
     def test_get_whitespace(self):
         assert error.get_left_whitespace("  foo") == "  "

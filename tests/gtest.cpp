@@ -10,6 +10,7 @@ class FooTest : public ::testing::Test {
 // Tests that the Foo::Bar() method does Abc.
 TEST_F(FooTest, test_success) {
   EXPECT_EQ(2 * 3, 6);
+  printf("Just saying hi from gtest\n");
 }
 
 // Tests that the Foo::Bar() method does Abc.
