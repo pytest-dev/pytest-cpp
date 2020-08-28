@@ -51,7 +51,8 @@ class BoostTestFacade(object):
         ]
         args.extend(test_args)
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        stdout, _ = p.communicate()
+        raw_stdout, _ = p.communicate()
+        stdout = raw_stdout.decode("utf-8") if raw_stdout else ""
 
         log = read_file(log_xml)
         report = read_file(report_xml)
@@ -76,7 +77,7 @@ class BoostTestFacade(object):
                     returncode=p.returncode,
                 ),
             )
-            return [failure]
+            return [failure], stdout
 
         if report is not None and (
             report.startswith("Boost.Test framework internal error: ")
@@ -84,12 +85,15 @@ class BoostTestFacade(object):
         ):
             # boost.test doesn't do XML output on fatal-enough errors.
             failure = BoostTestFailure("unknown location", 0, report)
-            return [failure]
+            return [failure], stdout
 
         results = self._parse_log(log=log)
         shutil.rmtree(temp_dir)
+
         if results:
-            return results
+            return results, stdout
+
+        return None, stdout
 
     def _parse_log(self, log):
         """

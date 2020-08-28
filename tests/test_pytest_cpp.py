@@ -78,12 +78,12 @@ def test_is_test_suite(facade, name, other_name, exes, tmpdir):
     ],
 )
 def test_success(facade, name, test_id, exes):
-    assert facade.run_test(exes.get(name), test_id) is None
+    assert facade.run_test(exes.get(name), test_id)[0] is None
 
 
 def test_google_failure(exes):
     facade = GoogleTestFacade()
-    failures = facade.run_test(exes.get("gtest"), "FooTest.test_failure")
+    failures, _ = facade.run_test(exes.get("gtest"), "FooTest.test_failure")
     assert len(failures) == 2
     colors = ("red", "bold")
     assert failures[0].get_lines() == [
@@ -91,19 +91,19 @@ def test_google_failure(exes):
         ("      Which is: 6", colors),
         ("To be equal to: 5", colors),
     ]
-    assert failures[0].get_file_reference() == ("gtest.cpp", 17)
+    assert failures[0].get_file_reference() == ("gtest.cpp", 19)
 
     assert failures[1].get_lines() == [
         ("      Expected: 2 * 6", colors),
         ("      Which is: 12", colors),
         ("To be equal to: 15", colors),
     ]
-    assert failures[1].get_file_reference() == ("gtest.cpp", 18)
+    assert failures[1].get_file_reference() == ("gtest.cpp", 20)
 
 
 def test_google_error(exes):
     facade = GoogleTestFacade()
-    failures = facade.run_test(exes.get("gtest"), "FooTest.test_error")
+    failures, _ = facade.run_test(exes.get("gtest"), "FooTest.test_error")
     assert len(failures) == 1
     colors = ("red", "bold")
     assert failures[0].get_lines() == [
@@ -124,21 +124,21 @@ def test_google_disabled(exes):
 
 def test_boost_failure(exes):
     facade = BoostTestFacade()
-    failures = facade.run_test(exes.get("boost_failure"), "<unused>")
+    failures, _ = facade.run_test(exes.get("boost_failure"), "<unused>")
     assert len(failures) == 2
 
     fail1, fail2 = failures
     colors = ("red", "bold")
     assert fail1.get_lines() == [("check 2 * 3 == 5 failed", colors)]
-    assert fail1.get_file_reference() == ("boost_failure.cpp", 8)
+    assert fail1.get_file_reference() == ("boost_failure.cpp", 9)
 
     assert fail2.get_lines() == [("check 2 - 1 == 0 failed", colors)]
-    assert fail2.get_file_reference() == ("boost_failure.cpp", 14)
+    assert fail2.get_file_reference() == ("boost_failure.cpp", 15)
 
 
 def test_boost_fatal_error(exes):
     facade = BoostTestFacade()
-    failures = facade.run_test(exes.get("boost_fatal_error"), "<unused>")
+    failures, _ = facade.run_test(exes.get("boost_fatal_error"), "<unused>")
     assert len(failures) == 1
 
     (fail1,) = failures
@@ -149,7 +149,7 @@ def test_boost_fatal_error(exes):
 
 def test_boost_error(exes):
     facade = BoostTestFacade()
-    failures = facade.run_test(exes.get("boost_error"), "<unused>")
+    failures, _ = facade.run_test(exes.get("boost_error"), "<unused>")
     assert len(failures) == 2
 
     fail1, fail2 = failures
@@ -165,7 +165,7 @@ def test_boost_error(exes):
 
 def test_boost_fixture_setup_error(exes):
     facade = BoostTestFacade()
-    failures = facade.run_test(exes.get("boost_fixture_setup_error"), "<unused>")
+    failures, _ = facade.run_test(exes.get("boost_fixture_setup_error"), "<unused>")
     assert len(failures) == 1
 
     fail1 = failures[0]
@@ -499,6 +499,42 @@ def test_exe_mask_on_windows(tmpdir, monkeypatch):
 
     fn = tmpdir.join("my_generator_test_demo.exe").ensure(file=1)
     assert not pytest_cpp.plugin.matches_any_mask(fn, ["test_*", "*_test"])
+
+
+def test_output_section(testdir, exes):
+    exes.get("boost_failure")
+    exes.get("gtest")
+
+    testdir.makeini(
+        """
+        [pytest]
+        cpp_files = gtest* boost*
+    """
+    )
+    result = testdir.runpytest("-k", "failure")
+    result.stdout.fnmatch_lines(
+        [
+            "*Captured c++ call*",
+            "Just saying hi from boost",
+            "Just saying hi from gtest",
+        ]
+    )
+
+
+def test_cpp_verbose(testdir, exes):
+    exes.get("boost_success")
+    exes.get("gtest")
+
+    testdir.makeini(
+        """
+        [pytest]
+        cpp_files = gtest* boost*
+    """
+    )
+    result = testdir.runpytest("-k", "success", "-s", "-o", "cpp_verbose=true")
+    result.stdout.fnmatch_lines(
+        ["*Just saying hi from boost", "*Just saying hi from gtest"]
+    )
 
 
 class TestError:

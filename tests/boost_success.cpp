@@ -4,6 +4,7 @@
 
 BOOST_AUTO_TEST_CASE( test_success_1 )
 {
+    printf("Just saying hi from boost\n");
     BOOST_CHECK( 2 * 3 == 6 );
 }
 
