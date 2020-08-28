@@ -88,7 +88,7 @@ def pytest_addoption(parser):
         "cpp_verbose",
         type="bool",
         default=False,
-        help="print the test output right after it ran, requieres -s",
+        help="print the test output right after it ran, requires -s",
     )
 
 
