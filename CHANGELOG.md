@@ -1,3 +1,10 @@
+# 1.4.0
+
+- New `cpp_verbose` configuration option prints the full output of the C++ test runner as the test finishes. Thanks to @dajose for contributing.
+
+- Now the output of the C++ test run is shown in its own section during test failure, similar to the `captured out` and `captured err` sections shown by pytest. Thanks to @dajose for contributing.
+
+
 # 1.3.0
 
 - New `cpp_harness` configuration option allows users to add prefix arguments when running the C++ test runner, allowing to use tools like `valgrind`. Thanks to @dajose for contributing!
