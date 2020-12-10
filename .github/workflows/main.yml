@@ -3,16 +3,57 @@ name: build
 on: [push, pull_request]
 
 jobs:
-  build:
+  compile:
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        gtest_ver: [ "1.8.0" ]
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: "3.8"
+      - name: Install GoogleTest
+        run: |
+          wget https://github.com/google/googletest/archive/release-${{ matrix.gtest_ver }}.tar.gz
+          tar -zxvf release-${{ matrix.gtest_ver }}.tar.gz
+          cd googletest-release-${{ matrix.gtest_ver }}/googletest
+          cmake .
+          sudo make install
+      - name: Install Boost.Test
+        run: |
+          sudo apt-get install libboost-test-dev valgrind
+      - name: Compile
+        run: |
+          python -m pip install --upgrade pip
+          pip install scons
+          scons -j4 -C tests
+      - name: Upload compilation results
+        uses: actions/upload-artifact@v2
+        with:
+          name: bin-tests
+          if-no-files-found: error
+          retention-days: 1
+          path: |
+            tests/
+            !tests/**/*.py
+            !tests/**/*.cpp
+            !tests/**/*.xml
+
+  build:
+    needs: compile
+    runs-on: [ubuntu-latest]
 
     strategy:
       fail-fast: false
       matrix:
         python: ["2.7", "3.5", "3.6", "3.7", "3.8"]
         gtest_ver: ["1.8.0"]
-        os: [ubuntu-latest]
         include:
           - python: "2.7"
             tox_env: "py27-pytestlatest"
@@ -31,21 +72,8 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python }}
-    - name: Install GoogleTest
-      run: |
-        wget https://github.com/google/googletest/archive/release-${{ matrix.gtest_ver }}.tar.gz
-        tar -zxvf release-${{ matrix.gtest_ver }}.tar.gz
-        cd googletest-release-${{ matrix.gtest_ver }}/googletest
-        cmake .
-        sudo make install
-    - name: Install Boost.Test
-      run: |
-        sudo apt-get install libboost-test-dev valgrind
-    - name: Compile
-      run: |
-        python -m pip install --upgrade pip
-        pip install scons
-        scons -j4 -C tests
+    - name: Download compiled tests
+      uses: actions/download-artifact@v2
     - name: Install Tox
       run: |
         pip install tox
