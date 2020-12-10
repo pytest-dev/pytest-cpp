@@ -111,7 +111,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    needs: [build, linting]
+    needs: [test, linting]
 
     steps:
     - uses: actions/checkout@v1
