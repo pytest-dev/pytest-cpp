@@ -52,17 +52,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ["2.7", "3.5", "3.6", "3.7", "3.8"]
+        #python: ["2.7", "3.5", "3.6", "3.7", "3.8"]
+        python: ["3.8"]
         gtest_ver: ["1.8.0"]
         include:
-          - python: "2.7"
-            tox_env: "py27-pytestlatest"
-          - python: "3.5"
-            tox_env: "py35-pytestlatest"
-          - python: "3.6"
-            tox_env: "py36-pytestlatest"
-          - python: "3.7"
-            tox_env: "py37-pytestlatest"
+#          - python: "2.7"
+#            tox_env: "py27-pytestlatest"
+#          - python: "3.5"
+#            tox_env: "py35-pytestlatest"
+#          - python: "3.6"
+#            tox_env: "py36-pytestlatest"
+#          - python: "3.7"
+#            tox_env: "py37-pytestlatest"
           - python: "3.8"
             tox_env: "py38-pytestlatest py38-pytest53"
 
@@ -74,8 +75,12 @@ jobs:
         python-version: ${{ matrix.python }}
     - name: Download compiled tests
       uses: actions/download-artifact@v2
+      with:
+        name: tests
     - name: Install Tox
       run: |
+        ls -la .
+        ls -la tests
         pip install tox
     - name: Test
       run: |
