@@ -16,15 +16,15 @@ jobs:
         os: [ubuntu-latest]
         include:
 #          - python: "2.7"
-#            tox_env: "py27"
+#            tox_env: "py27-pytestlatest"
 #          - python: "3.5"
-#            tox_env: "py35"
+#            tox_env: "py35-pytestlatest"
 #          - python: "3.6"
-#            tox_env: "py36"
+#            tox_env: "py36-pytestlatest"
 #          - python: "3.7"
-#            tox_env: "py37"
+#            tox_env: "py37-pytestlatest"
           - python: "3.8"
-            tox_env: "py38"
+            tox_env: "py38-pytestlatest"
 
     steps:
     - uses: actions/checkout@v1
@@ -42,13 +42,13 @@ jobs:
     - name: Install Boost.Test
       run: |
         sudo apt-get install libboost-test-dev valgrind
+    - name: Compile
+      run: |
+        scons -j4 -C tests
     - name: Install Python Deps
       run: |
         python -m pip install --upgrade pip
         pip install tox scons
-    - name: Compile
-      run: |
-        scons -j4 -C tests
     - name: Test
       run: |
         tox -e ${{ matrix.tox_env }}
