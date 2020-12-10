@@ -80,8 +80,6 @@ jobs:
     - name: Install Tox
       run: |
         chmod a+x -R tests
-        ls -la .
-        ls -la tests
         pip install tox
     - name: Test
       run: |
