@@ -46,9 +46,11 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install tox scons
-    - name: Test
+    - name: Compile
       run: |
         scons -j4 -C tests
+    - name: Test
+      run: |
         tox -e ${{ matrix.tox_env }}
 
   linting:
