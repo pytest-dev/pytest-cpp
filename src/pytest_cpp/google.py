@@ -121,7 +121,10 @@ class GoogleTestFacade(object):
                 failure_elements = test_case.findall("failure")
                 for failure_elem in failure_elements:
                     failures.append(failure_elem.text)
-                skipped = test_case.attrib["status"] == "notrun" or test_case.attrib.get("result", None) == "skipped"
+                skipped = (
+                    test_case.attrib["status"] == "notrun"
+                    or test_case.attrib.get("result", None) == "skipped"
+                )
                 result.append((test_suite_name + "." + test_name, failures, skipped))
 
         return result
