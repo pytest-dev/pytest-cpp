@@ -44,6 +44,7 @@ jobs:
             !tests/**/*.py
             !tests/**/*.cpp
             !tests/**/*.xml
+            !tests/**/*.o
 
   build:
     needs: compile
@@ -80,6 +81,7 @@ jobs:
         path: tests
     - name: Install Tox
       run: |
+        chmod a+x -R tests
         ls -la .
         ls -la tests
         pip install tox
