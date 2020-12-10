@@ -36,7 +36,7 @@ jobs:
       - name: Upload compilation results
         uses: actions/upload-artifact@v2
         with:
-          name: bin-tests
+          name: tests
           if-no-files-found: error
           retention-days: 1
           path: |
