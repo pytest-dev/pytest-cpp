@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        gtest_ver: [ "1.8.0", "1.10.0" ]
+        gtest_ver: [ "1.8.0" ]
 
     steps:
       - uses: actions/checkout@v1
