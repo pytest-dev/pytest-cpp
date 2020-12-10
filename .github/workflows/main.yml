@@ -33,14 +33,14 @@ jobs:
         python-version: ${{ matrix.python }}
     - name: Install GoogleTest
       run: |
-        wget https://github.com/google/googletest/archive/release-{{ matrix.gtest_ver }}.tar.gz
-        tar -zxvf release-{{ matrix.gtest_ver }}.tar.gz
-        cd googletest-release-{{ matrix.gtest_ver }}/googletest 
-        cmake . 
-        sudo make install        
+        wget https://github.com/google/googletest/archive/release-${{ matrix.gtest_ver }}.tar.gz
+        tar -zxvf release-${{ matrix.gtest_ver }}.tar.gz
+        cd googletest-release-${{ matrix.gtest_ver }}/googletest
+        cmake .
+        sudo make install
     - name: Install Boost.Test
       run: |
-        sudo apt-get install libboost-test-dev valgrind        
+        sudo apt-get install libboost-test-dev valgrind
     - name: Install Python Deps
       run: |
         python -m pip install --upgrade pip
