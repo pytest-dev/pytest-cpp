@@ -17,8 +17,8 @@ Supports both `Google Test <https://code.google.com/p/googletest>`_ and
 .. |anaconda| image:: https://img.shields.io/conda/vn/conda-forge/pytest-cpp.svg
     :target: https://anaconda.org/conda-forge/pytest-cpp
 
-.. |ci| image:: http://img.shields.io/travis/pytest-dev/pytest-cpp.png
-  :target: https://travis-ci.org/pytest-dev/pytest-cpp
+.. |ci| image:: https://github.com/pytest-dev/pytest-cpp/workflows/build/badge.svg
+    :target: https://github.com/pytest-dev/pytest-cpp/actions
 
 .. |coverage| image:: http://img.shields.io/coveralls/pytest-dev/pytest-cpp.png
   :target: https://coveralls.io/r/pytest-dev/pytest-cpp

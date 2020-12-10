@@ -129,10 +129,10 @@ def test_boost_failure(exes):
 
     fail1, fail2 = failures
     colors = ("red", "bold")
-    assert fail1.get_lines() == [("check 2 * 3 == 5 failed", colors)]
+    assert fail1.get_lines() == [("check 2 * 3 == 5 has failed", colors)]
     assert fail1.get_file_reference() == ("boost_failure.cpp", 9)
 
-    assert fail2.get_lines() == [("check 2 - 1 == 0 failed", colors)]
+    assert fail2.get_lines() == [("check 2 - 1 == 0 has failed", colors)]
     assert fail2.get_file_reference() == ("boost_failure.cpp", 15)
 
 
@@ -143,7 +143,7 @@ def test_boost_fatal_error(exes):
 
     (fail1,) = failures
     colors = ("red", "bold")
-    assert fail1.get_lines() == [("critical check 2 * 3 == 5 failed", colors)]
+    assert fail1.get_lines() == [("critical check 2 * 3 == 5 has failed", colors)]
     assert fail1.get_file_reference() == ("boost_fatal_error.cpp", 8)
 
 
@@ -170,12 +170,9 @@ def test_boost_fixture_setup_error(exes):
 
     fail1 = failures[0]
     colors = ("red", "bold")
-    assert fail1.get_lines() == [
-        (
-            "Test setup error: std::runtime_error: This is a global fixture init failure",
-            colors,
-        )
-    ]
+    ((line, obtained_colors),) = fail1.get_lines()
+    assert line.startswith("Test setup error")
+    assert obtained_colors == colors
     assert fail1.get_file_reference() == ("unknown location", 0)
 
 
