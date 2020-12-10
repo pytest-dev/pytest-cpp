@@ -33,9 +33,9 @@ jobs:
         python-version: ${{ matrix.python }}
     - name: Install GoogleTest
       run: |
-        wget https://github.com/google/googletest/archive/release-{{ matrix.gtest_ver }}.tar.gz
+        wget https://github.com/google/googletest/archive/release-${{ matrix.gtest_ver }}.tar.gz
         tar -zxvf release-{{ matrix.gtest_ver }}.tar.gz
-        cd googletest-release-{{ matrix.gtest_ver }}/googletest 
+        cd googletest-release-${{ matrix.gtest_ver }}/googletest
         cmake . 
         sudo make install        
     - name: Install Boost.Test
