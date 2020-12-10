@@ -1,3 +1,7 @@
+# 1.5.0
+
+- Added support for `GTEST_SKIP()` from Google Test 1.10.
+
 # 1.4.0
 
 - New `cpp_verbose` configuration option prints the full output of the C++ test runner as the test finishes. Thanks to @dajose for contributing.
