@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        gtest_ver: [ "1.8.0" ]
+        gtest_ver: [ "1.8.0", "1.10.0" ]
 
     steps:
       - uses: actions/checkout@v1
@@ -46,25 +46,23 @@ jobs:
             !tests/**/*.xml
             !tests/**/*.o
 
-  build:
+  test:
     needs: compile
     runs-on: [ubuntu-latest]
 
     strategy:
       fail-fast: false
       matrix:
-        #python: ["2.7", "3.5", "3.6", "3.7", "3.8"]
-        python: ["3.8"]
-        gtest_ver: ["1.8.0"]
+        python: ["2.7", "3.5", "3.6", "3.7", "3.8"]
         include:
-#          - python: "2.7"
-#            tox_env: "py27-pytestlatest"
-#          - python: "3.5"
-#            tox_env: "py35-pytestlatest"
-#          - python: "3.6"
-#            tox_env: "py36-pytestlatest"
-#          - python: "3.7"
-#            tox_env: "py37-pytestlatest"
+          - python: "2.7"
+            tox_env: "py27-pytestlatest"
+          - python: "3.5"
+            tox_env: "py35-pytestlatest"
+          - python: "3.6"
+            tox_env: "py36-pytestlatest"
+          - python: "3.7"
+            tox_env: "py37-pytestlatest"
           - python: "3.8"
             tox_env: "py38-pytestlatest py38-pytest53"
 
