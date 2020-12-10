@@ -10,7 +10,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ["2.7", "3.5", "3.6", "3.7", "3.8"]
+        #python: ["2.7", "3.5", "3.6", "3.7", "3.8"]
+        python: ["3.8"]
         gtest_ver: ["1.8.0"]
         os: [ubuntu-latest]
         include:
