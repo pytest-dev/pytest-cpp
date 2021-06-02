@@ -19,8 +19,9 @@ if 'CXX' in os.environ:
 
 env = Environment(**kwargs)
 genv = env.Clone(LIBS=['gtest'] + LIBS)
+c2env = env.Clone(CPPPATH=['.'])
 
-Export('env genv')
+Export('env genv c2env')
 
 genv.Program('gtest.cpp')
 genv.Program('gtest_args.cpp')
@@ -38,5 +39,9 @@ boost_files = [
 for filename in boost_files:
     env.Program(filename)
 
+c2env.Program('catch2_success.cpp')
+c2env.Program('catch2_failure.cpp')
+
 SConscript('acceptance/googletest-samples/SConscript')
 SConscript('acceptance/boosttest-samples/SConscript')
+SConscript('acceptance/catch2-samples/SConscript')

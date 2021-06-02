@@ -1,11 +1,14 @@
-import sys
-import pytest
 import subprocess
+import sys
+from distutils.spawn import find_executable
+
+import pytest
+
 from pytest_cpp import error
 from pytest_cpp.boost import BoostTestFacade
-from pytest_cpp.error import CppTestFailure, CppFailureRepr
+from pytest_cpp.catch2 import Catch2Facade
+from pytest_cpp.error import CppFailureRepr, CppTestFailure
 from pytest_cpp.google import GoogleTestFacade
-from distutils.spawn import find_executable
 
 
 def assert_outcomes(result, expected_outcomes):
@@ -37,18 +40,19 @@ def dummy_failure():
     "facade, name, expected",
     [
         (
-            GoogleTestFacade(),
-            "gtest",
-            [
-                "FooTest.test_success",
-                "FooTest.test_failure",
-                "FooTest.test_error",
-                "FooTest.DISABLED_test_disabled",
-            ],
+                GoogleTestFacade(),
+                "gtest",
+                [
+                    "FooTest.test_success",
+                    "FooTest.test_failure",
+                    "FooTest.test_error",
+                    "FooTest.DISABLED_test_disabled",
+                ],
         ),
         (BoostTestFacade(), "boost_success", ["boost_success"]),
         (BoostTestFacade(), "boost_error", ["boost_error"]),
         (BoostTestFacade(), "boost_fixture_setup_error", ["boost_fixture_setup_error"]),
+        (Catch2Facade(), "catch2_success", ["Factorials are computed"]),
     ],
 )
 def test_list_tests(facade, name, expected, exes):
@@ -61,6 +65,7 @@ def test_list_tests(facade, name, expected, exes):
     [
         (GoogleTestFacade(), "gtest", "boost_success"),
         (BoostTestFacade(), "boost_success", "gtest"),
+        (Catch2Facade(), "catch2_success", "gtest"),
     ],
 )
 def test_is_test_suite(facade, name, other_name, exes, tmpdir):
@@ -75,6 +80,7 @@ def test_is_test_suite(facade, name, other_name, exes, tmpdir):
     [
         (GoogleTestFacade(), "gtest", "FooTest.test_success"),
         (BoostTestFacade(), "boost_success", "<unused>"),
+        (Catch2Facade(), "catch2_success", "Factorials are computed"),
     ],
 )
 def test_success(facade, name, test_id, exes):
@@ -291,7 +297,7 @@ def test_cpp_files_option(testdir, exes):
     )
     result = testdir.runpytest("--collect-only")
     result.stdout.fnmatch_lines(
-        ["*CppFile boost_success*", "*CppFile gtest*",]
+        ["*CppFile boost_success*", "*CppFile gtest*", ]
     )
 
 
@@ -532,6 +538,20 @@ def test_cpp_verbose(testdir, exes):
     result.stdout.fnmatch_lines(
         ["*Just saying hi from boost", "*Just saying hi from gtest"]
     )
+
+
+def test_catch2_failure(exes):
+    facade = Catch2Facade()
+    failures, _ = facade.run_test(exes.get("catch2_failure"), "Factorials are computed")
+    assert len(failures) == 1
+
+    fail1 = failures[0]
+    colors = ("red", "bold")
+    assert fail1.get_lines() == [('Expected: ', colors), ('          Factorial(1) == 0', colors),
+                                 ('        ', colors), ('', colors), ('Actual: ', colors),
+                                 ('          1 == 0', colors), ('        ', colors)]
+
+    assert fail1.get_file_reference() == ("catch2_failure.cpp", 9)
 
 
 class TestError:
