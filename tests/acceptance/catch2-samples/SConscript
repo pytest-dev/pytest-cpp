@@ -1,0 +1,10 @@
+Import('c2env')
+
+
+c2env.Program('000-CatchMain.cpp')
+c2env.Program('010-TestCase', ['010-TestCase.cpp', '000-CatchMain.cpp'])
+c2env.Program('020-TestCase', ['020-TestCase-1.cpp', '020-TestCase-2.cpp'])
+c2env.Program('030-Asn-Require-Check', ['030-Asn-Require-Check.cpp', '000-CatchMain.cpp'])
+c2env.Program('100-Fix-Section', ['100-Fix-Section.cpp', '000-CatchMain.cpp'])
+c2env.Program('110-Fix-ClassFixture', ['110-Fix-ClassFixture.cpp', '000-CatchMain.cpp'])
+c2env.Program('120-Bdd-ScenarioGivenWhenThen', ['120-Bdd-ScenarioGivenWhenThen.cpp', '000-CatchMain.cpp'])

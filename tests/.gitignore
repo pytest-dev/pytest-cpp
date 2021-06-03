@@ -1,5 +1,6 @@
 *
 
+!acceptance/
 !.gitignore
 !*.h
 !*.cpp
