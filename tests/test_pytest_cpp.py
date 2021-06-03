@@ -40,14 +40,14 @@ def dummy_failure():
     "facade, name, expected",
     [
         (
-                GoogleTestFacade(),
-                "gtest",
-                [
-                    "FooTest.test_success",
-                    "FooTest.test_failure",
-                    "FooTest.test_error",
-                    "FooTest.DISABLED_test_disabled",
-                ],
+            GoogleTestFacade(),
+            "gtest",
+            [
+                "FooTest.test_success",
+                "FooTest.test_failure",
+                "FooTest.test_error",
+                "FooTest.DISABLED_test_disabled",
+            ],
         ),
         (BoostTestFacade(), "boost_success", ["boost_success"]),
         (BoostTestFacade(), "boost_error", ["boost_error"]),
@@ -297,7 +297,7 @@ def test_cpp_files_option(testdir, exes):
     )
     result = testdir.runpytest("--collect-only")
     result.stdout.fnmatch_lines(
-        ["*CppFile boost_success*", "*CppFile gtest*", ]
+        ["*CppFile boost_success*", "*CppFile gtest*",]
     )
 
 
@@ -547,9 +547,14 @@ def test_catch2_failure(exes):
 
     fail1 = failures[0]
     colors = ("red", "bold")
-    assert fail1.get_lines() == [('Expected: ', colors), ('          Factorial(1) == 0', colors),
-                                 ('        ', colors), ('Actual: ', colors),
-                                 ('          1 == 0', colors), ('        ', colors)]
+    assert fail1.get_lines() == [
+        ("Expected: ", colors),
+        ("          Factorial(1) == 0", colors),
+        ("        ", colors),
+        ("Actual: ", colors),
+        ("          1 == 0", colors),
+        ("        ", colors),
+    ]
 
     assert fail1.get_file_reference() == ("catch2_failure.cpp", 9)
 

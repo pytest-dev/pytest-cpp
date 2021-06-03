@@ -44,7 +44,7 @@ class Catch2Facade(object):
         except subprocess.CalledProcessError as e:
             output = e.output
 
-        result = output.strip().split('\n')
+        result = output.strip().split("\n")
 
         return result
 
@@ -80,7 +80,7 @@ class Catch2Facade(object):
                         test_id=test_id,
                         output=e.output,
                         returncode=e.returncode,
-                    )
+                    ),
                 )
 
                 return [failure], output
@@ -90,7 +90,13 @@ class Catch2Facade(object):
         for (executed_test_id, failures, skipped) in results:
             if executed_test_id == test_id:
                 if failures:
-                    return [Catch2Failure(filename, linenum, lines) for (filename, linenum, lines) in failures], output
+                    return (
+                        [
+                            Catch2Failure(filename, linenum, lines)
+                            for (filename, linenum, lines) in failures
+                        ],
+                        output,
+                    )
                 elif skipped:
                     pytest.skip()
                 else:
@@ -122,9 +128,15 @@ class Catch2Facade(object):
                         if check.attrib["success"] == "false":
                             expected = check.find("Original").text
                             actual = check.find("Expanded").text
-                            fail_msg = "Expected: {expected}\nActual: {actual}".format(expected=expected, actual=actual)
-                            failures.append((file_name, line_num, fail_msg))
-                skipped = False # TODO: skipped tests don't appear in the results
+                            fail_msg = "Expected: {expected}\nActual: {actual}".format(expected, actual)
+                            failures.append(
+                                (
+                                    file_name,
+                                    line_num,
+                                    fail_msg,
+                                )
+                            )
+                skipped = False  # TODO: skipped tests don't appear in the results
                 result.append((test_name, failures, skipped))
 
         return result
