@@ -548,7 +548,7 @@ def test_catch2_failure(exes):
     fail1 = failures[0]
     colors = ("red", "bold")
     assert fail1.get_lines() == [('Expected: ', colors), ('          Factorial(1) == 0', colors),
-                                 ('        ', colors), ('', colors), ('Actual: ', colors),
+                                 ('        ', colors), ('Actual: ', colors),
                                  ('          1 == 0', colors), ('        ', colors)]
 
     assert fail1.get_file_reference() == ("catch2_failure.cpp", 9)
