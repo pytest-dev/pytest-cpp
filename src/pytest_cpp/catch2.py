@@ -130,14 +130,9 @@ class Catch2Facade(object):
                             expected = check.find("Original").text
                             actual = check.find("Expanded").text
                             fail_msg = "Expected: {expected}\nActual: {actual}".format(
-                                expected=expected, actual=actual)
-                            failures.append(
-                                (
-                                    file_name,
-                                    line_num,
-                                    fail_msg,
-                                )
+                                expected=expected, actual=actual
                             )
+                            failures.append((file_name, line_num, fail_msg,))
                 skipped = False  # TODO: skipped tests don't appear in the results
                 result.append((test_name, failures, skipped))
 
