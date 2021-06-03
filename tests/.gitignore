@@ -8,3 +8,4 @@
 !*.xml
 !README*
 !SCons*
+!catch.hpp
