@@ -4,6 +4,7 @@ import tempfile
 from xml.etree import ElementTree
 
 import pytest
+
 from pytest_cpp.error import CppTestFailure
 
 
@@ -128,7 +129,8 @@ class Catch2Facade(object):
                         if check.attrib["success"] == "false":
                             expected = check.find("Original").text
                             actual = check.find("Expanded").text
-                            fail_msg = "Expected: {expected}\nActual: {actual}".format(expected, actual)
+                            fail_msg = "Expected: {expected}\nActual: {actual}".format(
+                                expected=expected, actual=actual)
                             failures.append(
                                 (
                                     file_name,
