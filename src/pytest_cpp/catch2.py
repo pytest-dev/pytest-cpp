@@ -137,8 +137,6 @@ class Catch2Failure(CppTestFailure):
         self.lines = lines.splitlines()
         self.filename = filename
         self.linenum = int(linenum)
-        print(f"Created lines: {self.lines}")
-        print(self.get_lines())
 
     def get_lines(self):
         m = ("red", "bold")
