@@ -15,13 +15,11 @@ class Catch2Facade(object):
     @classmethod
     def is_test_suite(cls, executable):
         try:
-            proc = subprocess.run(
+            output = subprocess.check_output(
                 [executable, "--help"],
                 stderr=subprocess.STDOUT,
-                stdout=subprocess.PIPE,
                 universal_newlines=True,
             )
-            output = proc.stdout
         except (subprocess.CalledProcessError, OSError):
             return False
         else:
@@ -36,16 +34,15 @@ class Catch2Facade(object):
         2: Factorial of 0 is 1 (fail)
         2: Factorials of 1 and higher are computed (pass)
         """
-        # This will return an exit code with the number of tests available,
-        # so we don't want to use check_output and get an error
-        proc = subprocess.run(
-            [executable, "--list-test-names-only"],
-            stderr=subprocess.STDOUT,
-            stdout=subprocess.PIPE,
-            universal_newlines=True,
-        )
-
-        output = proc.stdout
+        # This will return an exit code with the number of tests available
+        try:
+            output = subprocess.check_output(
+                [executable, "--list-test-names-only"],
+                stderr=subprocess.STDOUT,
+                universal_newlines=True,
+            )
+        except subprocess.CalledProcessError as e:
+            output = e.output
 
         result = output.strip().split('\n')
 
@@ -125,7 +122,8 @@ class Catch2Facade(object):
                         if check.attrib["success"] == "false":
                             expected = check.find("Original").text
                             actual = check.find("Expanded").text
-                            failures.append((file_name, line_num, f"Expected: {expected}\nActual: {actual}"))
+                            fail_msg = "Expected: {expected}\nActual: {actual}".format(expected=expected, actual=actual)
+                            failures.append((file_name, line_num, fail_msg))
                 skipped = False # TODO: skipped tests don't appear in the results
                 result.append((test_name, failures, skipped))
 
