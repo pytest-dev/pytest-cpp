@@ -79,14 +79,6 @@ class BoostTestFacade(object):
             )
             return [failure], stdout
 
-        if report is not None and (
-            report.startswith("Boost.Test framework internal error: ")
-            or report.startswith("Test setup error: ")
-        ):
-            # boost.test doesn't do XML output on fatal-enough errors.
-            failure = BoostTestFailure("unknown location", 0, report)
-            return [failure], stdout
-
         results = self._parse_log(log=log)
         shutil.rmtree(temp_dir)
 
@@ -102,21 +94,22 @@ class BoostTestFacade(object):
         This is always a XML file, and from this we produce most of the
         failures possible when running BoostTest.
         """
-        # Fatal errors apparently generate invalid xml in the form:
-        # <FatalError>...</FatalError><TestLog>...</TestLog>
-        # so we have to manually split it into two xmls if that's the case.
+        # Boosttest will sometimes generate unparseable XML
+        # so we surround it with xml tags.
         parsed_elements = []
-        if log.startswith("<FatalError"):
-            fatal, log = log.split("</FatalError>")
-            fatal += "</FatalError>"  # put it back, removed by split()
-            fatal_root = ElementTree.fromstring(fatal)
-            fatal_root.text = "Fatal Error: %s" % fatal_root.text
-            parsed_elements.append(fatal_root)
+        log = "<xml>{}</xml>".format(log)
 
         log_root = ElementTree.fromstring(log)
+        testlog = log_root.find("TestLog")
+
         parsed_elements.extend(log_root.findall("Exception"))
         parsed_elements.extend(log_root.findall("Error"))
         parsed_elements.extend(log_root.findall("FatalError"))
+
+        if testlog is not None:
+            parsed_elements.extend(testlog.findall("Exception"))
+            parsed_elements.extend(testlog.findall("Error"))
+            parsed_elements.extend(testlog.findall("FatalError"))
 
         result = []
         for elem in parsed_elements:

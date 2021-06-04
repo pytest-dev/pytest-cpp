@@ -6,8 +6,9 @@ Use `pytest <https://pypi.python.org/pypi/pytest>`_ runner to discover and execu
 
 |python| |version| |anaconda| |ci| |coverage| |black|
 
-Supports both `Google Test <https://code.google.com/p/googletest>`_ and
-`Boost::Test <http://www.boost.org/doc/libs/release/libs/test>`_:
+Supports `Google Test <https://code.google.com/p/googletest>`_,
+`Boost::Test <http://www.boost.org/doc/libs/release/libs/test>`_,
+and `Catch2 <https://github.com/catchorg/Catch2>`_:
 
 .. image:: https://raw.githubusercontent.com/pytest-dev/pytest-cpp/master/images/screenshot.png
 
@@ -46,7 +47,7 @@ Usage
 
 Once installed, when py.test runs it will search and run tests
 found in executable files, detecting if the suites are
-Google or Boost tests automatically.
+Google, Boost, or Catch2 tests automatically.
 
 Configuration Options
 ~~~~~~~~~~~~~~~~~~~~~

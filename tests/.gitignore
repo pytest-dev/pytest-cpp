@@ -1,5 +1,6 @@
 *
 
+!acceptance/
 !.gitignore
 !*.h
 !*.cpp
@@ -8,3 +9,4 @@
 !*.xml
 !README*
 !SCons*
+!catch.hpp

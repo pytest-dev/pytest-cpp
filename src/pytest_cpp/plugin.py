@@ -7,8 +7,9 @@ import pytest
 from pytest_cpp.boost import BoostTestFacade
 from pytest_cpp.error import CppFailureRepr, CppFailureError
 from pytest_cpp.google import GoogleTestFacade
+from pytest_cpp.catch2 import Catch2Facade
 
-FACADES = [GoogleTestFacade, BoostTestFacade]
+FACADES = [GoogleTestFacade, BoostTestFacade, Catch2Facade]
 DEFAULT_MASKS = ("test_*", "*_test")
 
 _ARGUMENTS = "cpp_arguments"
