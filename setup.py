@@ -9,6 +9,7 @@ setup(
     package_dir={"": "src"},
     entry_points={"pytest11": ["cpp = pytest_cpp.plugin"],},
     install_requires=["pytest !=5.4.0, !=5.4.1", "colorama",],
+    python_requires=">=3.6",
     # metadata for upload to PyPI
     author="Bruno Oliveira",
     author_email="nicoddemus@gmail.com",
