@@ -177,7 +177,7 @@ def test_boost_fixture_setup_error(exes):
     fail1 = failures[0]
     colors = ("red", "bold")
     ((line, obtained_colors),) = fail1.get_lines()
-    assert line.startswith("Test setup error")
+    assert line == "std::runtime_error: This is a global fixture init failure"
     assert obtained_colors == colors
     assert fail1.get_file_reference() == ("unknown location", 0)
 
@@ -287,7 +287,7 @@ def test_cpp_files_option(testdir, exes):
     exes.get("gtest")
 
     result = testdir.runpytest("--collect-only")
-    result.stdout.fnmatch_lines("* no tests ran *")
+    result.stdout.fnmatch_lines("* no tests *")
 
     testdir.makeini(
         """
@@ -316,7 +316,7 @@ def test_cpp_ignore_py_files(testdir, exes):
     )
 
     result = testdir.runpytest("--collect-only")
-    result.stdout.fnmatch_lines("* no tests ran *")
+    result.stdout.fnmatch_lines("* no tests *")
 
     result = testdir.runpytest("--collect-only", "-o", "cpp_ignore_py_files=False")
     result.stdout.fnmatch_lines("*CppFile cpptest_success.py*")
