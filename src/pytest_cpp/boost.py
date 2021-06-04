@@ -100,7 +100,7 @@ class BoostTestFacade(object):
         log = "<xml>{}</xml>".format(log)
 
         log_root = ElementTree.fromstring(log)
-        testlog = log_root.find('TestLog')
+        testlog = log_root.find("TestLog")
 
         parsed_elements.extend(log_root.findall("Exception"))
         parsed_elements.extend(log_root.findall("Error"))
