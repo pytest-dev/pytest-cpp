@@ -1,3 +1,9 @@
+# 2.0.0
+
+- `pytest-cpp` now supports [Catch2](https://github.com/catchorg/Catch2). Many thanks to [@salim-runsafe](https://github.com/salim-runsafe) for the contribution.
+
+- Dropped support for Python 2.7 and 3.5.
+
 # 1.5.0
 
 - Added support for `GTEST_SKIP()` from Google Test 1.10.
