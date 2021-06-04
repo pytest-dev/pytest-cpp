@@ -19,7 +19,7 @@ setup(
     keywords="pytest test unittest",
     url="http://github.com/pytest-dev/pytest-cpp",
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Framework :: Pytest",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
