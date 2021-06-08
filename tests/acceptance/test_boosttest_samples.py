@@ -38,5 +38,9 @@ def test_example_11(exes, testdir):
     example = "boosttest-samples/unit_test_example_11"
     result = testdir.runpytest(exes.get(example))
     result.stdout.fnmatch_lines(
-        ["*something happened*", "*check s.substr*", "*1 failed in*",]
+        [
+            "*something happened*",
+            "*check s.substr*",
+            "*1 failed in*",
+        ]
     )
