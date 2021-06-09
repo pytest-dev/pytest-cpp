@@ -7,8 +7,13 @@ setup(
     setup_requires=["setuptools_scm"],
     packages=["pytest_cpp"],
     package_dir={"": "src"},
-    entry_points={"pytest11": ["cpp = pytest_cpp.plugin"],},
-    install_requires=["pytest !=5.4.0, !=5.4.1", "colorama",],
+    entry_points={
+        "pytest11": ["cpp = pytest_cpp.plugin"],
+    },
+    install_requires=[
+        "pytest !=5.4.0, !=5.4.1",
+        "colorama",
+    ],
     python_requires=">=3.6",
     # metadata for upload to PyPI
     author="Bruno Oliveira",

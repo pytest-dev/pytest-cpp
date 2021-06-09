@@ -297,7 +297,10 @@ def test_cpp_files_option(testdir, exes):
     )
     result = testdir.runpytest("--collect-only")
     result.stdout.fnmatch_lines(
-        ["*CppFile boost_success*", "*CppFile gtest*",]
+        [
+            "*CppFile boost_success*",
+            "*CppFile gtest*",
+        ]
     )
 
 
