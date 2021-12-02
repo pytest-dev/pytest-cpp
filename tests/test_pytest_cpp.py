@@ -95,18 +95,18 @@ def test_google_failure(exes):
     assert len(failures) == 2
     colors = ("red", "bold")
     assert failures[0].get_lines() == [
-        ('Expected equality of these values:', colors),
-        ('  2 * 3', colors),
-        ('    Which is: 6', colors),
-        ('  5', colors)
+        ("Expected equality of these values:", colors),
+        ("  2 * 3", colors),
+        ("    Which is: 6", colors),
+        ("  5", colors),
     ]
     assert failures[0].get_file_reference() == ("gtest.cpp", 19)
 
     assert failures[1].get_lines() == [
-        ('Expected equality of these values:', colors),
-        ('  2 * 6', colors),
-        ('    Which is: 12', colors),
-        ('  15', colors),
+        ("Expected equality of these values:", colors),
+        ("  2 * 6", colors),
+        ("    Which is: 12", colors),
+        ("  15", colors),
     ]
     assert failures[1].get_file_reference() == ("gtest.cpp", 20)
 
