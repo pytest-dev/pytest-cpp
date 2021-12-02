@@ -30,6 +30,17 @@ TEST_F(FooTest, DISABLED_test_disabled) {
   EXPECT_EQ(2 * 6, 10);
 }
 
+// Tests that the Foo::Bar() method does Abc.
+TEST_F(FooTest, test_skipped) {
+  GTEST_SKIP() << "This is a skipped message";
+  EXPECT_EQ(true, false);
+}
+
+// Tests that the Foo::Bar() method does Abc.
+TEST_F(FooTest, test_skipped_no_msg) {
+  GTEST_SKIP();
+  EXPECT_EQ(true, false);
+}
 
 }  // namespace
 
