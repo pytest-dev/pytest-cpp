@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        gtest_ver: [ "1.8.0" ]
+        gtest_ver: [ "1.11.0" ]
 
     steps:
       - uses: actions/checkout@v1
@@ -22,8 +22,10 @@ jobs:
         run: |
           wget https://github.com/google/googletest/archive/release-${{ matrix.gtest_ver }}.tar.gz
           tar -zxvf release-${{ matrix.gtest_ver }}.tar.gz
-          cd googletest-release-${{ matrix.gtest_ver }}/googletest
-          cmake .
+          cd googletest-release-${{ matrix.gtest_ver }}
+          mkdir build 
+          cd build
+          cmake ..
           sudo make install
       - name: Install Boost.Test
         run: |
