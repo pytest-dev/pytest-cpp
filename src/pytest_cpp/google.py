@@ -98,7 +98,7 @@ class GoogleTestFacade(object):
                 if failures:
                     return [GoogleTestFailure(x) for x in failures], output
                 elif skipped:
-                    [pytest.skip(x) for x in skipped]
+                    pytest.skip("\n".join(skipped))
                 else:
                     return None, output
 
