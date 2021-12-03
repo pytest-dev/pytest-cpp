@@ -4,7 +4,7 @@ pytest-cpp
 
 Use `pytest <https://pypi.python.org/pypi/pytest>`_ runner to discover and execute C++ tests.
 
-|python| |version| |anaconda| |ci| |coverage| |black|
+|python| |version| |anaconda| |ci| |black|
 
 Supports `Google Test <https://code.google.com/p/googletest>`_,
 `Boost::Test <http://www.boost.org/doc/libs/release/libs/test>`_,
