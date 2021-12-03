@@ -39,6 +39,16 @@ This brings several benefits:
 
 .. contents:: **Table of Contents**
 
+
+Installation
+============
+
+Install using `pip <http://pip-installer.org/>`_:
+
+.. code-block:: console
+
+    $ pip install pytest-cpp
+
 Usage
 =====
 
@@ -115,14 +125,6 @@ wrapping the test binary, like valgrind and memcheck:
     [pytest]
     cpp_harness = valgrind --tool=memcheck
 
-Install
-=======
-
-Install using `pip <http://pip-installer.org/>`_:
-
-.. code-block:: console
-
-    $ pip install pytest-cpp
 
 Changelog
 =========
