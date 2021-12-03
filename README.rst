@@ -52,8 +52,12 @@ Install using `pip <http://pip-installer.org/>`_:
 Usage
 =====
 
-Once installed, when pytest runs it will search and run tests
-found in executable files, detecting if the suites are
+.. code-block:: console
+
+    $ pytest
+
+Once installed, pytest runs will search and run tests
+found in **executable** files, detecting if the suites are
 Google, Boost, or Catch2 tests automatically.
 
 Configuration Options
