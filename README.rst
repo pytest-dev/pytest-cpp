@@ -21,9 +21,6 @@ and `Catch2 <https://github.com/catchorg/Catch2>`_:
 .. |ci| image:: https://github.com/pytest-dev/pytest-cpp/workflows/build/badge.svg
     :target: https://github.com/pytest-dev/pytest-cpp/actions
 
-.. |coverage| image:: http://img.shields.io/coveralls/pytest-dev/pytest-cpp.png
-  :target: https://coveralls.io/r/pytest-dev/pytest-cpp
-
 .. |python| image:: https://img.shields.io/pypi/pyversions/pytest-cpp.svg
     :target: https://pypi.python.org/pypi/pytest-cpp/
     :alt: Supported Python versions
