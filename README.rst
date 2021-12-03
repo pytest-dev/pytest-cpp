@@ -82,8 +82,6 @@ By default matches ``test_*`` and ``*_test`` executable files.
 cpp_arguments
 ^^^^^^^^^^^^^
 
-*New in version 1.1*.
-
 Arguments to the C++ tests can be provided with the
 ``cpp_arguments`` ini configuration option.
 
@@ -104,8 +102,6 @@ pytest's ``-o`` option:
 cpp_ignore_py_files
 ^^^^^^^^^^^^^^^^^^^
 
-*New in version 1.2*.
-
 This option defaults to ``True`` and configures the plugin to ignore ``*.py`` files that
 would otherwise match the ``cpp_files`` option.
 
@@ -118,8 +114,6 @@ Set it to ``False`` if you have C++ executable files that end with the ``*.py`` 
 
 cpp_harness
 ^^^^^^^^^^^
-
-*New in version 1.3*.
 
 This option allows the usage of tools that are used by invoking them on the console
 wrapping the test binary, like valgrind and memcheck:
