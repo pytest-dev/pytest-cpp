@@ -2,15 +2,13 @@
 pytest-cpp
 ==========
 
-Use `pytest <https://pypi.python.org/pypi/pytest>`_ runner to discover and execute C++ tests.
-
 |python| |version| |anaconda| |ci| |black|
+
+Use `pytest <https://pypi.python.org/pypi/pytest>`_ runner to discover and execute C++ tests.
 
 Supports `Google Test <https://code.google.com/p/googletest>`_,
 `Boost::Test <http://www.boost.org/doc/libs/release/libs/test>`_,
 and `Catch2 <https://github.com/catchorg/Catch2>`_:
-
-.. image:: https://raw.githubusercontent.com/pytest-dev/pytest-cpp/master/images/screenshot.png
 
 .. |version| image:: http://img.shields.io/pypi/v/pytest-cpp.png
   :target: https://crate.io/packages/pytest-cpp
@@ -42,14 +40,18 @@ This brings several benefits:
 Usage
 =====
 
-Once installed, when py.test runs it will search and run tests
+Once installed, when pytest runs it will search and run tests
 found in executable files, detecting if the suites are
 Google, Boost, or Catch2 tests automatically.
 
 Configuration Options
 ~~~~~~~~~~~~~~~~~~~~~
 
-**cpp_files**
+Following are the options that can be put in the pytest configuration file related
+to pytest-cpp.
+
+cpp_files
+^^^^^^^^^
 
 You can configure which files are tested for suites by using the ``cpp_files``
 ini configuration option:
@@ -61,7 +63,8 @@ ini configuration option:
 
 By default matches ``test_*`` and ``*_test`` executable files.
 
-**cpp_arguments**
+cpp_arguments
+^^^^^^^^^^^^^
 
 *New in version 1.1*.
 
@@ -82,7 +85,8 @@ pytest's ``-o`` option:
 
     $ pytest -o cpp_arguments='-v --log-dir=logs'
 
-**cpp_ignore_py_files**
+cpp_ignore_py_files
+^^^^^^^^^^^^^^^^^^^
 
 *New in version 1.2*.
 
@@ -96,7 +100,8 @@ Set it to ``False`` if you have C++ executable files that end with the ``*.py`` 
     [pytest]
     cpp_ignore_py_files = False
 
-**cpp_harness**
+cpp_harness
+^^^^^^^^^^^
 
 *New in version 1.3*.
 
