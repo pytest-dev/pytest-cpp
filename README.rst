@@ -37,6 +37,8 @@ This brings several benefits:
 * Filter which tests to run using standard test filtering capabilities, such as
   by file names, directories, keywords by using the ``-k`` option, etc.;
 
+.. contents:: **Table of Contents**
+
 Usage
 =====
 
