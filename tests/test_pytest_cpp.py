@@ -47,6 +47,8 @@ def dummy_failure():
                 "FooTest.test_failure",
                 "FooTest.test_error",
                 "FooTest.DISABLED_test_disabled",
+                "FooTest.test_skipped",
+                "FooTest.test_skipped_no_msg",
             ],
         ),
         (BoostTestFacade(), "boost_success", ["boost_success"]),
@@ -93,16 +95,18 @@ def test_google_failure(exes):
     assert len(failures) == 2
     colors = ("red", "bold")
     assert failures[0].get_lines() == [
-        ("      Expected: 2 * 3", colors),
-        ("      Which is: 6", colors),
-        ("To be equal to: 5", colors),
+        ("Expected equality of these values:", colors),
+        ("  2 * 3", colors),
+        ("    Which is: 6", colors),
+        ("  5", colors),
     ]
     assert failures[0].get_file_reference() == ("gtest.cpp", 19)
 
     assert failures[1].get_lines() == [
-        ("      Expected: 2 * 6", colors),
-        ("      Which is: 12", colors),
-        ("To be equal to: 15", colors),
+        ("Expected equality of these values:", colors),
+        ("  2 * 6", colors),
+        ("    Which is: 12", colors),
+        ("  15", colors),
     ]
     assert failures[1].get_file_reference() == ("gtest.cpp", 20)
 
@@ -124,8 +128,26 @@ def test_google_error(exes):
 
 def test_google_disabled(exes):
     facade = GoogleTestFacade()
-    with pytest.raises(pytest.skip.Exception):
+    try:
         facade.run_test(exes.get("gtest"), "FooTest.DISABLED_test_disabled")
+    except pytest.skip.Exception as disabled_message:
+        assert "Disabled" in str(disabled_message)
+
+
+def test_google_skipped(exes):
+    facade = GoogleTestFacade()
+    try:
+        facade.run_test(exes.get("gtest"), "FooTest.test_skipped")
+        assert False, "No skipped exception found"
+    except pytest.skip.Exception as skipped_message:
+        assert "This is a skipped message" in str(skipped_message)
+
+
+def test_google_skipped_no_msg(exes):
+    facade = GoogleTestFacade()
+    with pytest.raises(pytest.skip.Exception):
+        facade.run_test(exes.get("gtest"), "FooTest.test_skipped_no_msg")
+        assert False, "No skipped exception found"
 
 
 def test_boost_failure(exes):
@@ -191,6 +213,8 @@ def test_google_run(testdir, exes):
             ("FooTest.test_failure", "failed"),
             ("FooTest.test_error", "failed"),
             ("FooTest.DISABLED_test_disabled", "skipped"),
+            ("FooTest.test_skipped", "skipped"),
+            ("FooTest.test_skipped_no_msg", "skipped"),
         ],
     )
 

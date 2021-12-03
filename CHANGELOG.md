@@ -1,3 +1,7 @@
+# 2.1.0
+
+- Added support for `GTEST_SKIP()` skipped message from Google Test 1.11.
+
 # 2.0.0
 
 - `pytest-cpp` now supports [Catch2](https://github.com/catchorg/Catch2). Many thanks to [@salim-runsafe](https://github.com/salim-runsafe) for the contribution.

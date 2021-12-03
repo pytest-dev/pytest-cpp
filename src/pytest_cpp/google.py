@@ -98,7 +98,7 @@ class GoogleTestFacade(object):
                 if failures:
                     return [GoogleTestFailure(x) for x in failures], output
                 elif skipped:
-                    pytest.skip()
+                    pytest.skip("\n".join(skipped))
                 else:
                     return None, output
 
@@ -121,11 +121,21 @@ class GoogleTestFacade(object):
                 failure_elements = test_case.findall("failure")
                 for failure_elem in failure_elements:
                     failures.append(failure_elem.text)
-                skipped = (
-                    test_case.attrib["status"] == "notrun"
-                    or test_case.attrib.get("result", None) == "skipped"
-                )
-                result.append((test_suite_name + "." + test_name, failures, skipped))
+                skippeds = []
+                if test_case.attrib["result"] == "skipped":
+                    # In gtest 1.11 a skipped message was added to
+                    # the output file
+                    skipped_elements = test_case.findall("skipped")
+                    for skipped_elem in skipped_elements:
+                        skippeds.append(skipped_elem.text)
+                    # In gtest 1.10 the skipped message is not dump,
+                    # so if no skipped message was found just
+                    # append a "skipped" keyword
+                    if not skipped_elements:
+                        skippeds.append("Skipped")
+                if test_case.attrib["status"] == "notrun":
+                    skippeds.append("Disabled")
+                result.append((test_suite_name + "." + test_name, failures, skippeds))
 
         return result
 
