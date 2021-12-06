@@ -122,7 +122,7 @@ class GoogleTestFacade(object):
                 for failure_elem in failure_elements:
                     failures.append(failure_elem.text)
                 skippeds = []
-                if test_case.attrib["result"] == "skipped":
+                if test_case.attrib.get("result", None) == "skipped":
                     # In gtest 1.11 a skipped message was added to
                     # the output file
                     skipped_elements = test_case.findall("skipped")
@@ -133,7 +133,7 @@ class GoogleTestFacade(object):
                     # append a "skipped" keyword
                     if not skipped_elements:
                         skippeds.append("Skipped")
-                if test_case.attrib["status"] == "notrun":
+                elif test_case.attrib.get("status", None) == "notrun":
                     skippeds.append("Disabled")
                 result.append((test_suite_name + "." + test_name, failures, skippeds))
 
