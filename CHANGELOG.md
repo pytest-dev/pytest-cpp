@@ -1,3 +1,7 @@
+# 2.1.1 (2021-12-06)
+
+- Fix corner-case issue when no result attribute is found in google test XML output file.
+
 # 2.1.0 (2021-12-03)
 
 - Added support for `GTEST_SKIP()` skipped message from Google Test `1.11`.
