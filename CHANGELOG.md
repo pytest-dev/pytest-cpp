@@ -1,3 +1,7 @@
+# 2.1.2 (2022-03-18)
+
+- Fix warnings in pytest 7.0 ([#78](https://github.com/pytest-dev/pytest-cpp/issues/78)).
+
 # 2.1.1 (2021-12-06)
 
 - Fix corner-case issue when no result attribute is found in google test XML output file.
