@@ -29,6 +29,7 @@ jobs:
           sudo make install
       - name: Install Boost.Test
         run: |
+          sudo apt-get update
           sudo apt-get install libboost-test-dev valgrind
       - name: Compile
         run: |
