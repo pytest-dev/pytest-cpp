@@ -1,6 +1,7 @@
 import os
 import stat
 import sys
+from fnmatch import fnmatch
 
 import pytest
 
@@ -23,12 +24,12 @@ def matches_any_mask(path, masks):
     """Return True if the given path matches any of the masks given"""
     if sys.platform.startswith("win"):
         masks = [m + ".exe" for m in masks]
-    return any(path.fnmatch(m) for m in masks)
+    return any(fnmatch(path.name, m) for m in masks)
 
 
-def pytest_collect_file(parent, path):
+def pytest_collect_file(parent, file_path):
     try:
-        is_executable = os.stat(str(path)).st_mode & stat.S_IXUSR
+        is_executable = os.stat(str(file_path)).st_mode & stat.S_IXUSR
     except OSError:
         # in some situations the file might not be available anymore at this point
         is_executable = False
@@ -41,23 +42,30 @@ def pytest_collect_file(parent, path):
     cpp_ignore_py_files = config.getini("cpp_ignore_py_files")
 
     # don't attempt to check *.py files even if they were given as explicit arguments
-    if cpp_ignore_py_files and path.fnmatch("*.py"):
+    if cpp_ignore_py_files and fnmatch(file_path.name, "*.py"):
         return
 
-    if not parent.session.isinitpath(path) and not matches_any_mask(path, masks):
+    if not parent.session.isinitpath(file_path) and not matches_any_mask(
+        file_path, masks
+    ):
         return
 
     for facade_class in FACADES:
-        if facade_class.is_test_suite(str(path)):
+        if facade_class.is_test_suite(str(file_path)):
             if needs_from_parent:
                 return CppFile.from_parent(
-                    fspath=path,
+                    path=file_path,
                     parent=parent,
                     facade=facade_class(),
                     arguments=test_args,
                 )
             else:
-                return CppFile(path, parent, facade_class(), test_args)
+                return CppFile(
+                    path=file_path,
+                    parent=parent,
+                    facade_class=facade_class(),
+                    arguments=test_args,
+                )
 
 
 def pytest_addoption(parser):
@@ -94,16 +102,15 @@ def pytest_addoption(parser):
 
 
 class CppFile(pytest.File):
-    def __init__(self, fspath, parent, facade, arguments):
-        pytest.File.__init__(self, fspath, parent)
+    def __init__(self, *, path, parent, facade, arguments, **kwargs):
+        pytest.File.__init__(self, path=path, parent=parent, **kwargs)
         self.facade = facade
         self._arguments = arguments
 
     @classmethod
-    def from_parent(cls, parent, fspath, facade, arguments):
-        # TODO: after dropping python 2, change to keyword only after 'parent'
+    def from_parent(cls, *, parent, path, facade, arguments, **kwargs):
         return super().from_parent(
-            parent=parent, fspath=fspath, facade=facade, arguments=arguments
+            parent=parent, path=path, facade=facade, arguments=arguments
         )
 
     def collect(self):
@@ -120,16 +127,15 @@ class CppFile(pytest.File):
 
 
 class CppItem(pytest.Item):
-    def __init__(self, name, parent, facade, arguments):
-        pytest.Item.__init__(self, name, parent)
+    def __init__(self, *, name, parent, facade, arguments, **kwargs):
+        pytest.Item.__init__(self, name, parent, **kwargs)
         self.facade = facade
         self._arguments = arguments
 
     @classmethod
-    def from_parent(cls, parent, name, facade, arguments):
-        # TODO: after dropping python 2, change to keyword only after 'parent'
+    def from_parent(cls, *, parent, name, facade, arguments, **kw):
         return super().from_parent(
-            name=name, parent=parent, facade=facade, arguments=arguments
+            name=name, parent=parent, facade=facade, arguments=arguments, **kw
         )
 
     def runtest(self):

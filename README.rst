@@ -16,7 +16,7 @@ and `Catch2 <https://github.com/catchorg/Catch2>`_:
 .. |anaconda| image:: https://img.shields.io/conda/vn/conda-forge/pytest-cpp.svg
     :target: https://anaconda.org/conda-forge/pytest-cpp
 
-.. |ci| image:: https://github.com/pytest-dev/pytest-cpp/workflows/build/badge.svg
+.. |ci| image:: https://github.com/pytest-dev/pytest-cpp/workflows/test/badge.svg
     :target: https://github.com/pytest-dev/pytest-cpp/actions
 
 .. |python| image:: https://img.shields.io/pypi/pyversions/pytest-cpp.svg

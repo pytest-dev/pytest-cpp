@@ -70,11 +70,11 @@ def test_list_tests(facade, name, expected, exes):
         (Catch2Facade(), "catch2_success", "gtest"),
     ],
 )
-def test_is_test_suite(facade, name, other_name, exes, tmpdir):
+def test_is_test_suite(facade, name, other_name, exes, tmp_path):
     assert facade.is_test_suite(exes.get(name))
     assert not facade.is_test_suite(exes.get(other_name))
-    tmpdir.ensure("foo.txt")
-    assert not facade.is_test_suite(str(tmpdir.join("foo.txt")))
+    tmp_path.joinpath("foo.txt").touch()
+    assert not facade.is_test_suite(str(tmp_path.joinpath("foo.txt")))
 
 
 @pytest.mark.parametrize(
@@ -228,7 +228,7 @@ def test_unknown_error(testdir, exes, mocker):
     assert "unknown error" in str(rep.longrepr)
 
 
-def test_google_internal_errors(mocker, testdir, exes, tmpdir):
+def test_google_internal_errors(mocker, testdir, exes, tmp_path):
     mocker.patch.object(GoogleTestFacade, "is_test_suite", return_value=True)
     mocker.patch.object(
         GoogleTestFacade, "list_tests", return_value=["FooTest.test_success"]
@@ -246,8 +246,8 @@ def test_google_internal_errors(mocker, testdir, exes, tmpdir):
     assert "Internal Error: calling" in str(rep.longrepr)
 
     mocked.side_effect = None
-    xml_file = tmpdir.join("results.xml")
-    xml_file.write("<empty/>")
+    xml_file = tmp_path.joinpath("results.xml")
+    xml_file.write_text("<empty/>")
     mocker.patch.object(
         GoogleTestFacade, "_get_temp_xml_filename", return_value=str(xml_file)
     )
@@ -496,7 +496,7 @@ def test_passing_files_directly_in_command_line(testdir, exes):
     result.stdout.fnmatch_lines(["*1 passed*"])
 
 
-def test_race_condition_on_collect(tmpdir):
+def test_race_condition_on_collect(tmp_path):
     """
     Check that collection correctly handles when a path no longer is valid.
 
@@ -510,10 +510,12 @@ def test_race_condition_on_collect(tmpdir):
     """
     import pytest_cpp.plugin
 
-    assert pytest_cpp.plugin.pytest_collect_file(None, tmpdir / "invalid-file") is None
+    assert (
+        pytest_cpp.plugin.pytest_collect_file(None, tmp_path / "invalid-file") is None
+    )
 
 
-def test_exe_mask_on_windows(tmpdir, monkeypatch):
+def test_exe_mask_on_windows(tmp_path, monkeypatch):
     """
     Test for #45: C++ tests not collected due to '*_test' mask on Windows
     """
@@ -521,13 +523,16 @@ def test_exe_mask_on_windows(tmpdir, monkeypatch):
 
     monkeypatch.setattr(sys, "platform", "win32")
 
-    fn = tmpdir.join("generator_demo_test.exe").ensure(file=1)
+    fn = tmp_path.joinpath("generator_demo_test.exe")
+    fn.touch()
     assert pytest_cpp.plugin.matches_any_mask(fn, ["test_*", "*_test"])
 
-    fn = tmpdir.join("test_generator_demo.exe").ensure(file=1)
+    fn = tmp_path.joinpath("test_generator_demo.exe")
+    fn.touch()
     assert pytest_cpp.plugin.matches_any_mask(fn, ["test_*", "*_test"])
 
-    fn = tmpdir.join("my_generator_test_demo.exe").ensure(file=1)
+    fn = tmp_path.joinpath("my_generator_test_demo.exe")
+    fn.touch()
     assert not pytest_cpp.plugin.matches_any_mask(fn, ["test_*", "*_test"])
 
 
@@ -591,9 +596,9 @@ class TestError:
         assert error.get_left_whitespace("  foo") == "  "
         assert error.get_left_whitespace("\t\t foo") == "\t\t "
 
-    def test_get_code_context_around_line(self, tmpdir):
-        f = tmpdir.join("foo.py")
-        f.write("line1\nline2\nline3\nline4\nline5")
+    def test_get_code_context_around_line(self, tmp_path):
+        f = tmp_path.joinpath("foo.py")
+        f.write_text("line1\nline2\nline3\nline4\nline5")
 
         assert error.get_code_context_around_line(str(f), 1) == ["line1"]
         assert error.get_code_context_around_line(str(f), 2) == ["line1", "line2"]
@@ -613,5 +618,5 @@ class TestError:
             "line5",
         ]
 
-        invalid = str(tmpdir.join("invalid"))
+        invalid = str(tmp_path.joinpath("invalid"))
         assert error.get_code_context_around_line(invalid, 10) == []
