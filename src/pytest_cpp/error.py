@@ -1,7 +1,7 @@
 import string
 
 import os
-from py._code.code import ReprFileLocation
+from _pytest._code.code import ReprFileLocation
 
 
 class CppFailureError(Exception):

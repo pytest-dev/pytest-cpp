@@ -1,3 +1,8 @@
+# 2.3.0 (2022-08-22)
+
+- Dropped support for Python 3.6.
+- This plugin now requires pytest >=7.0.
+
 # 2.1.2 (2022-03-18)
 
 - Fix warnings in pytest 7.0 ([#78](https://github.com/pytest-dev/pytest-cpp/issues/78)).

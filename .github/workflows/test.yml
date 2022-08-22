@@ -60,18 +60,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+        python: ["3.7", "3.8", "3.9", "3.10"]
         include:
-          - python: "3.6"
-            tox_env: "py36-pytestlatest"
           - python: "3.7"
-            tox_env: "py37-pytestlatest"
+            tox_env: "py37"
           - python: "3.8"
-            tox_env: "py38-pytestlatest"
+            tox_env: "py38"
           - python: "3.9"
-            tox_env: "py39-pytestlatest py39-pytest53"
+            tox_env: "py39"
           - python: "3.10"
-            tox_env: "py310-pytestlatest"
+            tox_env: "py310"
 
     steps:
     - uses: actions/checkout@v1
