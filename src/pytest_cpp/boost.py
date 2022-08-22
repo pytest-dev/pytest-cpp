@@ -1,9 +1,10 @@
+import io
 import os
+import shutil
 import subprocess
 import tempfile
 from xml.etree import ElementTree
-import io
-import shutil
+
 from pytest_cpp.error import CppTestFailure
 
 

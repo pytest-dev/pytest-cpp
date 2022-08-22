@@ -6,18 +6,15 @@ from fnmatch import fnmatch
 import pytest
 
 from pytest_cpp.boost import BoostTestFacade
-from pytest_cpp.error import CppFailureRepr, CppFailureError
-from pytest_cpp.google import GoogleTestFacade
 from pytest_cpp.catch2 import Catch2Facade
+from pytest_cpp.error import CppFailureError
+from pytest_cpp.error import CppFailureRepr
+from pytest_cpp.google import GoogleTestFacade
 
 FACADES = [GoogleTestFacade, BoostTestFacade, Catch2Facade]
 DEFAULT_MASKS = ("test_*", "*_test")
 
 _ARGUMENTS = "cpp_arguments"
-
-
-# pytest 5.4 introduced the 'from_parent' constructor
-needs_from_parent = hasattr(pytest.Item, "from_parent")
 
 
 def matches_any_mask(path, masks):
@@ -52,20 +49,12 @@ def pytest_collect_file(parent, file_path):
 
     for facade_class in FACADES:
         if facade_class.is_test_suite(str(file_path)):
-            if needs_from_parent:
-                return CppFile.from_parent(
-                    path=file_path,
-                    parent=parent,
-                    facade=facade_class(),
-                    arguments=test_args,
-                )
-            else:
-                return CppFile(
-                    path=file_path,
-                    parent=parent,
-                    facade_class=facade_class(),
-                    arguments=test_args,
-                )
+            return CppFile.from_parent(
+                path=file_path,
+                parent=parent,
+                facade=facade_class(),
+                arguments=test_args,
+            )
 
 
 def pytest_addoption(parser):
@@ -115,15 +104,12 @@ class CppFile(pytest.File):
 
     def collect(self):
         for test_id in self.facade.list_tests(str(self.fspath)):
-            if needs_from_parent:
-                yield CppItem.from_parent(
-                    parent=self,
-                    name=test_id,
-                    facade=self.facade,
-                    arguments=self._arguments,
-                )
-            else:
-                yield CppItem(test_id, self, self.facade, self._arguments)
+            yield CppItem.from_parent(
+                parent=self,
+                name=test_id,
+                facade=self.facade,
+                arguments=self._arguments,
+            )
 
 
 class CppItem(pytest.Item):
