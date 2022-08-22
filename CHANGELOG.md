@@ -1,4 +1,4 @@
-# 2.3.0 (2022-08-22)
+# 2.2.0 (2022-08-22)
 
 - Dropped support for Python 3.6.
 - This plugin now requires pytest >=7.0.
