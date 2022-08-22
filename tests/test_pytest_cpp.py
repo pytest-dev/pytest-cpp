@@ -1,13 +1,14 @@
 import subprocess
 import sys
-from distutils.spawn import find_executable
 
 import pytest
+from distutils.spawn import find_executable
 
 from pytest_cpp import error
 from pytest_cpp.boost import BoostTestFacade
 from pytest_cpp.catch2 import Catch2Facade
-from pytest_cpp.error import CppFailureRepr, CppTestFailure
+from pytest_cpp.error import CppFailureRepr
+from pytest_cpp.error import CppTestFailure
 from pytest_cpp.google import GoogleTestFacade
 
 

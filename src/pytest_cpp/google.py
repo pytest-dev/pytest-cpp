@@ -4,6 +4,7 @@ import tempfile
 from xml.etree import ElementTree
 
 import pytest
+
 from pytest_cpp.error import CppTestFailure
 
 

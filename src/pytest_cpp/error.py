@@ -1,6 +1,6 @@
+import os
 import string
 
-import os
 from _pytest._code.code import ReprFileLocation
 
 
