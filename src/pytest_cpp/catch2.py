@@ -130,7 +130,6 @@ class Catch2Facade(AbstractFacade):
         root = ElementTree.parse(xml_filename)
         result = []
         for test_suite in root.findall("Group"):
-            test_suite_name = test_suite.attrib["name"]
             for test_case in test_suite.findall("TestCase"):
                 test_name = test_case.attrib["name"]
                 test_result = test_case.find("OverallResult")

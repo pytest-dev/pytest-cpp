@@ -22,7 +22,6 @@ from pytest_cpp.facade_abc import AbstractFacade
 from pytest_cpp.google import GoogleTestFacade
 
 if TYPE_CHECKING:
-    from typing_extensions import TypeAlias
     from _pytest._code.code import TerminalRepr
 
 
