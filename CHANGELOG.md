@@ -1,4 +1,4 @@
-# 2.2.1 (UNRELEASED)
+# 2.2.1 (2022-09-23)
 
 - Fixed a problem while handling errors using``--gtest_filter``. The recommendation is to use pytest's own
   filtering facilities (like `-k`) instead of passing filtering arguments to the underlying framework
