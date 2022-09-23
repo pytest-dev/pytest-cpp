@@ -1,3 +1,10 @@
+# 2.2.1 (UNRELEASED)
+
+- Fixed a problem while handling errors using``--gtest_filter``. The recommendation is to use pytest's own
+  filtering facilities (like `-k`) instead of passing filtering arguments to the underlying framework
+  ([#84](https://github.com/pytest-dev/pytest-cpp/issues/84)).
+
+
 # 2.2.0 (2022-08-22)
 
 - Dropped support for Python 3.6.

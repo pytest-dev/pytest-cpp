@@ -1,20 +1,25 @@
+from __future__ import annotations
+
 import os
 import subprocess
 import tempfile
+from typing import Sequence
 from xml.etree import ElementTree
 
 import pytest
 
 from pytest_cpp.error import CppTestFailure
+from pytest_cpp.error import Markup
+from pytest_cpp.facade_abc import AbstractFacade
 
 
-class Catch2Facade(object):
+class Catch2Facade(AbstractFacade):
     """
     Facade for Catch2.
     """
 
     @classmethod
-    def is_test_suite(cls, executable):
+    def is_test_suite(cls, executable: str) -> bool:
         try:
             output = subprocess.check_output(
                 [executable, "--help"],
@@ -26,7 +31,7 @@ class Catch2Facade(object):
         else:
             return "--list-test-names-only" in output
 
-    def list_tests(self, executable):
+    def list_tests(self, executable: str) -> list[str]:
         """
         Executes test with "--list-test-names-only" and gets list of tests
         parsing output like this:
@@ -49,10 +54,15 @@ class Catch2Facade(object):
 
         return result
 
-    def run_test(self, executable, test_id="", test_args=(), harness=None):
-        harness = harness or []
+    def run_test(
+        self,
+        executable: str,
+        test_id: str = "",
+        test_args: Sequence[str] = (),
+        harness: Sequence[str] = (),
+    ) -> tuple[Sequence[Catch2Failure] | None, str]:
         xml_filename = self._get_temp_xml_filename()
-        args = harness + [
+        args = list(harness) + [
             executable,
             test_id,
             "--success",
@@ -103,16 +113,20 @@ class Catch2Facade(object):
                 else:
                     return None, output
 
-        msg = "Internal Error: could not find test " "{test_id} in results:\n{results}"
+        msg = "Internal Error: could not find test {test_id} in results:\n{results}"
 
-        results_list = "\n".join("\n".join(x) for (n, x, f) in results)
-        failure = Catch2Failure(msg.format(test_id=test_id, results=results_list))
+        results_list = "\n".join(n for (n, x, f) in results)
+        failure = Catch2Failure(
+            msg.format(test_id=test_id, results=results_list), 0, ""
+        )
         return [failure], output
 
-    def _get_temp_xml_filename(self):
+    def _get_temp_xml_filename(self) -> str:
         return tempfile.mktemp()
 
-    def _parse_xml(self, xml_filename):
+    def _parse_xml(
+        self, xml_filename: str
+    ) -> Sequence[tuple[str, Sequence[tuple[str, int, str]], bool]]:
         root = ElementTree.parse(xml_filename)
         result = []
         for test_suite in root.findall("Group"):
@@ -121,14 +135,16 @@ class Catch2Facade(object):
                 test_name = test_case.attrib["name"]
                 test_result = test_case.find("OverallResult")
                 failures = []
-                if test_result.attrib["success"] == "false":
+                if test_result is not None and test_result.attrib["success"] == "false":
                     test_checks = test_case.findall("Expression")
                     for check in test_checks:
                         file_name = check.attrib["filename"]
-                        line_num = check.attrib["line"]
-                        if check.attrib["success"] == "false":
-                            expected = check.find("Original").text
-                            actual = check.find("Expanded").text
+                        line_num = int(check.attrib["line"])
+                        if check is not None and check.attrib["success"] == "false":
+                            item = check.find("Original")
+                            expected = item.text if item is not None else ""
+                            item = check.find("Expanded")
+                            actual = item.text if item is not None else ""
                             fail_msg = "Expected: {expected}\nActual: {actual}".format(
                                 expected=expected, actual=actual
                             )
@@ -146,14 +162,14 @@ class Catch2Facade(object):
 
 
 class Catch2Failure(CppTestFailure):
-    def __init__(self, filename, linenum, lines):
+    def __init__(self, filename: str, linenum: int, lines: str):
         self.lines = lines.splitlines()
         self.filename = filename
-        self.linenum = int(linenum)
+        self.linenum = linenum
 
-    def get_lines(self):
+    def get_lines(self) -> list[tuple[str, Markup]]:
         m = ("red", "bold")
         return [(x, m) for x in self.lines]
 
-    def get_file_reference(self):
+    def get_file_reference(self) -> tuple[str, int]:
         return self.filename, self.linenum

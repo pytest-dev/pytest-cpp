@@ -1,7 +1,16 @@
+from __future__ import annotations
+
 import os
 import stat
 import sys
 from fnmatch import fnmatch
+from pathlib import Path
+from typing import Any
+from typing import cast
+from typing import Iterator
+from typing import Sequence
+from typing import Type
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -9,29 +18,41 @@ from pytest_cpp.boost import BoostTestFacade
 from pytest_cpp.catch2 import Catch2Facade
 from pytest_cpp.error import CppFailureError
 from pytest_cpp.error import CppFailureRepr
+from pytest_cpp.facade_abc import AbstractFacade
 from pytest_cpp.google import GoogleTestFacade
 
-FACADES = [GoogleTestFacade, BoostTestFacade, Catch2Facade]
+if TYPE_CHECKING:
+    from typing_extensions import TypeAlias
+    from _pytest._code.code import TerminalRepr
+
+
+FACADES: Sequence[Type[AbstractFacade]] = (
+    GoogleTestFacade,
+    BoostTestFacade,
+    Catch2Facade,
+)
 DEFAULT_MASKS = ("test_*", "*_test")
 
 _ARGUMENTS = "cpp_arguments"
 
 
-def matches_any_mask(path, masks):
+def matches_any_mask(path: Path, masks: Sequence[str]) -> bool:
     """Return True if the given path matches any of the masks given"""
     if sys.platform.startswith("win"):
         masks = [m + ".exe" for m in masks]
     return any(fnmatch(path.name, m) for m in masks)
 
 
-def pytest_collect_file(parent, file_path):
+def pytest_collect_file(
+    parent: pytest.Collector, file_path: Path
+) -> pytest.Collector | None:
     try:
         is_executable = os.stat(str(file_path)).st_mode & stat.S_IXUSR
     except OSError:
         # in some situations the file might not be available anymore at this point
         is_executable = False
     if not is_executable:
-        return
+        return None
 
     config = parent.config
     masks = config.getini("cpp_files")
@@ -40,12 +61,12 @@ def pytest_collect_file(parent, file_path):
 
     # don't attempt to check *.py files even if they were given as explicit arguments
     if cpp_ignore_py_files and fnmatch(file_path.name, "*.py"):
-        return
+        return None
 
     if not parent.session.isinitpath(file_path) and not matches_any_mask(
         file_path, masks
     ):
-        return
+        return None
 
     for facade_class in FACADES:
         if facade_class.is_test_suite(str(file_path)):
@@ -56,8 +77,10 @@ def pytest_collect_file(parent, file_path):
                 arguments=test_args,
             )
 
+    return None
 
-def pytest_addoption(parser):
+
+def pytest_addoption(parser: pytest.Parser) -> None:
     parser.addini(
         "cpp_files",
         type="args",
@@ -91,18 +114,37 @@ def pytest_addoption(parser):
 
 
 class CppFile(pytest.File):
-    def __init__(self, *, path, parent, facade, arguments, **kwargs):
-        pytest.File.__init__(self, path=path, parent=parent, **kwargs)
+    def __init__(
+        self,
+        *,
+        path: Path,
+        parent: pytest.Item,
+        facade: AbstractFacade,
+        arguments: Sequence[str],
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(path=path, parent=parent, **kwargs)
         self.facade = facade
         self._arguments = arguments
 
     @classmethod
-    def from_parent(cls, *, parent, path, facade, arguments, **kwargs):
-        return super().from_parent(
-            parent=parent, path=path, facade=facade, arguments=arguments
+    def from_parent(  # type:ignore[override]
+        cls,
+        *,
+        parent: pytest.Collector,
+        path: Path,
+        facade: AbstractFacade,
+        arguments: Sequence[str],
+        **kwargs: Any,
+    ) -> CppFile:
+        return cast(
+            CppFile,
+            super().from_parent(
+                parent=parent, path=path, facade=facade, arguments=arguments
+            ),
         )
 
-    def collect(self):
+    def collect(self) -> Iterator[CppItem]:
         for test_id in self.facade.list_tests(str(self.fspath)):
             yield CppItem.from_parent(
                 parent=self,
@@ -113,18 +155,37 @@ class CppFile(pytest.File):
 
 
 class CppItem(pytest.Item):
-    def __init__(self, *, name, parent, facade, arguments, **kwargs):
+    def __init__(
+        self,
+        *,
+        name: str,
+        parent: pytest.Collector,
+        facade: AbstractFacade,
+        arguments: Sequence[str],
+        **kwargs: Any,
+    ) -> None:
         pytest.Item.__init__(self, name, parent, **kwargs)
         self.facade = facade
         self._arguments = arguments
 
     @classmethod
-    def from_parent(cls, *, parent, name, facade, arguments, **kw):
-        return super().from_parent(
-            name=name, parent=parent, facade=facade, arguments=arguments, **kw
+    def from_parent(  # type:ignore[override]
+        cls,
+        *,
+        parent: pytest.Collector,
+        name: str,
+        facade: AbstractFacade,
+        arguments: Sequence[str],
+        **kwargs: Any,
+    ) -> CppItem:
+        return cast(
+            CppItem,
+            super().from_parent(
+                name=name, parent=parent, facade=facade, arguments=arguments, **kwargs
+            ),
         )
 
-    def runtest(self):
+    def runtest(self) -> None:
         failures, output = self.facade.run_test(
             str(self.fspath),
             self.name,
@@ -140,10 +201,12 @@ class CppItem(pytest.Item):
         if failures:
             raise CppFailureError(failures)
 
-    def repr_failure(self, excinfo):
+    def repr_failure(  # type:ignore[override]
+        self, excinfo: pytest.ExceptionInfo[BaseException]
+    ) -> str | TerminalRepr | CppFailureRepr:
         if isinstance(excinfo.value, CppFailureError):
             return CppFailureRepr(excinfo.value.failures)
         return pytest.Item.repr_failure(self, excinfo)
 
-    def reportinfo(self):
+    def reportinfo(self) -> tuple[Any, int, str]:
         return self.fspath, 0, self.name

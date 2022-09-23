@@ -1,4 +1,5 @@
-exclude: '^($|.*\.bin)'
+default_language_version:
+  python: "3.10"
 repos:
   - repo: https://github.com/asottile/reorder_python_imports
     rev: v3.8.2
@@ -11,7 +12,6 @@ repos:
     hooks:
       - id: black
         args: [--safe, --quiet]
-        language_version: python3.7
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.2.0
     hooks:
@@ -25,3 +25,11 @@ repos:
         files: README.rst
         language: python
         additional_dependencies: [pygments, restructuredtext_lint]
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.971
+    hooks:
+    -   id: mypy
+        files: src/
+        args: []
+        additional_dependencies:
+          - pytest>=7

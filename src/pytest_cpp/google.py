@@ -1,20 +1,25 @@
+from __future__ import annotations
+
 import os
 import subprocess
 import tempfile
+from typing import Sequence
 from xml.etree import ElementTree
 
 import pytest
 
 from pytest_cpp.error import CppTestFailure
+from pytest_cpp.error import Markup
+from pytest_cpp.facade_abc import AbstractFacade
 
 
-class GoogleTestFacade(object):
+class GoogleTestFacade(AbstractFacade):
     """
     Facade for GoogleTests.
     """
 
     @classmethod
-    def is_test_suite(cls, executable):
+    def is_test_suite(cls, executable: str) -> bool:
         try:
             output = subprocess.check_output(
                 [executable, "--help"],
@@ -26,7 +31,7 @@ class GoogleTestFacade(object):
         else:
             return "--gtest_list_tests" in output
 
-    def list_tests(self, executable):
+    def list_tests(self, executable: str) -> list[str]:
         """
         Executes google-test with "--gtest_list_tests" and gets list of tests
         parsing output like this:
@@ -42,27 +47,32 @@ class GoogleTestFacade(object):
             universal_newlines=True,
         )
 
-        def strip_comment(x):
+        def strip_comment(x: str) -> str:
             comment_start = x.find("#")
             if comment_start != -1:
                 x = x[:comment_start]
             return x
 
-        test_suite = None
+        test_suite: str | None = None
         result = []
         for line in output.splitlines():
             has_indent = line.startswith(" ")
             if not has_indent and "." in line:
                 test_suite = strip_comment(line).strip()
             elif has_indent:
+                assert test_suite is not None
                 result.append(test_suite + strip_comment(line).strip())
         return result
 
-    def run_test(self, executable, test_id, test_args=(), harness=None):
-        harness = harness or []
-        output = ""
+    def run_test(
+        self,
+        executable: str,
+        test_id: str,
+        test_args: Sequence[str] = (),
+        harness: Sequence[str] = (),
+    ) -> tuple[list[GoogleTestFailure] | None, str]:
         xml_filename = self._get_temp_xml_filename()
-        args = harness + [
+        args = list(harness) + [
             executable,
             "--gtest_filter=" + test_id,
             "--gtest_output=xml:%s" % xml_filename,
@@ -104,14 +114,16 @@ class GoogleTestFacade(object):
                     return None, output
 
         msg = "Internal Error: could not find test " "{test_id} in results:\n{results}"
-        results_list = "\n".join(x for (x, f) in results)
+        results_list = "\n".join(x for (x, f, s) in results)
         failure = GoogleTestFailure(msg.format(test_id=test_id, results=results_list))
         return [failure], output
 
-    def _get_temp_xml_filename(self):
+    def _get_temp_xml_filename(self) -> str:
         return tempfile.mktemp()
 
-    def _parse_xml(self, xml_filename):
+    def _parse_xml(
+        self, xml_filename: str
+    ) -> Sequence[tuple[str, Sequence[str], Sequence[str]]]:
         root = ElementTree.parse(xml_filename)
         result = []
         for test_suite in root.findall("testsuite"):
@@ -121,14 +133,14 @@ class GoogleTestFacade(object):
                 failures = []
                 failure_elements = test_case.findall("failure")
                 for failure_elem in failure_elements:
-                    failures.append(failure_elem.text)
+                    failures.append(failure_elem.text or "")
                 skippeds = []
                 if test_case.attrib.get("result", None) == "skipped":
                     # In gtest 1.11 a skipped message was added to
                     # the output file
                     skipped_elements = test_case.findall("skipped")
                     for skipped_elem in skipped_elements:
-                        skippeds.append(skipped_elem.text)
+                        skippeds.append(skipped_elem.text or "")
                     # In gtest 1.10 the skipped message is not dump,
                     # so if no skipped message was found just
                     # append a "skipped" keyword
@@ -142,7 +154,7 @@ class GoogleTestFacade(object):
 
 
 class GoogleTestFailure(CppTestFailure):
-    def __init__(self, contents):
+    def __init__(self, contents: str) -> None:
         self.lines = contents.splitlines()
         self.filename = "unknown file"
         self.linenum = 0
@@ -157,9 +169,9 @@ class GoogleTestFailure(CppTestFailure):
                 self.linenum = linenum
                 self.lines.pop(0)
 
-    def get_lines(self):
+    def get_lines(self) -> list[tuple[str, Markup]]:
         m = ("red", "bold")
         return [(x, m) for x in self.lines]
 
-    def get_file_reference(self):
+    def get_file_reference(self) -> tuple[str, int]:
         return self.filename, self.linenum
