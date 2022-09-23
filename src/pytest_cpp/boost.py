@@ -1,20 +1,24 @@
+from __future__ import annotations
+
 import io
 import os
-import shutil
 import subprocess
 import tempfile
+from typing import Sequence
 from xml.etree import ElementTree
 
 from pytest_cpp.error import CppTestFailure
+from pytest_cpp.error import Markup
+from pytest_cpp.facade_abc import AbstractFacade
 
 
-class BoostTestFacade(object):
+class BoostTestFacade(AbstractFacade):
     """
     Facade for BoostTests.
     """
 
     @classmethod
-    def is_test_suite(cls, executable):
+    def is_test_suite(cls, executable: str) -> bool:
         try:
             output = subprocess.check_output(
                 [executable, "--help"],
@@ -26,37 +30,41 @@ class BoostTestFacade(object):
         else:
             return "--output_format" in output and "log_format" in output
 
-    def list_tests(self, executable):
+    def list_tests(self, executable: str) -> list[str]:
         # unfortunately boost doesn't provide us with a way to list the tests
         # inside the executable, so the test_id is a dummy placeholder :(
         return [os.path.basename(os.path.splitext(executable)[0])]
 
-    def run_test(self, executable, test_id, test_args=(), harness=None):
-        harness = harness or []
-
-        def read_file(name):
+    def run_test(
+        self,
+        executable: str,
+        test_id: str,
+        test_args: Sequence[str] = (),
+        harness: Sequence[str] = (),
+    ) -> tuple[Sequence[BoostTestFailure] | None, str]:
+        def read_file(name: str) -> str:
             try:
                 with io.open(name) as f:
                     return f.read()
             except IOError:
-                return None
+                return ""
 
-        temp_dir = tempfile.mkdtemp()
-        log_xml = os.path.join(temp_dir, "log.xml")
-        report_xml = os.path.join(temp_dir, "report.xml")
-        args = harness + [
-            executable,
-            "--output_format=XML",
-            "--log_sink=%s" % log_xml,
-            "--report_sink=%s" % report_xml,
-        ]
-        args.extend(test_args)
-        p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        raw_stdout, _ = p.communicate()
-        stdout = raw_stdout.decode("utf-8") if raw_stdout else ""
+        with tempfile.TemporaryDirectory(prefix="pytest-cpp") as temp_dir:
+            log_xml = os.path.join(temp_dir, "log.xml")
+            report_xml = os.path.join(temp_dir, "report.xml")
+            args = list(harness) + [
+                executable,
+                "--output_format=XML",
+                "--log_sink=%s" % log_xml,
+                "--report_sink=%s" % report_xml,
+            ]
+            args.extend(test_args)
+            p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            raw_stdout, _ = p.communicate()
+            stdout = raw_stdout.decode("utf-8") if raw_stdout else ""
 
-        log = read_file(log_xml)
-        report = read_file(report_xml)
+            log = read_file(log_xml)
+            report = read_file(report_xml)
 
         if p.returncode not in (0, 200, 201):
             msg = (
@@ -81,14 +89,13 @@ class BoostTestFacade(object):
             return [failure], stdout
 
         results = self._parse_log(log=log)
-        shutil.rmtree(temp_dir)
 
         if results:
             return results, stdout
 
         return None, stdout
 
-    def _parse_log(self, log):
+    def _parse_log(self, log: str) -> list[BoostTestFailure]:
         """
         Parse the "log" section produced by BoostTest.
 
@@ -116,19 +123,19 @@ class BoostTestFacade(object):
         for elem in parsed_elements:
             filename = elem.attrib["file"]
             linenum = int(elem.attrib["line"])
-            result.append(BoostTestFailure(filename, linenum, elem.text))
+            result.append(BoostTestFailure(filename, linenum, elem.text or ""))
         return result
 
 
 class BoostTestFailure(CppTestFailure):
-    def __init__(self, filename, linenum, contents):
+    def __init__(self, filename: str, linenum: int, contents: str) -> None:
         self.filename = filename
         self.linenum = linenum
         self.lines = contents.splitlines()
 
-    def get_lines(self):
+    def get_lines(self) -> list[tuple[str, Markup]]:
         m = ("red", "bold")
         return [(x, m) for x in self.lines]
 
-    def get_file_reference(self):
+    def get_file_reference(self) -> tuple[str, int]:
         return self.filename, self.linenum

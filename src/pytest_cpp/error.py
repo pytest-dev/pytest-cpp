@@ -1,28 +1,37 @@
+from __future__ import annotations
+
 import os
 import string
+from abc import ABC
+from abc import abstractmethod
+from typing import Sequence
+from typing import Tuple
 
 from _pytest._code.code import ReprFileLocation
+from _pytest._io import TerminalWriter
 
 
 class CppFailureError(Exception):
     """
     Should be raised by test Facades when a test fails.
-
-    Contains a list of `CppFailure` instances.
     """
 
-    def __init__(self, failures):
-        self.failures = failures
+    def __init__(self, failures: Sequence[CppTestFailure]) -> None:
+        self.failures = list(failures)
 
 
-class CppTestFailure(object):
+Markup = Tuple[str, ...]
+
+
+class CppTestFailure(ABC):
     """
     Represents a failure in a C++ test. Each framework
     must implement the abstract functions to build the final exception
     message that will be displayed in the terminal.
     """
 
-    def get_lines(self):
+    @abstractmethod
+    def get_lines(self) -> list[tuple[str, Markup]]:
         """
         Returns list of (line, markup) that will be displayed to the user,
         where markup can be a sequence of color codes from
@@ -32,13 +41,12 @@ class CppTestFailure(object):
             'blue', 'purple', 'cyan', 'white',
             'bold', 'light', 'blink', 'invert'
         """
-        raise NotImplementedError  # pragma: no cover
 
-    def get_file_reference(self):
+    @abstractmethod
+    def get_file_reference(self) -> tuple[str, int]:
         """
         Return tuple of filename, linenum of the failure.
         """
-        raise NotImplementedError  # pragma: no cover
 
 
 class CppFailureRepr(object):
@@ -49,10 +57,10 @@ class CppFailureRepr(object):
 
     failure_sep = "---"
 
-    def __init__(self, failures):
-        self.failures = failures
+    def __init__(self, failures: Sequence[CppTestFailure]) -> None:
+        self.failures = list(failures)
 
-    def __str__(self):
+    def __str__(self) -> str:
         reprs = []
         for failure in self.failures:
             pure_lines = "\n".join(x[0] for x in failure.get_lines())
@@ -60,11 +68,11 @@ class CppFailureRepr(object):
             reprs.append("%s\n%s" % (pure_lines, repr_loc))
         return self.failure_sep.join(reprs)
 
-    def _get_repr_file_location(self, failure):
+    def _get_repr_file_location(self, failure: CppTestFailure) -> ReprFileLocation:
         filename, linenum = failure.get_file_reference()
         return ReprFileLocation(filename, linenum, "C++ failure")
 
-    def toterminal(self, tw):
+    def toterminal(self, tw: TerminalWriter) -> None:
         for index, failure in enumerate(self.failures):
             filename, linenum = failure.get_file_reference()
             code_lines = get_code_context_around_line(filename, linenum)
@@ -84,7 +92,7 @@ class CppFailureRepr(object):
                 tw.line(self.failure_sep, cyan=True)
 
 
-def get_code_context_around_line(filename, linenum):
+def get_code_context_around_line(filename: str, linenum: int) -> list[str]:
     """
     return code context lines, with the last line being the line at
     linenum.
@@ -98,7 +106,7 @@ def get_code_context_around_line(filename, linenum):
     return []
 
 
-def get_left_whitespace(line):
+def get_left_whitespace(line: str) -> str:
     result = ""
     for c in line:
         if c in string.whitespace:

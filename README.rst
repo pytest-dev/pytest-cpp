@@ -99,6 +99,11 @@ pytest's ``-o`` option:
 
     $ pytest -o cpp_arguments='-v --log-dir=logs'
 
+**Important**: do not pass filtering arguments (for example ``--gtest_filter``), as this will conflict
+with the plugin functionality and behave incorrectly.
+
+To filter tests, use the standard pytest filtering facilities (such as ``-k``).
+
 cpp_ignore_py_files
 ^^^^^^^^^^^^^^^^^^^
 

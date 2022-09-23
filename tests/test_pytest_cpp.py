@@ -1,5 +1,6 @@
 import subprocess
 import sys
+import tempfile
 
 import pytest
 from distutils.spawn import find_executable
@@ -247,11 +248,11 @@ def test_google_internal_errors(mocker, testdir, exes, tmp_path):
     assert "Internal Error: calling" in str(rep.longrepr)
 
     mocked.side_effect = None
-    xml_file = tmp_path.joinpath("results.xml")
+    xml_file = tmp_path.joinpath("cpp-report.xml")
     xml_file.write_text("<empty/>")
-    mocker.patch.object(
-        GoogleTestFacade, "_get_temp_xml_filename", return_value=str(xml_file)
-    )
+    temp_mock = mocker.patch.object(tempfile, "TemporaryDirectory")
+    temp_mock().__enter__.return_value = str(tmp_path)
+
     result = testdir.inline_run("-v", exes.get("gtest", "test_gtest"))
     rep = result.matchreport(exes.exe_name("test_gtest"), "pytest_runtest_logreport")
 
