@@ -71,39 +71,40 @@ class GoogleTestFacade(AbstractFacade):
         test_args: Sequence[str] = (),
         harness: Sequence[str] = (),
     ) -> tuple[list[GoogleTestFailure] | None, str]:
-        xml_filename = self._get_temp_xml_filename()
-        args = list(harness) + [
-            executable,
-            "--gtest_filter=" + test_id,
-            "--gtest_output=xml:%s" % xml_filename,
-        ]
-        args.extend(test_args)
+        with tempfile.TemporaryDirectory(prefix="pytest-cpp") as tmp_dir:
+            xml_filename = os.path.join(tmp_dir, "cpp-report.xml")
+            args = list(harness) + [
+                executable,
+                "--gtest_filter=" + test_id,
+                "--gtest_output=xml:%s" % xml_filename,
+            ]
+            args.extend(test_args)
 
-        try:
-            output = subprocess.check_output(
-                args, stderr=subprocess.STDOUT, universal_newlines=True
-            )
-        except subprocess.CalledProcessError as e:
-            output = e.output
-            if e.returncode != 1:
-                msg = (
-                    "Internal Error: calling {executable} "
-                    "for test {test_id} failed (returncode={returncode}):\n"
-                    "{output}"
+            try:
+                output = subprocess.check_output(
+                    args, stderr=subprocess.STDOUT, universal_newlines=True
                 )
-                failure = GoogleTestFailure(
-                    msg.format(
-                        executable=executable,
-                        test_id=test_id,
-                        output=e.output,
-                        returncode=e.returncode,
+            except subprocess.CalledProcessError as e:
+                output = e.output
+                if e.returncode != 1:
+                    msg = (
+                        "Internal Error: calling {executable} "
+                        "for test {test_id} failed (returncode={returncode}):\n"
+                        "{output}"
                     )
-                )
+                    failure = GoogleTestFailure(
+                        msg.format(
+                            executable=executable,
+                            test_id=test_id,
+                            output=e.output,
+                            returncode=e.returncode,
+                        )
+                    )
 
-                return [failure], output
+                    return [failure], output
 
-        results = self._parse_xml(xml_filename)
-        os.remove(xml_filename)
+            results = self._parse_xml(xml_filename)
+
         for (executed_test_id, failures, skipped) in results:
             if executed_test_id == test_id:
                 if failures:
@@ -117,9 +118,6 @@ class GoogleTestFacade(AbstractFacade):
         results_list = "\n".join(x for (x, f, s) in results)
         failure = GoogleTestFailure(msg.format(test_id=test_id, results=results_list))
         return [failure], output
-
-    def _get_temp_xml_filename(self) -> str:
-        return tempfile.mktemp()
 
     def _parse_xml(
         self, xml_filename: str

@@ -61,43 +61,44 @@ class Catch2Facade(AbstractFacade):
         test_args: Sequence[str] = (),
         harness: Sequence[str] = (),
     ) -> tuple[Sequence[Catch2Failure] | None, str]:
-        xml_filename = self._get_temp_xml_filename()
-        args = list(harness) + [
-            executable,
-            test_id,
-            "--success",
-            "--reporter=xml",
-            "--out %s" % xml_filename,
-        ]
-        args.extend(test_args)
+        with tempfile.TemporaryDirectory(prefix="pytest-cpp") as tmp_dir:
+            xml_filename = os.path.join(tmp_dir, "cpp-report.xml")
+            args = list(harness) + [
+                executable,
+                test_id,
+                "--success",
+                "--reporter=xml",
+                "--out %s" % xml_filename,
+            ]
+            args.extend(test_args)
 
-        try:
-            output = subprocess.check_output(
-                args, stderr=subprocess.STDOUT, universal_newlines=True
-            )
-        except subprocess.CalledProcessError as e:
-            output = e.output
-            if e.returncode != 1:
-                msg = (
-                    "Internal Error: calling {executable} "
-                    "for test {test_id} failed (returncode={returncode}):\n"
-                    "{output}"
+            try:
+                output = subprocess.check_output(
+                    args, stderr=subprocess.STDOUT, universal_newlines=True
                 )
-                failure = Catch2Failure(
-                    executable,
-                    0,
-                    msg.format(
-                        executable=executable,
-                        test_id=test_id,
-                        output=e.output,
-                        returncode=e.returncode,
-                    ),
-                )
+            except subprocess.CalledProcessError as e:
+                output = e.output
+                if e.returncode != 1:
+                    msg = (
+                        "Internal Error: calling {executable} "
+                        "for test {test_id} failed (returncode={returncode}):\n"
+                        "{output}"
+                    )
+                    failure = Catch2Failure(
+                        executable,
+                        0,
+                        msg.format(
+                            executable=executable,
+                            test_id=test_id,
+                            output=e.output,
+                            returncode=e.returncode,
+                        ),
+                    )
 
-                return [failure], output
+                    return [failure], output
 
-        results = self._parse_xml(xml_filename)
-        os.remove(xml_filename)
+            results = self._parse_xml(xml_filename)
+
         for (executed_test_id, failures, skipped) in results:
             if executed_test_id == test_id:
                 if failures:
@@ -120,9 +121,6 @@ class Catch2Facade(AbstractFacade):
             msg.format(test_id=test_id, results=results_list), 0, ""
         )
         return [failure], output
-
-    def _get_temp_xml_filename(self) -> str:
-        return tempfile.mktemp()
 
     def _parse_xml(
         self, xml_filename: str

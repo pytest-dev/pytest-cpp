@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import os
 import string
+from abc import ABC
+from abc import abstractmethod
 from typing import Sequence
 from typing import Tuple
 
@@ -21,13 +23,14 @@ class CppFailureError(Exception):
 Markup = Tuple[str, ...]
 
 
-class CppTestFailure(object):
+class CppTestFailure(ABC):
     """
     Represents a failure in a C++ test. Each framework
     must implement the abstract functions to build the final exception
     message that will be displayed in the terminal.
     """
 
+    @abstractmethod
     def get_lines(self) -> list[tuple[str, Markup]]:
         """
         Returns list of (line, markup) that will be displayed to the user,
@@ -38,13 +41,12 @@ class CppTestFailure(object):
             'blue', 'purple', 'cyan', 'white',
             'bold', 'light', 'blink', 'invert'
         """
-        raise NotImplementedError  # pragma: no cover
 
+    @abstractmethod
     def get_file_reference(self) -> tuple[str, int]:
         """
         Return tuple of filename, linenum of the failure.
         """
-        raise NotImplementedError  # pragma: no cover
 
 
 class CppFailureRepr(object):

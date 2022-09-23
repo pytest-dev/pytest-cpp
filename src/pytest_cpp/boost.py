@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import io
 import os
-import shutil
 import subprocess
 import tempfile
 from typing import Sequence
@@ -50,22 +49,22 @@ class BoostTestFacade(AbstractFacade):
             except IOError:
                 return ""
 
-        temp_dir = tempfile.mkdtemp()
-        log_xml = os.path.join(temp_dir, "log.xml")
-        report_xml = os.path.join(temp_dir, "report.xml")
-        args = list(harness) + [
-            executable,
-            "--output_format=XML",
-            "--log_sink=%s" % log_xml,
-            "--report_sink=%s" % report_xml,
-        ]
-        args.extend(test_args)
-        p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        raw_stdout, _ = p.communicate()
-        stdout = raw_stdout.decode("utf-8") if raw_stdout else ""
+        with tempfile.TemporaryDirectory(prefix="pytest-cpp") as temp_dir:
+            log_xml = os.path.join(temp_dir, "log.xml")
+            report_xml = os.path.join(temp_dir, "report.xml")
+            args = list(harness) + [
+                executable,
+                "--output_format=XML",
+                "--log_sink=%s" % log_xml,
+                "--report_sink=%s" % report_xml,
+            ]
+            args.extend(test_args)
+            p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            raw_stdout, _ = p.communicate()
+            stdout = raw_stdout.decode("utf-8") if raw_stdout else ""
 
-        log = read_file(log_xml)
-        report = read_file(report_xml)
+            log = read_file(log_xml)
+            report = read_file(report_xml)
 
         if p.returncode not in (0, 200, 201):
             msg = (
@@ -90,7 +89,6 @@ class BoostTestFacade(AbstractFacade):
             return [failure], stdout
 
         results = self._parse_log(log=log)
-        shutil.rmtree(temp_dir)
 
         if results:
             return results, stdout
