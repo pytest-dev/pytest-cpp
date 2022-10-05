@@ -103,7 +103,24 @@ class GoogleTestFacade(AbstractFacade):
 
                     return [failure], output
 
-            results = self._parse_xml(xml_filename)
+            try:
+                results = self._parse_xml(xml_filename)
+            except FileNotFoundError as e:
+                msg = (
+                    "Error while getting results for test {test_id}, "
+                    "file {xml_filename} was not found\n"
+                    "Exception: {exception}"
+                )
+                failure = GoogleTestFailure(
+                    msg.format(
+                        test_id=test_id,
+                        xml_filename=xml_filename,
+                        exception=e
+                    )
+                )
+
+                return [failure], output
+                
 
         for (executed_test_id, failures, skipped) in results:
             if executed_test_id == test_id:
