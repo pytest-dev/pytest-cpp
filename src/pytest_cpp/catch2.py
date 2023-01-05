@@ -19,10 +19,19 @@ class Catch2Facade(AbstractFacade):
     """
 
     @classmethod
-    def is_test_suite(cls, executable: str) -> bool:
+    def is_test_suite(
+        cls,
+        executable: str,
+        prefix: Sequence[str] = (),
+    ) -> bool:
         try:
+            args = list(prefix)
+            args.extend([
+                executable,
+                "--help",
+            ])
             output = subprocess.check_output(
-                [executable, "--help"],
+                args,
                 stderr=subprocess.STDOUT,
                 universal_newlines=True,
             )
@@ -31,7 +40,11 @@ class Catch2Facade(AbstractFacade):
         else:
             return "--list-test-names-only" in output
 
-    def list_tests(self, executable: str) -> list[str]:
+    def list_tests(
+        self,
+        executable: str,
+        prefix: Sequence[str] = (),
+    ) -> list[str]:
         """
         Executes test with "--list-test-names-only" and gets list of tests
         parsing output like this:
@@ -41,9 +54,14 @@ class Catch2Facade(AbstractFacade):
         2: Factorials of 1 and higher are computed (pass)
         """
         # This will return an exit code with the number of tests available
+        args = list(prefix)
+        args.extend([
+            executable,
+            "--list-test-names-only",
+        ])
         try:
             output = subprocess.check_output(
-                [executable, "--list-test-names-only"],
+                args,
                 stderr=subprocess.STDOUT,
                 universal_newlines=True,
             )
@@ -59,17 +77,20 @@ class Catch2Facade(AbstractFacade):
         executable: str,
         test_id: str = "",
         test_args: Sequence[str] = (),
+        prefix: Sequence[str] = (),
         harness: Sequence[str] = (),
     ) -> tuple[Sequence[Catch2Failure] | None, str]:
         with tempfile.TemporaryDirectory(prefix="pytest-cpp") as tmp_dir:
             xml_filename = os.path.join(tmp_dir, "cpp-report.xml")
-            args = list(harness) + [
+            args = list(prefix)
+            args.extend(harness)
+            args.extend([
                 executable,
                 test_id,
                 "--success",
                 "--reporter=xml",
-                "--out %s" % xml_filename,
-            ]
+                f"--out {xml_filename}",
+            ])
             args.extend(test_args)
 
             try:

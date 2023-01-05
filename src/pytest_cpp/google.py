@@ -19,10 +19,19 @@ class GoogleTestFacade(AbstractFacade):
     """
 
     @classmethod
-    def is_test_suite(cls, executable: str) -> bool:
+    def is_test_suite(
+        cls,
+        executable: str,
+        prefix: Sequence[str] = (),
+    ) -> bool:
         try:
+            args = list(prefix)
+            args.extend([
+                executable,
+                "--help"
+            ])
             output = subprocess.check_output(
-                [executable, "--help"],
+                args,
                 stderr=subprocess.STDOUT,
                 universal_newlines=True,
             )
@@ -31,7 +40,11 @@ class GoogleTestFacade(AbstractFacade):
         else:
             return "--gtest_list_tests" in output
 
-    def list_tests(self, executable: str) -> list[str]:
+    def list_tests(
+        self,
+        executable: str,
+        prefix: Sequence[str] = (),
+    ) -> list[str]:
         """
         Executes google-test with "--gtest_list_tests" and gets list of tests
         parsing output like this:
@@ -41,8 +54,13 @@ class GoogleTestFacade(AbstractFacade):
           ReturnsTrueForPrimes
           CanGetNextPrime
         """
+        args = list(prefix)
+        args.extend([
+            executable,
+            "--gtest_list_tests",
+        ])
         output = subprocess.check_output(
-            [executable, "--gtest_list_tests"],
+            args,
             stderr=subprocess.STDOUT,
             universal_newlines=True,
         )
@@ -69,15 +87,18 @@ class GoogleTestFacade(AbstractFacade):
         executable: str,
         test_id: str,
         test_args: Sequence[str] = (),
+        prefix: Sequence[str] = (),
         harness: Sequence[str] = (),
     ) -> tuple[list[GoogleTestFailure] | None, str]:
         with tempfile.TemporaryDirectory(prefix="pytest-cpp") as tmp_dir:
             xml_filename = os.path.join(tmp_dir, "cpp-report.xml")
-            args = list(harness) + [
+            args = list(prefix)
+            args.extend(harness)
+            args.extend([
                 executable,
-                "--gtest_filter=" + test_id,
-                "--gtest_output=xml:%s" % xml_filename,
-            ]
+                f"--gtest_filter={test_id}",
+                f"--gtest_output=xml:{xml_filename}",
+            ])
             args.extend(test_args)
 
             try:

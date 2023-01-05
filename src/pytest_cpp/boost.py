@@ -18,10 +18,19 @@ class BoostTestFacade(AbstractFacade):
     """
 
     @classmethod
-    def is_test_suite(cls, executable: str) -> bool:
+    def is_test_suite(
+        cls,
+        executable: str,
+        prefix: Sequence[str] = (),
+    ) -> bool:
         try:
+            args = list(prefix)
+            args.extend([
+                executable,
+                "--help",
+            ])
             output = subprocess.check_output(
-                [executable, "--help"],
+                args,
                 stderr=subprocess.STDOUT,
                 universal_newlines=True,
             )
@@ -30,7 +39,12 @@ class BoostTestFacade(AbstractFacade):
         else:
             return "--output_format" in output and "log_format" in output
 
-    def list_tests(self, executable: str) -> list[str]:
+    def list_tests(
+        self,
+        executable: str,
+        prefix: Sequence[str] = (),
+    ) -> list[str]:
+        del prefix
         # unfortunately boost doesn't provide us with a way to list the tests
         # inside the executable, so the test_id is a dummy placeholder :(
         return [os.path.basename(os.path.splitext(executable)[0])]
@@ -40,6 +54,7 @@ class BoostTestFacade(AbstractFacade):
         executable: str,
         test_id: str,
         test_args: Sequence[str] = (),
+        prefix: Sequence[str] = (),
         harness: Sequence[str] = (),
     ) -> tuple[Sequence[BoostTestFailure] | None, str]:
         def read_file(name: str) -> str:
@@ -52,12 +67,14 @@ class BoostTestFacade(AbstractFacade):
         with tempfile.TemporaryDirectory(prefix="pytest-cpp") as temp_dir:
             log_xml = os.path.join(temp_dir, "log.xml")
             report_xml = os.path.join(temp_dir, "report.xml")
-            args = list(harness) + [
+            args = list(prefix)
+            args.extend(harness)
+            args.extend([
                 executable,
                 "--output_format=XML",
-                "--log_sink=%s" % log_xml,
-                "--report_sink=%s" % report_xml,
-            ]
+                f"--log_sink={log_xml}",
+                f"--report_sink={report_xml}",
+            ])
             args.extend(test_args)
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             raw_stdout, _ = p.communicate()
