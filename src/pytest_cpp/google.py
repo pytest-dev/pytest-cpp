@@ -82,7 +82,7 @@ class GoogleTestFacade(AbstractFacade):
         test_args: Sequence[str] = (),
         harness: Sequence[str] = (),
     ) -> tuple[list[GoogleTestFailure] | None, str]:
-        with tempfile.TemporaryDirectory(prefix="pytest-cpp") as tmp_dir:
+        with tempfile.TemporaryDirectory(prefix="pytest-cpp", dir=os.getcwd()) as tmp_dir:
             xml_filename = os.path.join(tmp_dir, "cpp-report.xml")
             args = make_cmdline(harness, executable, [f"--gtest_filter={test_id}", f"--gtest_output=xml:{xml_filename}"])
             args.extend(test_args)
