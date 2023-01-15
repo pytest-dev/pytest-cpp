@@ -123,9 +123,6 @@ cpp_harness
 This option allows the usage of tools that are used by invoking them on the console
 wrapping the test binary, like valgrind and memcheck:
 
-Might be used in the combination with ``cpp_prefix``, then a tool from ``cpp_prefix`` will be placed
-before ``cpp_harness`` arguments.
-
 .. code-block:: ini
 
     [pytest]
