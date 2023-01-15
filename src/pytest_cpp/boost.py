@@ -60,9 +60,9 @@ class BoostTestFacade(AbstractFacade):
             except IOError:
                 return ""
 
-        with tempfile.TemporaryDirectory(prefix="pytest-cpp", dir=os.getcwd()) as temp_dir:
-            log_xml = os.path.join(temp_dir, "log.xml")
-            report_xml = os.path.join(temp_dir, "report.xml")
+        with tempfile.TemporaryDirectory(prefix="pytest-cpp") as temp_dir:
+            log_xml = os.path.join(os.path.relpath(tmp_dir), "log.xml")
+            report_xml = os.path.join(os.path.relpath(tmp_dir), "report.xml")
             args = make_cmdline(harness, executable, ["--output_format=XML", f"--log_sink={log_xml}", f"--report_sink={report_xml}"])
             args.extend(test_args)
 
