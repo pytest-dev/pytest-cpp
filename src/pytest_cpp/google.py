@@ -11,6 +11,7 @@ import pytest
 from pytest_cpp.error import CppTestFailure
 from pytest_cpp.error import Markup
 from pytest_cpp.facade_abc import AbstractFacade
+from pytest_cpp.helpers import make_cmdline
 
 
 class GoogleTestFacade(AbstractFacade):
@@ -22,14 +23,10 @@ class GoogleTestFacade(AbstractFacade):
     def is_test_suite(
         cls,
         executable: str,
-        prefix: Sequence[str] = (),
+        harness_collect: Sequence[str] = (),
     ) -> bool:
+        args = make_cmdline(harness_collect, executable, ["--help"])
         try:
-            args = list(prefix)
-            args.extend([
-                executable,
-                "--help"
-            ])
             output = subprocess.check_output(
                 args,
                 stderr=subprocess.STDOUT,
@@ -43,7 +40,7 @@ class GoogleTestFacade(AbstractFacade):
     def list_tests(
         self,
         executable: str,
-        prefix: Sequence[str] = (),
+        harness_collect: Sequence[str] = (),
     ) -> list[str]:
         """
         Executes google-test with "--gtest_list_tests" and gets list of tests
@@ -54,11 +51,7 @@ class GoogleTestFacade(AbstractFacade):
           ReturnsTrueForPrimes
           CanGetNextPrime
         """
-        args = list(prefix)
-        args.extend([
-            executable,
-            "--gtest_list_tests",
-        ])
+        args = make_cmdline(harness_collect, executable, ["--gtest_list_tests"])
         output = subprocess.check_output(
             args,
             stderr=subprocess.STDOUT,
@@ -87,18 +80,11 @@ class GoogleTestFacade(AbstractFacade):
         executable: str,
         test_id: str,
         test_args: Sequence[str] = (),
-        prefix: Sequence[str] = (),
         harness: Sequence[str] = (),
     ) -> tuple[list[GoogleTestFailure] | None, str]:
         with tempfile.TemporaryDirectory(prefix="pytest-cpp") as tmp_dir:
             xml_filename = os.path.join(tmp_dir, "cpp-report.xml")
-            args = list(prefix)
-            args.extend(harness)
-            args.extend([
-                executable,
-                f"--gtest_filter={test_id}",
-                f"--gtest_output=xml:{xml_filename}",
-            ])
+            args = make_cmdline(harness, executable, [f"--gtest_filter={test_id}", f"--gtest_output=xml:{xml_filename}"])
             args.extend(test_args)
 
             try:

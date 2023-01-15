@@ -11,6 +11,7 @@ from pytest_cpp.catch2 import Catch2Facade
 from pytest_cpp.error import CppFailureRepr
 from pytest_cpp.error import CppTestFailure
 from pytest_cpp.google import GoogleTestFacade
+from pytest_cpp.helpers import make_cmdline
 
 
 def assert_outcomes(result, expected_outcomes):
@@ -89,6 +90,29 @@ def test_is_test_suite(facade, name, other_name, exes, tmp_path):
 )
 def test_success(facade, name, test_id, exes):
     assert facade.run_test(exes.get(name), test_id)[0] is None
+
+
+def test_cmdline_builder_happy_flow():
+    arg_string = make_cmdline( ["wine"], "gtest", ["--help"] )
+    assert arg_string
+    assert arg_string[0] == 'wine', "First element MUST be a `harness` value"
+
+
+def test_cmdline_builder_with_empty_harness():
+    arg_string = make_cmdline(list(), "boost_test", ["--output_format=XML", "--log_sink=dummy.log"])
+    assert arg_string
+    assert arg_string[0] == 'boost_test', "First element MUST be a name of an executable binary if a harness is not present"
+
+
+def test_cmdline_builder_with_no_executable():
+    arg_string = make_cmdline( ["wine"], "", ["--help"] )
+    assert not arg_string, "Function will return an empty list if the executable name was not provided"
+
+
+def test_cmdline_builder_with_empty_args():
+    arg_string = make_cmdline( ["wine"], "gtest")
+    assert arg_string
+    assert arg_string[-1] == 'gtest', "Last element MUST be the value of executable if no arguments were specified"
 
 
 def test_google_failure(exes):

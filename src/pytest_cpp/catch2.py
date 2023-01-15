@@ -11,6 +11,7 @@ import pytest
 from pytest_cpp.error import CppTestFailure
 from pytest_cpp.error import Markup
 from pytest_cpp.facade_abc import AbstractFacade
+from pytest_cpp.helpers import make_cmdline
 
 
 class Catch2Facade(AbstractFacade):
@@ -22,14 +23,10 @@ class Catch2Facade(AbstractFacade):
     def is_test_suite(
         cls,
         executable: str,
-        prefix: Sequence[str] = (),
+        harness_collect: Sequence[str] = (),
     ) -> bool:
+        args = make_cmdline(harness_collect, executable, ["--help"])
         try:
-            args = list(prefix)
-            args.extend([
-                executable,
-                "--help",
-            ])
             output = subprocess.check_output(
                 args,
                 stderr=subprocess.STDOUT,
@@ -43,7 +40,7 @@ class Catch2Facade(AbstractFacade):
     def list_tests(
         self,
         executable: str,
-        prefix: Sequence[str] = (),
+        harness_collect: Sequence[str] = (),
     ) -> list[str]:
         """
         Executes test with "--list-test-names-only" and gets list of tests
@@ -54,11 +51,7 @@ class Catch2Facade(AbstractFacade):
         2: Factorials of 1 and higher are computed (pass)
         """
         # This will return an exit code with the number of tests available
-        args = list(prefix)
-        args.extend([
-            executable,
-            "--list-test-names-only",
-        ])
+        args = make_cmdline(harness_collect, executable, ["--list-test-names-only"])
         try:
             output = subprocess.check_output(
                 args,
@@ -77,20 +70,11 @@ class Catch2Facade(AbstractFacade):
         executable: str,
         test_id: str = "",
         test_args: Sequence[str] = (),
-        prefix: Sequence[str] = (),
         harness: Sequence[str] = (),
     ) -> tuple[Sequence[Catch2Failure] | None, str]:
         with tempfile.TemporaryDirectory(prefix="pytest-cpp") as tmp_dir:
             xml_filename = os.path.join(tmp_dir, "cpp-report.xml")
-            args = list(prefix)
-            args.extend(harness)
-            args.extend([
-                executable,
-                test_id,
-                "--success",
-                "--reporter=xml",
-                f"--out {xml_filename}",
-            ])
+            args = make_cmdline(harness, executable, ["--success", "--reporter=xml", f"--out {xml_filename}"])
             args.extend(test_args)
 
             try:

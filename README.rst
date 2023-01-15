@@ -117,17 +117,6 @@ Set it to ``False`` if you have C++ executable files that end with the ``*.py`` 
     [pytest]
     cpp_ignore_py_files = False
 
-cpp_prefix
-^^^^^^^^^^
-
-This option allows the usage of tolls or emulators that are used by invoking them on
-the console wrapping the test binary, like wine or qemu:
-
-.. code-block:: ini
-
-    [pytest]
-    cpp_prefix = wine
-
 cpp_harness
 ^^^^^^^^^^^
 
@@ -142,6 +131,28 @@ before ``cpp_harness`` arguments.
     [pytest]
     cpp_harness = valgrind --tool=memcheck
 
+
+cpp_harness_collect
+^^^^^^^^^^^^^^^^^^^
+
+This option allows the usage of tools or emulators (like wine or qemu) that are used by invoking them
+on the console wrapping the test binary during a test collection.
+
+Might be used in the combination with ``cpp_harness`` to run a binary in emulators, like wine or qemu
+in cross-compilation targets.
+
+.. code-block:: ini
+
+    [pytest]
+    cpp_harness_collect = qemu-x86_64 -L libs/
+
+or
+
+.. code-block:: ini
+
+    [pytest]
+    cpp_harness_collect = qemu-x86_64 -L libs/
+    cpp_harness = qemu-x86_64 -L libs/
 
 Changelog
 =========

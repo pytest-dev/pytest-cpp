@@ -1,6 +1,6 @@
 # 2.2.2 (UNRELEASED)
 
-- New `cpp_prefix` configuration option allows users to add prefix arguments to run C++ test executables, allowing to use additional tools like `wine` of `qemu` for a test runners.
+- New `cpp_harness_collect` configuration option allows users to add prefix arguments to run C++ test executables, allowing to use additional tools like `wine` of `qemu` for a test runners in cross-platform development.
 
 # 2.2.1 (2022-09-23)
 

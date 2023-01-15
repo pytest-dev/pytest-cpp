@@ -10,6 +10,7 @@ from xml.etree import ElementTree
 from pytest_cpp.error import CppTestFailure
 from pytest_cpp.error import Markup
 from pytest_cpp.facade_abc import AbstractFacade
+from pytest_cpp.helpers import make_cmdline
 
 
 class BoostTestFacade(AbstractFacade):
@@ -21,14 +22,10 @@ class BoostTestFacade(AbstractFacade):
     def is_test_suite(
         cls,
         executable: str,
-        prefix: Sequence[str] = (),
+        harness_collect: Sequence[str] = (),
     ) -> bool:
+        args = make_cmdline(harness_collect, executable, ["--help"])
         try:
-            args = list(prefix)
-            args.extend([
-                executable,
-                "--help",
-            ])
             output = subprocess.check_output(
                 args,
                 stderr=subprocess.STDOUT,
@@ -42,9 +39,9 @@ class BoostTestFacade(AbstractFacade):
     def list_tests(
         self,
         executable: str,
-        prefix: Sequence[str] = (),
+        harness_collect: Sequence[str] = (),
     ) -> list[str]:
-        del prefix
+        del harness_collect
         # unfortunately boost doesn't provide us with a way to list the tests
         # inside the executable, so the test_id is a dummy placeholder :(
         return [os.path.basename(os.path.splitext(executable)[0])]
@@ -54,7 +51,6 @@ class BoostTestFacade(AbstractFacade):
         executable: str,
         test_id: str,
         test_args: Sequence[str] = (),
-        prefix: Sequence[str] = (),
         harness: Sequence[str] = (),
     ) -> tuple[Sequence[BoostTestFailure] | None, str]:
         def read_file(name: str) -> str:
@@ -67,15 +63,9 @@ class BoostTestFacade(AbstractFacade):
         with tempfile.TemporaryDirectory(prefix="pytest-cpp") as temp_dir:
             log_xml = os.path.join(temp_dir, "log.xml")
             report_xml = os.path.join(temp_dir, "report.xml")
-            args = list(prefix)
-            args.extend(harness)
-            args.extend([
-                executable,
-                "--output_format=XML",
-                f"--log_sink={log_xml}",
-                f"--report_sink={report_xml}",
-            ])
+            args = make_cmdline(harness, executable, ["--output_format=XML", f"--log_sink={log_xml}", f"--report_sink={report_xml}"])
             args.extend(test_args)
+
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             raw_stdout, _ = p.communicate()
             stdout = raw_stdout.decode("utf-8") if raw_stdout else ""

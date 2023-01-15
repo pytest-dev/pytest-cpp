@@ -13,7 +13,7 @@ class AbstractFacade(ABC):
     def is_test_suite(
         cls,
         executable: str,
-        prefix: Sequence[str] = (),
+        harness_collect: Sequence[str] = (),
     ) -> bool:
         """Return True if the given path to an executable contains tests for this framework."""
 
@@ -21,7 +21,7 @@ class AbstractFacade(ABC):
     def list_tests(
         self,
         executable: str,
-        prefix: Sequence[str] = (),
+        harness_collect: Sequence[str] = (),
     ) -> list[str]:
         """Return a list of test ids found in the given executable."""
 
@@ -31,7 +31,6 @@ class AbstractFacade(ABC):
         executable: str,
         test_id: str,
         test_args: Sequence[str] = (),
-        prefix: Sequence[str] = (),
         harness: Sequence[str] = (),
     ) -> tuple[Sequence[CppTestFailure] | None, str]:
         """
