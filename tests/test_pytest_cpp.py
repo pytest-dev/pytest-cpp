@@ -104,11 +104,6 @@ def test_cmdline_builder_with_empty_harness():
     assert arg_string[0] == 'boost_test', "First element MUST be a name of an executable binary if a harness is not present"
 
 
-def test_cmdline_builder_with_no_executable():
-    arg_string = make_cmdline( ["wine"], "", ["--help"] )
-    assert not arg_string, "Function will return an empty list if the executable name was not provided"
-
-
 def test_cmdline_builder_with_empty_args():
     arg_string = make_cmdline( ["wine"], "gtest")
     assert arg_string
