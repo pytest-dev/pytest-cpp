@@ -72,8 +72,15 @@ class Catch2Facade(AbstractFacade):
         test_args: Sequence[str] = (),
         harness: Sequence[str] = (),
     ) -> tuple[Sequence[Catch2Failure] | None, str]:
-        with tempfile.TemporaryDirectory(prefix="pytest-cpp") as tmp_dir:
-            xml_filename = os.path.join(os.path.relpath(tmp_dir), "cpp-report.xml")
+        with tempfile.TemporaryDirectory(prefix="pytest-cpp") as temp_dir:
+            """
+            On Windows, ValueError is raised when path and start are on different drives.
+            In this case failing back to the absolute path.
+            """
+            try:
+                xml_filename = os.path.join(os.path.relpath(temp_dir), "cpp-report.xml")
+            except ValueError:
+                xml_filename = os.path.join(temp_dir, "cpp-report.xml")
             args = make_cmdline(harness, executable, ["--success", "--reporter=xml", f"--out {xml_filename}"])
             args.extend(test_args)
 
