@@ -94,20 +94,17 @@ def test_success(facade, name, test_id, exes):
 
 def test_cmdline_builder_happy_flow():
     arg_string = make_cmdline( ["wine"], "gtest", ["--help"] )
-    assert arg_string
-    assert arg_string[0] == 'wine', "First element MUST be a `harness` value"
+    assert arg_string == ["wine", "gtest", "--help"]
 
 
 def test_cmdline_builder_with_empty_harness():
     arg_string = make_cmdline(list(), "boost_test", ["--output_format=XML", "--log_sink=dummy.log"])
-    assert arg_string
-    assert arg_string[0] == 'boost_test', "First element MUST be a name of an executable binary if a harness is not present"
+    assert arg_string == ["boost_test", "--output_format=XML", "--log_sink=dummy.log"]
 
 
 def test_cmdline_builder_with_empty_args():
     arg_string = make_cmdline( ["wine"], "gtest")
-    assert arg_string
-    assert arg_string[-1] == 'gtest', "Last element MUST be the value of executable if no arguments were specified"
+    assert arg_string == ["wine", "gtest"]
 
 
 def test_google_failure(exes):
