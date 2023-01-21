@@ -106,13 +106,13 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         "cpp_harness",
         type="args",
         default=(),
-        help="command that wraps the cpp binary when tests should run",
+        help="command that wraps the cpp binary when running tests",
     )
     parser.addini(
         "cpp_harness_collect",
         type="args",
         default=(),
-        help="command that wraps the cpp binary when a list of tests is collecting",
+        help="command that wraps the cpp binary when collecting tests",
     )
     parser.addini(
         "cpp_verbose",
