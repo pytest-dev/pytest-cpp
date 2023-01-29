@@ -81,7 +81,7 @@ class Catch2Facade(AbstractFacade):
                 xml_filename = os.path.join(os.path.relpath(temp_dir), "cpp-report.xml")
             except ValueError:
                 xml_filename = os.path.join(temp_dir, "cpp-report.xml")
-            args = make_cmdline(harness, executable, ["--success", "--reporter=xml", f"--out {xml_filename}"])
+            args = make_cmdline(harness, executable, [test_id, "--success", "--reporter=xml", f"--out {xml_filename}"])
             args.extend(test_args)
 
             try:
