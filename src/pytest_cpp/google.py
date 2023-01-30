@@ -83,10 +83,8 @@ class GoogleTestFacade(AbstractFacade):
         harness: Sequence[str] = (),
     ) -> tuple[list[GoogleTestFailure] | None, str]:
         with tempfile.TemporaryDirectory(prefix="pytest-cpp") as temp_dir:
-            """
-            On Windows, ValueError is raised when path and start are on different drives.
-            In this case failing back to the absolute path.
-            """
+            # On Windows, ValueError is raised when path and start are on different drives.
+            # In this case failing back to the absolute path.
             try:
                 xml_filename = os.path.join(os.path.relpath(temp_dir), "cpp-report.xml")
             except ValueError:

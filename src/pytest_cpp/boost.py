@@ -61,10 +61,8 @@ class BoostTestFacade(AbstractFacade):
                 return ""
 
         with tempfile.TemporaryDirectory(prefix="pytest-cpp") as temp_dir:
-            """
-            On Windows, ValueError is raised when path and start are on different drives.
-            In this case failing back to the absolute path.
-            """
+            # On Windows, ValueError is raised when path and start are on different drives.
+            # In this case failing back to the absolute path.
             try:
                 log_xml = os.path.join(os.path.relpath(temp_dir), "log.xml")
                 report_xml = os.path.join(os.path.relpath(temp_dir), "report.xml")
