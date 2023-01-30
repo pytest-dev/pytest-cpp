@@ -67,8 +67,12 @@ def pytest_collect_file(
     ):
         return None
 
+    harness_collect = parent.config.getini("cpp_harness_collect")
     for facade_class in FACADES:
-        if facade_class.is_test_suite(str(file_path)):
+        if facade_class.is_test_suite(
+                str(file_path),
+                harness_collect=harness_collect
+            ):
             return CppFile.from_parent(
                 path=file_path,
                 parent=parent,
@@ -102,7 +106,13 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         "cpp_harness",
         type="args",
         default=(),
-        help="command that wraps the cpp binary",
+        help="command that wraps the cpp binary when running tests",
+    )
+    parser.addini(
+        "cpp_harness_collect",
+        type="args",
+        default=(),
+        help="command that wraps the cpp binary when collecting tests",
     )
     parser.addini(
         "cpp_verbose",
@@ -144,7 +154,11 @@ class CppFile(pytest.File):
         )
 
     def collect(self) -> Iterator[CppItem]:
-        for test_id in self.facade.list_tests(str(self.fspath)):
+        harness_collect=self.config.getini("cpp_harness_collect")
+        for test_id in self.facade.list_tests(
+                str(self.fspath),
+                harness_collect=harness_collect,
+            ):
             yield CppItem.from_parent(
                 parent=self,
                 name=test_id,

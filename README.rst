@@ -129,6 +129,28 @@ wrapping the test binary, like valgrind and memcheck:
     cpp_harness = valgrind --tool=memcheck
 
 
+cpp_harness_collect
+^^^^^^^^^^^^^^^^^^^
+
+This option allows the usage of tools or emulators (like wine or qemu) that are used by invoking them
+on the console wrapping the test binary during a test collection.
+
+Might be used in the combination with ``cpp_harness`` to run a binary in emulators, like wine or qemu
+in cross-compilation targets.
+
+.. code-block:: ini
+
+    [pytest]
+    cpp_harness_collect = qemu-x86_64 -L libs/
+
+or
+
+.. code-block:: ini
+
+    [pytest]
+    cpp_harness_collect = qemu-x86_64 -L libs/
+    cpp_harness = qemu-x86_64 -L libs/
+
 Changelog
 =========
 

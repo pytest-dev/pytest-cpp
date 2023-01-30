@@ -10,6 +10,7 @@ from xml.etree import ElementTree
 from pytest_cpp.error import CppTestFailure
 from pytest_cpp.error import Markup
 from pytest_cpp.facade_abc import AbstractFacade
+from pytest_cpp.helpers import make_cmdline
 
 
 class BoostTestFacade(AbstractFacade):
@@ -18,10 +19,15 @@ class BoostTestFacade(AbstractFacade):
     """
 
     @classmethod
-    def is_test_suite(cls, executable: str) -> bool:
+    def is_test_suite(
+        cls,
+        executable: str,
+        harness_collect: Sequence[str] = (),
+    ) -> bool:
+        args = make_cmdline(harness_collect, executable, ["--help"])
         try:
             output = subprocess.check_output(
-                [executable, "--help"],
+                args,
                 stderr=subprocess.STDOUT,
                 universal_newlines=True,
             )
@@ -30,7 +36,12 @@ class BoostTestFacade(AbstractFacade):
         else:
             return "--output_format" in output and "log_format" in output
 
-    def list_tests(self, executable: str) -> list[str]:
+    def list_tests(
+        self,
+        executable: str,
+        harness_collect: Sequence[str] = (),
+    ) -> list[str]:
+        del harness_collect
         # unfortunately boost doesn't provide us with a way to list the tests
         # inside the executable, so the test_id is a dummy placeholder :(
         return [os.path.basename(os.path.splitext(executable)[0])]
@@ -50,15 +61,17 @@ class BoostTestFacade(AbstractFacade):
                 return ""
 
         with tempfile.TemporaryDirectory(prefix="pytest-cpp") as temp_dir:
-            log_xml = os.path.join(temp_dir, "log.xml")
-            report_xml = os.path.join(temp_dir, "report.xml")
-            args = list(harness) + [
-                executable,
-                "--output_format=XML",
-                "--log_sink=%s" % log_xml,
-                "--report_sink=%s" % report_xml,
-            ]
+            # On Windows, ValueError is raised when path and start are on different drives.
+            # In this case failing back to the absolute path.
+            try:
+                log_xml = os.path.join(os.path.relpath(temp_dir), "log.xml")
+                report_xml = os.path.join(os.path.relpath(temp_dir), "report.xml")
+            except ValueError:
+                log_xml = os.path.join(temp_dir, "log.xml")
+                report_xml = os.path.join(temp_dir, "report.xml")
+            args = make_cmdline(harness, executable, ["--output_format=XML", f"--log_sink={log_xml}", f"--report_sink={report_xml}"])
             args.extend(test_args)
+
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             raw_stdout, _ = p.communicate()
             stdout = raw_stdout.decode("utf-8") if raw_stdout else ""

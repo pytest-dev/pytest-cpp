@@ -11,6 +11,7 @@ import pytest
 from pytest_cpp.error import CppTestFailure
 from pytest_cpp.error import Markup
 from pytest_cpp.facade_abc import AbstractFacade
+from pytest_cpp.helpers import make_cmdline
 
 
 class GoogleTestFacade(AbstractFacade):
@@ -19,10 +20,15 @@ class GoogleTestFacade(AbstractFacade):
     """
 
     @classmethod
-    def is_test_suite(cls, executable: str) -> bool:
+    def is_test_suite(
+        cls,
+        executable: str,
+        harness_collect: Sequence[str] = (),
+    ) -> bool:
+        args = make_cmdline(harness_collect, executable, ["--help"])
         try:
             output = subprocess.check_output(
-                [executable, "--help"],
+                args,
                 stderr=subprocess.STDOUT,
                 universal_newlines=True,
             )
@@ -31,7 +37,11 @@ class GoogleTestFacade(AbstractFacade):
         else:
             return "--gtest_list_tests" in output
 
-    def list_tests(self, executable: str) -> list[str]:
+    def list_tests(
+        self,
+        executable: str,
+        harness_collect: Sequence[str] = (),
+    ) -> list[str]:
         """
         Executes google-test with "--gtest_list_tests" and gets list of tests
         parsing output like this:
@@ -41,8 +51,9 @@ class GoogleTestFacade(AbstractFacade):
           ReturnsTrueForPrimes
           CanGetNextPrime
         """
+        args = make_cmdline(harness_collect, executable, ["--gtest_list_tests"])
         output = subprocess.check_output(
-            [executable, "--gtest_list_tests"],
+            args,
             stderr=subprocess.STDOUT,
             universal_newlines=True,
         )
@@ -71,13 +82,14 @@ class GoogleTestFacade(AbstractFacade):
         test_args: Sequence[str] = (),
         harness: Sequence[str] = (),
     ) -> tuple[list[GoogleTestFailure] | None, str]:
-        with tempfile.TemporaryDirectory(prefix="pytest-cpp") as tmp_dir:
-            xml_filename = os.path.join(tmp_dir, "cpp-report.xml")
-            args = list(harness) + [
-                executable,
-                "--gtest_filter=" + test_id,
-                "--gtest_output=xml:%s" % xml_filename,
-            ]
+        with tempfile.TemporaryDirectory(prefix="pytest-cpp") as temp_dir:
+            # On Windows, ValueError is raised when path and start are on different drives.
+            # In this case failing back to the absolute path.
+            try:
+                xml_filename = os.path.join(os.path.relpath(temp_dir), "cpp-report.xml")
+            except ValueError:
+                xml_filename = os.path.join(temp_dir, "cpp-report.xml")
+            args = make_cmdline(harness, executable, [f"--gtest_filter={test_id}", f"--gtest_output=xml:{xml_filename}"])
             args.extend(test_args)
 
             try:

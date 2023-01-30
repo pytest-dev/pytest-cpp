@@ -10,11 +10,19 @@ from pytest_cpp.error import CppTestFailure
 class AbstractFacade(ABC):
     @classmethod
     @abstractmethod
-    def is_test_suite(cls, executable: str) -> bool:
+    def is_test_suite(
+        cls,
+        executable: str,
+        harness_collect: Sequence[str] = (),
+    ) -> bool:
         """Return True if the given path to an executable contains tests for this framework."""
 
     @abstractmethod
-    def list_tests(self, executable: str) -> list[str]:
+    def list_tests(
+        self,
+        executable: str,
+        harness_collect: Sequence[str] = (),
+    ) -> list[str]:
         """Return a list of test ids found in the given executable."""
 
     @abstractmethod

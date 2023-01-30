@@ -11,6 +11,7 @@ import pytest
 from pytest_cpp.error import CppTestFailure
 from pytest_cpp.error import Markup
 from pytest_cpp.facade_abc import AbstractFacade
+from pytest_cpp.helpers import make_cmdline
 
 
 class Catch2Facade(AbstractFacade):
@@ -19,10 +20,15 @@ class Catch2Facade(AbstractFacade):
     """
 
     @classmethod
-    def is_test_suite(cls, executable: str) -> bool:
+    def is_test_suite(
+        cls,
+        executable: str,
+        harness_collect: Sequence[str] = (),
+    ) -> bool:
+        args = make_cmdline(harness_collect, executable, ["--help"])
         try:
             output = subprocess.check_output(
-                [executable, "--help"],
+                args,
                 stderr=subprocess.STDOUT,
                 universal_newlines=True,
             )
@@ -31,7 +37,11 @@ class Catch2Facade(AbstractFacade):
         else:
             return "--list-test-names-only" in output
 
-    def list_tests(self, executable: str) -> list[str]:
+    def list_tests(
+        self,
+        executable: str,
+        harness_collect: Sequence[str] = (),
+    ) -> list[str]:
         """
         Executes test with "--list-test-names-only" and gets list of tests
         parsing output like this:
@@ -41,9 +51,10 @@ class Catch2Facade(AbstractFacade):
         2: Factorials of 1 and higher are computed (pass)
         """
         # This will return an exit code with the number of tests available
+        args = make_cmdline(harness_collect, executable, ["--list-test-names-only"])
         try:
             output = subprocess.check_output(
-                [executable, "--list-test-names-only"],
+                args,
                 stderr=subprocess.STDOUT,
                 universal_newlines=True,
             )
@@ -61,15 +72,16 @@ class Catch2Facade(AbstractFacade):
         test_args: Sequence[str] = (),
         harness: Sequence[str] = (),
     ) -> tuple[Sequence[Catch2Failure] | None, str]:
-        with tempfile.TemporaryDirectory(prefix="pytest-cpp") as tmp_dir:
-            xml_filename = os.path.join(tmp_dir, "cpp-report.xml")
-            args = list(harness) + [
-                executable,
-                test_id,
-                "--success",
-                "--reporter=xml",
-                "--out %s" % xml_filename,
-            ]
+        with tempfile.TemporaryDirectory(prefix="pytest-cpp") as temp_dir:
+            """
+            On Windows, ValueError is raised when path and start are on different drives.
+            In this case failing back to the absolute path.
+            """
+            try:
+                xml_filename = os.path.join(os.path.relpath(temp_dir), "cpp-report.xml")
+            except ValueError:
+                xml_filename = os.path.join(temp_dir, "cpp-report.xml")
+            args = make_cmdline(harness, executable, [test_id, "--success", "--reporter=xml", f"--out {xml_filename}"])
             args.extend(test_args)
 
             try:
