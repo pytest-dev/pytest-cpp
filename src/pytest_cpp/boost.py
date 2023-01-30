@@ -69,7 +69,17 @@ class BoostTestFacade(AbstractFacade):
             except ValueError:
                 log_xml = os.path.join(temp_dir, "log.xml")
                 report_xml = os.path.join(temp_dir, "report.xml")
-            args = make_cmdline(harness, executable, ["--output_format=XML", f"--log_sink={log_xml}", f"--report_sink={report_xml}"])
+            args = list(
+                make_cmdline(
+                    harness,
+                    executable,
+                    [
+                        "--output_format=XML",
+                        f"--log_sink={log_xml}",
+                        f"--report_sink={report_xml}",
+                    ],
+                )
+            )
             args.extend(test_args)
 
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)

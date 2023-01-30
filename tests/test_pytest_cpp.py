@@ -93,17 +93,19 @@ def test_success(facade, name, test_id, exes):
 
 
 def test_cmdline_builder_happy_flow():
-    arg_string = make_cmdline( ["wine"], "gtest", ["--help"] )
+    arg_string = make_cmdline(["wine"], "gtest", ["--help"])
     assert arg_string == ["wine", "gtest", "--help"]
 
 
 def test_cmdline_builder_with_empty_harness():
-    arg_string = make_cmdline(list(), "boost_test", ["--output_format=XML", "--log_sink=dummy.log"])
+    arg_string = make_cmdline(
+        list(), "boost_test", ["--output_format=XML", "--log_sink=dummy.log"]
+    )
     assert arg_string == ["boost_test", "--output_format=XML", "--log_sink=dummy.log"]
 
 
 def test_cmdline_builder_with_empty_args():
-    arg_string = make_cmdline( ["wine"], "gtest")
+    arg_string = make_cmdline(["wine"], "gtest")
     assert arg_string == ["wine", "gtest"]
 
 
