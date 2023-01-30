@@ -89,7 +89,13 @@ class GoogleTestFacade(AbstractFacade):
                 xml_filename = os.path.join(os.path.relpath(temp_dir), "cpp-report.xml")
             except ValueError:
                 xml_filename = os.path.join(temp_dir, "cpp-report.xml")
-            args = make_cmdline(harness, executable, [f"--gtest_filter={test_id}", f"--gtest_output=xml:{xml_filename}"])
+            args = list(
+                make_cmdline(
+                    harness,
+                    executable,
+                    [f"--gtest_filter={test_id}", f"--gtest_output=xml:{xml_filename}"],
+                )
+            )
             args.extend(test_args)
 
             try:
