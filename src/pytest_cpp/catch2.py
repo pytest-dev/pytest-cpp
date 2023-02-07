@@ -117,7 +117,7 @@ class Catch2Facade(AbstractFacade):
 
             results = self._parse_xml(xml_filename)
 
-        for (executed_test_id, failures, skipped) in results:
+        for executed_test_id, failures, skipped in results:
             if executed_test_id == test_id:
                 if failures:
                     return (
