@@ -35,7 +35,7 @@ class Catch2Facade(AbstractFacade):
         except (subprocess.CalledProcessError, OSError):
             return False
         else:
-            return "--list-test-names-only" in output
+            return "--list-tests" in output
 
     def list_tests(
         self,
@@ -43,7 +43,7 @@ class Catch2Facade(AbstractFacade):
         harness_collect: Sequence[str] = (),
     ) -> list[str]:
         """
-        Executes test with "--list-test-names-only" and gets list of tests
+        Executes test with "--list-tests --verbosity quiet" and gets list of tests
         parsing output like this:
 
         1: All test cases reside in other .cpp files (empty)
@@ -51,7 +51,7 @@ class Catch2Facade(AbstractFacade):
         2: Factorials of 1 and higher are computed (pass)
         """
         # This will return an exit code with the number of tests available
-        args = make_cmdline(harness_collect, executable, ["--list-test-names-only"])
+        args = make_cmdline(harness_collect, executable, ["--list-tests", "--verbosity quiet"])
         try:
             output = subprocess.check_output(
                 args,
@@ -117,7 +117,8 @@ class Catch2Facade(AbstractFacade):
 
             results = self._parse_xml(xml_filename)
 
-        for executed_test_id, failures, skipped in results:
+
+        for (executed_test_id, failures, skipped) in results:
             if executed_test_id == test_id:
                 if failures:
                     return (
@@ -145,7 +146,7 @@ class Catch2Facade(AbstractFacade):
     ) -> Sequence[tuple[str, Sequence[tuple[str, int, str]], bool]]:
         root = ElementTree.parse(xml_filename)
         result = []
-        for test_suite in root.findall("Group"):
+        for test_suite in root.iter("Catch2TestRun"):
             for test_case in test_suite.findall("TestCase"):
                 test_name = test_case.attrib["name"]
                 test_result = test_case.find("OverallResult")
