@@ -51,7 +51,9 @@ class Catch2Facade(AbstractFacade):
         2: Factorials of 1 and higher are computed (pass)
         """
         # This will return an exit code with the number of tests available
-        args = make_cmdline(harness_collect, executable, ["--list-tests", "--verbosity quiet"])
+        args = make_cmdline(
+            harness_collect, executable, ["--list-tests", "--verbosity quiet"]
+        )
         try:
             output = subprocess.check_output(
                 args,
@@ -117,8 +119,7 @@ class Catch2Facade(AbstractFacade):
 
             results = self._parse_xml(xml_filename)
 
-
-        for (executed_test_id, failures, skipped) in results:
+        for executed_test_id, failures, skipped in results:
             if executed_test_id == test_id:
                 if failures:
                     return (
