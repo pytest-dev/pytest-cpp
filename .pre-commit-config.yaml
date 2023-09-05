@@ -2,7 +2,7 @@ default_language_version:
   python: "3.10"
 repos:
   - repo: https://github.com/PyCQA/autoflake
-    rev: v2.2.0
+    rev: v2.2.1
     hooks:
       - id: autoflake
         name: autoflake
