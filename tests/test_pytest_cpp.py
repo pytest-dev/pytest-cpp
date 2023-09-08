@@ -610,6 +610,9 @@ def test_catch2_failure(exes):
 
     assert fail1.get_file_reference() == ("catch2_failure.cpp", 9)
 
+    failures, _ = facade.run_test(exes.get("catch2_failure"), "Failed Sections")
+    assert len(failures) == 2
+
 
 class TestError:
     def test_get_whitespace(self):
