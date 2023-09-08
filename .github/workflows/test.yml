@@ -3,8 +3,12 @@ name: test
 on:
   push:
     branches:
-      - "*"
+    - "master"
+    - "test-me-*"
+
   pull_request:
+    branches:
+    - "master"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

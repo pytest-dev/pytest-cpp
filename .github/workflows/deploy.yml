@@ -50,3 +50,6 @@ jobs:
 
     - name: GitHub Release
       uses: softprops/action-gh-release@v1
+      with:
+        files: dist/*
+        tag_name: v${{ github.event.inputs.version }}
