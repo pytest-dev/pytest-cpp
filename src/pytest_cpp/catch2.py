@@ -96,24 +96,6 @@ class Catch2Facade(AbstractFacade):
                 )
             except subprocess.CalledProcessError as e:
                 output = e.output
-                if e.returncode != 1:
-                    msg = (
-                        "Internal Error: calling {executable} "
-                        "for test {test_id} failed (returncode={returncode}):\n"
-                        "{output}"
-                    )
-                    failure = Catch2Failure(
-                        executable,
-                        0,
-                        msg.format(
-                            executable=executable,
-                            test_id=test_id,
-                            output=e.output,
-                            returncode=e.returncode,
-                        ),
-                    )
-
-                    return [failure], output
 
             results = self._parse_xml(xml_filename)
 
@@ -151,7 +133,7 @@ class Catch2Facade(AbstractFacade):
                 test_result = test_case.find("OverallResult")
                 failures = []
                 if test_result is not None and test_result.attrib["success"] == "false":
-                    test_checks = test_case.findall("Expression")
+                    test_checks = test_case.findall(".//Expression")
                     for check in test_checks:
                         file_name = check.attrib["filename"]
                         line_num = int(check.attrib["line"])

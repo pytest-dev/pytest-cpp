@@ -41,6 +41,12 @@ TEST_CASE( "vectors can be sized and resized", "[vector]" ) {
         REQUIRE( v.size() == 5 );
         REQUIRE( v.capacity() >= 5 );
     }
+    SECTION( "failed 1" ) {
+        REQUIRE(false);
+    }
+    SECTION( "failed 2" ) {
+        REQUIRE(false);
+    }
 }
 
 // Compile & run:

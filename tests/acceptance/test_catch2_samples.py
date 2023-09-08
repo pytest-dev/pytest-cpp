@@ -7,7 +7,7 @@ import pytest
         ("010-TestCase", 1, 1),
         ("020-TestCase", 2, 1),
         ("030-Asn-Require-Check", 1, 5),
-        ("100-Fix-Section", 1, 0),
+        ("100-Fix-Section", 1, 2),
         ("110-Fix-ClassFixture", 2, 0),
         ("120-Bdd-ScenarioGivenWhenThen", 1, 0),
     ],
