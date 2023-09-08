@@ -17,7 +17,7 @@ TEST_CASE( "Failed Sections" ) {
     SECTION( "failed 1" ) {
         REQUIRE(false);
     }
-    
+
     SECTION( "failed 2" ) {
         REQUIRE(false);
     }

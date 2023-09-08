@@ -57,7 +57,11 @@ def dummy_failure():
         (BoostTestFacade(), "boost_success", ["boost_success"]),
         (BoostTestFacade(), "boost_error", ["boost_error"]),
         (BoostTestFacade(), "boost_fixture_setup_error", ["boost_fixture_setup_error"]),
-        (Catch2Facade(), "catch2_success", ["Factorials are computed", "Passed Sections"]),
+        (
+            Catch2Facade(),
+            "catch2_success",
+            ["Factorials are computed", "Passed Sections"],
+        ),
     ],
 )
 def test_list_tests(facade, name, expected, exes):

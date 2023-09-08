@@ -16,7 +16,7 @@ TEST_CASE( "Passed Sections" ) {
     SECTION( "passed 1" ) {
         REQUIRE(true);
     }
-    
+
     SECTION( "passed 2" ) {
         REQUIRE(true);
     }
