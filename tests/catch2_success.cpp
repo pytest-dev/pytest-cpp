@@ -11,3 +11,13 @@ TEST_CASE( "Factorials are computed", "[factorial]" ) {
     REQUIRE( Factorial(3) == 6 );
     REQUIRE( Factorial(10) == 3628800 );
 }
+
+TEST_CASE( "Passed Sections" ) {
+    SECTION( "passed 1" ) {
+        REQUIRE(true);
+    }
+
+    SECTION( "passed 2" ) {
+        REQUIRE(true);
+    }
+}
