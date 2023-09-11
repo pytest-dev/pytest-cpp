@@ -62,6 +62,11 @@ def dummy_failure():
             "catch2_success",
             ["Factorials are computed", "Passed Sections"],
         ),
+        (
+            Catch2Facade(),
+            "catch2_success_v3",
+            ["Factorials are computed", "Passed Sections"],
+        ),
     ],
 )
 def test_list_tests(facade, name, expected, exes):
@@ -596,26 +601,32 @@ def test_cpp_verbose(testdir, exes):
     )
 
 
+def assert_catch2_failure(line, expected_line, expected_colors):
+    assert expected_line in line[0]
+    assert line[1] == expected_colors
+
+
 def test_catch2_failure(exes):
-    facade = Catch2Facade()
-    failures, _ = facade.run_test(exes.get("catch2_failure"), "Factorials are computed")
-    assert len(failures) == 1
+    for suffix in ["", "_v3"]:
+        facade = Catch2Facade()
+        failures, _ = facade.run_test(
+            exes.get(f"catch2_failure{suffix}"), "Factorials are computed"
+        )
+        assert len(failures) == 1
 
-    fail1 = failures[0]
-    colors = ("red", "bold")
-    assert fail1.get_lines() == [
-        ("Expected: ", colors),
-        ("          Factorial(1) == 0", colors),
-        ("        ", colors),
-        ("Actual: ", colors),
-        ("          1 == 0", colors),
-        ("        ", colors),
-    ]
+        fail1 = failures[0]
+        colors = ("red", "bold")
+        assert_catch2_failure(fail1.get_lines()[0], "Expected: ", colors)
+        assert_catch2_failure(fail1.get_lines()[1], "Factorial(1) == 0", colors)
+        assert_catch2_failure(fail1.get_lines()[3], "Actual: ", colors)
+        assert_catch2_failure(fail1.get_lines()[4], "1 == 0", colors)
 
-    assert fail1.get_file_reference() == ("catch2_failure.cpp", 9)
+        assert fail1.get_file_reference() == (f"catch2_failure.cpp", 9)
 
-    failures, _ = facade.run_test(exes.get("catch2_failure"), "Failed Sections")
-    assert len(failures) == 2
+        failures, _ = facade.run_test(
+            exes.get(f"catch2_failure{suffix}"), "Failed Sections"
+        )
+        assert len(failures) == 2
 
 
 class TestError:

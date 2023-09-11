@@ -19,9 +19,13 @@ if 'CXX' in os.environ:
 
 env = Environment(**kwargs)
 genv = env.Clone(LIBS=['gtest'] + LIBS)
-c2env = env.Clone(CPPPATH=['.'])
+c2env = env.Clone(CPPPATH=['.', 'catch2_v2'])
 
-Export('env genv c2env')
+catch2_v3 = env.Library('catch2_v3', ['catch2_v3/catch.cpp'])
+
+c3env = env.Clone(CPPPATH=['.', 'catch2_v3'], LIBS=[catch2_v3])
+
+Export('env genv c2env c3env')
 
 genv.Program('gtest.cpp')
 genv.Program('gtest_args.cpp')
@@ -39,8 +43,12 @@ boost_files = [
 for filename in boost_files:
     env.Program(filename)
 
-c2env.Program('catch2_success.cpp')
-c2env.Program('catch2_failure.cpp')
+for env, label in [(c3env, "_v3"), (c2env, "")]:
+    catch2_success = env.Object(f'catch2_success{label}', 'catch2_success.cpp')
+    catch2_failure = env.Object(f'catch2_failure{label}', 'catch2_failure.cpp')
+
+    env.Program(catch2_success)
+    env.Program(catch2_failure)
 
 SConscript('acceptance/googletest-samples/SConscript')
 SConscript('acceptance/boosttest-samples/SConscript')
