@@ -122,9 +122,7 @@ class Catch2Facade(AbstractFacade):
             except subprocess.CalledProcessError as e:
                 output = e.output
 
-            results = self._parse_xml(
-                xml_filename, catch_version
-            )
+            results = self._parse_xml(xml_filename, catch_version)
 
         for executed_test_id, failures, skipped in results:
             if executed_test_id == test_id:
