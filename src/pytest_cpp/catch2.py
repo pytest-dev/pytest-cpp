@@ -56,7 +56,10 @@ class Catch2Facade(AbstractFacade):
         executable: str,
         harness_collect: Sequence[str] = (),
     ) -> bool:
-        return cls.get_catch_version(executable, harness_collect) in [Catch2Version.V2, Catch2Version.V3]
+        return cls.get_catch_version(executable, harness_collect) in [
+            Catch2Version.V2,
+            Catch2Version.V3,
+        ]
 
     def list_tests(
         self,
