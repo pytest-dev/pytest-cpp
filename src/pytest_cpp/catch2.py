@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import enum
 import os
 import subprocess
 import tempfile
+from typing import Optional
 from typing import Sequence
 from xml.etree import ElementTree
 
@@ -14,17 +16,22 @@ from pytest_cpp.facade_abc import AbstractFacade
 from pytest_cpp.helpers import make_cmdline
 
 
+class Catch2Version(enum.Enum):
+    V2 = "v2"
+    V3 = "v3"
+
+
 class Catch2Facade(AbstractFacade):
     """
     Facade for Catch2.
     """
 
     @classmethod
-    def is_test_suite(
+    def get_catch_version(
         cls,
         executable: str,
         harness_collect: Sequence[str] = (),
-    ) -> bool:
+    ) -> Optional[Catch2Version]:
         args = make_cmdline(harness_collect, executable, ["--help"])
         try:
             output = subprocess.check_output(
@@ -33,9 +40,26 @@ class Catch2Facade(AbstractFacade):
                 universal_newlines=True,
             )
         except (subprocess.CalledProcessError, OSError):
-            return False
+            return None
         else:
-            return "--list-test-names-only" in output
+            return (
+                Catch2Version.V2
+                if "--list-test-names-only" in output
+                else Catch2Version.V3
+                if "--list-tests" in output
+                else None
+            )
+
+    @classmethod
+    def is_test_suite(
+        cls,
+        executable: str,
+        harness_collect: Sequence[str] = (),
+    ) -> bool:
+        return cls.get_catch_version(executable, harness_collect) in [
+            Catch2Version.V2,
+            Catch2Version.V3,
+        ]
 
     def list_tests(
         self,
@@ -43,7 +67,7 @@ class Catch2Facade(AbstractFacade):
         harness_collect: Sequence[str] = (),
     ) -> list[str]:
         """
-        Executes test with "--list-test-names-only" and gets list of tests
+        Executes test with "--list-test-names-only" (v2) or "--list-tests --verbosity quiet" (v3) and gets list of tests
         parsing output like this:
 
         1: All test cases reside in other .cpp files (empty)
@@ -51,7 +75,12 @@ class Catch2Facade(AbstractFacade):
         2: Factorials of 1 and higher are computed (pass)
         """
         # This will return an exit code with the number of tests available
-        args = make_cmdline(harness_collect, executable, ["--list-test-names-only"])
+        exec_args = (
+            ["--list-test-names-only"]
+            if self.get_catch_version(executable, harness_collect) == Catch2Version.V2
+            else ["--list-tests", "--verbosity quiet"]
+        )
+        args = make_cmdline(harness_collect, executable, exec_args)
         try:
             output = subprocess.check_output(
                 args,
@@ -77,6 +106,11 @@ class Catch2Facade(AbstractFacade):
             On Windows, ValueError is raised when path and start are on different drives.
             In this case failing back to the absolute path.
             """
+            catch_version = self.get_catch_version(executable, harness)
+
+            if catch_version is None:
+                raise Exception("Invalid Catch Version")
+
             try:
                 xml_filename = os.path.join(os.path.relpath(temp_dir), "cpp-report.xml")
             except ValueError:
@@ -97,7 +131,7 @@ class Catch2Facade(AbstractFacade):
             except subprocess.CalledProcessError as e:
                 output = e.output
 
-            results = self._parse_xml(xml_filename)
+            results = self._parse_xml(xml_filename, catch_version)
 
         for executed_test_id, failures, skipped in results:
             if executed_test_id == test_id:
@@ -123,11 +157,16 @@ class Catch2Facade(AbstractFacade):
         return [failure], output
 
     def _parse_xml(
-        self, xml_filename: str
+        self, xml_filename: str, catch_version: Catch2Version
     ) -> Sequence[tuple[str, Sequence[tuple[str, int, str]], bool]]:
         root = ElementTree.parse(xml_filename)
         result = []
-        for test_suite in root.findall("Group"):
+        test_suites = (
+            root.findall("Group")
+            if catch_version == Catch2Version.V2
+            else root.iter("Catch2TestRun")
+        )
+        for test_suite in test_suites:
             for test_case in test_suite.findall("TestCase"):
                 test_name = test_case.attrib["name"]
                 test_result = test_case.find("OverallResult")

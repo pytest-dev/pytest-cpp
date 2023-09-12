@@ -4,9 +4,12 @@
 !.gitignore
 !*.h
 !*.cpp
+!*.hpp
 !*.cc
 !*.py
 !*.xml
 !README*
 !SCons*
-!catch.hpp
+
+!catch2_v2
+!catch2_v3

@@ -1,3 +1,7 @@
+# UNRELEASED
+
+- Catch2: add support for catch version 3 ([#115](https://github.com/pytest-dev/pytest-cpp/pull/115))
+
 # 2.4.0 (2023-09-08)
 
 - Catch2: fix issue with multiple test failures, and support multiple "SECTION" tests. ([#112](https://github.com/pytest-dev/pytest-cpp/pull/112))
