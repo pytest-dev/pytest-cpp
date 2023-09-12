@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import enum
 import os
 import subprocess
 import tempfile
@@ -15,6 +16,11 @@ from pytest_cpp.facade_abc import AbstractFacade
 from pytest_cpp.helpers import make_cmdline
 
 
+class Catch2Version(enum.Enum):
+    V2 = "v2"
+    V3 = "v3"
+
+
 class Catch2Facade(AbstractFacade):
     """
     Facade for Catch2.
@@ -25,7 +31,7 @@ class Catch2Facade(AbstractFacade):
         cls,
         executable: str,
         harness_collect: Sequence[str] = (),
-    ) -> Optional[str]:
+    ) -> Optional[Catch2Version]:
         args = make_cmdline(harness_collect, executable, ["--help"])
         try:
             output = subprocess.check_output(
@@ -37,9 +43,9 @@ class Catch2Facade(AbstractFacade):
             return None
         else:
             return (
-                "v2"
+                Catch2Version.V2
                 if "--list-test-names-only" in output
-                else "v3"
+                else Catch2Version.V3
                 if "--list-tests" in output
                 else None
             )
@@ -50,7 +56,7 @@ class Catch2Facade(AbstractFacade):
         executable: str,
         harness_collect: Sequence[str] = (),
     ) -> bool:
-        return cls.get_catch_version(executable, harness_collect) in ["v2", "v3"]
+        return cls.get_catch_version(executable, harness_collect) in [Catch2Version.V2, Catch2Version.V3]
 
     def list_tests(
         self,
@@ -68,7 +74,7 @@ class Catch2Facade(AbstractFacade):
         # This will return an exit code with the number of tests available
         exec_args = (
             ["--list-test-names-only"]
-            if self.get_catch_version(executable, harness_collect) == "v2"
+            if self.get_catch_version(executable, harness_collect) == Catch2Version.V2
             else ["--list-tests", "--verbosity quiet"]
         )
         args = make_cmdline(harness_collect, executable, exec_args)
@@ -148,13 +154,13 @@ class Catch2Facade(AbstractFacade):
         return [failure], output
 
     def _parse_xml(
-        self, xml_filename: str, catch_version: str
+        self, xml_filename: str, catch_version: Catch2Version
     ) -> Sequence[tuple[str, Sequence[tuple[str, int, str]], bool]]:
         root = ElementTree.parse(xml_filename)
         result = []
         test_suites = (
             root.findall("Group")
-            if catch_version == "v2"
+            if catch_version == Catch2Version.V2
             else root.iter("Catch2TestRun")
         )
         for test_suite in test_suites:
