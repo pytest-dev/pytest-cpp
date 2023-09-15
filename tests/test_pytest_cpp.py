@@ -628,6 +628,12 @@ def test_catch2_failure(exes):
         )
         assert len(failures) == 2
 
+        # test exceptions
+        failures, _ = facade.run_test(
+            exes.get(f"catch2_error{suffix}"), "Error"
+        )
+        assert len(failures) == 1
+
 
 class TestError:
     def test_get_whitespace(self):
