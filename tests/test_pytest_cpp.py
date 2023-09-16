@@ -630,9 +630,7 @@ def test_catch2_failure(exes):
 
         # test exceptions
         failures, _ = facade.run_test(exes.get(f"catch2_error{suffix}"), "Error")
-        assert len(failures) == 1
-
-        fail1 = failures[0]
+        [fail1] = failures
         assert_catch2_failure(fail1.get_lines()[0], "Error: ", colors)
         assert_catch2_failure(fail1.get_lines()[1], "a runtime error", colors)
 
