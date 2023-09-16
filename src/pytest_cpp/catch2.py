@@ -191,6 +191,19 @@ class Catch2Facade(AbstractFacade):
                                     fail_msg,
                                 )
                             )
+                    test_exception = test_case.findall(".//Exception")
+                    for exception in test_exception:
+                        file_name = exception.attrib["filename"]
+                        line_num = int(exception.attrib["line"])
+
+                        fail_msg = f"Error: {exception.text}"
+                        failures.append(
+                            (
+                                file_name,
+                                line_num,
+                                fail_msg,
+                            )
+                        )
                 skipped = False  # TODO: skipped tests don't appear in the results
                 result.append((test_name, failures, skipped))
 

@@ -46,9 +46,11 @@ for filename in boost_files:
 for env, label in [(c3env, "_v3"), (c2env, "")]:
     catch2_success = env.Object(f'catch2_success{label}', 'catch2_success.cpp')
     catch2_failure = env.Object(f'catch2_failure{label}', 'catch2_failure.cpp')
+    catch2_error = env.Object(f'catch2_error{label}', 'catch2_error.cpp')
 
     env.Program(catch2_success)
     env.Program(catch2_failure)
+    env.Program(catch2_error)
 
 SConscript('acceptance/googletest-samples/SConscript')
 SConscript('acceptance/boosttest-samples/SConscript')
