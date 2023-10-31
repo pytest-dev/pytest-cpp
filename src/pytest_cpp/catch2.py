@@ -16,6 +16,15 @@ from pytest_cpp.facade_abc import AbstractFacade
 from pytest_cpp.helpers import make_cmdline
 
 
+# Map each special character's Unicode ordinal to the escaped character.
+_special_chars_map: dict[int, str] = {i: "\\" + chr(i) for i in b'[]*,~\\"'}
+
+
+def escape(test_id: str) -> str:
+    """Escape special characters in test names."""
+    return test_id.translate(_special_chars_map)
+
+
 class Catch2Version(enum.Enum):
     V2 = "v2"
     V3 = "v3"
@@ -115,14 +124,14 @@ class Catch2Facade(AbstractFacade):
                 xml_filename = os.path.join(os.path.relpath(temp_dir), "cpp-report.xml")
             except ValueError:
                 xml_filename = os.path.join(temp_dir, "cpp-report.xml")
-            args = list(
-                make_cmdline(
-                    harness,
-                    executable,
-                    [test_id, "--success", "--reporter=xml", f"--out {xml_filename}"],
-                )
-            )
-            args.extend(test_args)
+            exec_args = [
+                escape(test_id),
+                "--success",
+                "--reporter=xml",
+                f"--out={xml_filename}",
+            ]
+            exec_args.extend(test_args)
+            args = make_cmdline(harness, executable, exec_args)
 
             try:
                 output = subprocess.check_output(
