@@ -21,7 +21,7 @@ _special_chars_map: dict[int, str] = {i: "\\" + chr(i) for i in b'[]*,~\\"'}
 
 
 def escape(test_id: str) -> str:
-    """Escape special characters in test names."""
+    """Escape special characters in test names (see #123)."""
     return test_id.translate(_special_chars_map)
 
 
