@@ -1,9 +1,9 @@
 import subprocess
 import sys
 import tempfile
+from shutil import which
 
 import pytest
-from distutils.spawn import find_executable
 
 from pytest_cpp import error
 from pytest_cpp.boost import BoostTestFacade
@@ -451,7 +451,7 @@ def test_argument_option_priority(testdir, exes):
 
 
 @pytest.mark.skipif(
-    not find_executable("valgrind") or not find_executable("catchsegv"),
+    not which("valgrind") or not which("catchsegv"),
     reason="Environment does not have required tools",
 )
 def test_google_cpp_harness_via_option(testdir, exes):
@@ -504,7 +504,7 @@ def test_boost_two_arguments_via_option(testdir, exes):
 
 
 @pytest.mark.skipif(
-    not find_executable("valgrind") or not find_executable("catchsegv"),
+    not which("valgrind") or not which("catchsegv"),
     reason="Environment does not have required tools",
 )
 def test_boost_cpp_harness_via_option(testdir, exes):
