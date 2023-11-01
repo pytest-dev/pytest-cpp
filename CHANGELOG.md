@@ -1,4 +1,4 @@
-# UNRELEASED
+# 2.5.0 (2023-11-01)
 
 - Catch2: add support for catch version 3 ([#115](https://github.com/pytest-dev/pytest-cpp/pull/115)).
 - Catch2: support exception handling ([#117](https://github.com/pytest-dev/pytest-cpp/pull/117)).
