@@ -75,18 +75,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ["3.7", "3.8", "3.9", "3.10", "3.11-dev"]
-        include:
-          - python: "3.7"
-            tox_env: "py37"
-          - python: "3.8"
-            tox_env: "py38"
-          - python: "3.9"
-            tox_env: "py39"
-          - python: "3.10"
-            tox_env: "py310"
-          - python: "3.11-dev"
-            tox_env: "py311"
+        python: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
 
     steps:
     - uses: actions/checkout@v2
@@ -115,4 +104,4 @@ jobs:
     - name: Test
       shell: bash
       run: |
-        tox run -e ${{ matrix.tox_env }} --installpkg `find dist/*.tar.gz`
+        tox run -e py --installpkg `find dist/*.tar.gz`

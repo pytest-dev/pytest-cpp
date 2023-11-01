@@ -2,6 +2,7 @@
 
 - Catch2: add support for catch version 3 ([#115](https://github.com/pytest-dev/pytest-cpp/pull/115))
 - Catch2: support exception handling ([#117](https://github.com/pytest-dev/pytest-cpp/pull/117))
+- Added support for Python 3.12.
 
 # 2.4.0 (2023-09-08)
 
