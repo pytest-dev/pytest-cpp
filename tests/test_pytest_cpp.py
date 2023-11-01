@@ -635,6 +635,24 @@ def test_catch2_failure(exes):
         assert_catch2_failure(fail1.get_lines()[1], "a runtime error", colors)
 
 
+@pytest.mark.parametrize("suffix", ["", "_v3"])
+@pytest.mark.parametrize(
+    "test_id",
+    [
+        "Brackets in [test] name",
+        "**Star in test name**",
+        "~Tilde in test name",
+        "Comma, in, test, name",
+        r"Backslash\ in\ test\ name",
+        '"Quotes" in test name',
+    ],
+)
+def test_catch2_special_chars(suffix, test_id, exes):
+    facade = Catch2Facade()
+    exe = exes.get("catch2_special_chars" + suffix)
+    assert facade.run_test(exe, test_id)[0] is None
+
+
 class TestError:
     def test_get_whitespace(self):
         assert error.get_left_whitespace("  foo") == "  "
