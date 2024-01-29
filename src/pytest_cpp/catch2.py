@@ -54,9 +54,7 @@ class Catch2Facade(AbstractFacade):
             return (
                 Catch2Version.V2
                 if "--list-test-names-only" in output
-                else Catch2Version.V3
-                if "--list-tests" in output
-                else None
+                else Catch2Version.V3 if "--list-tests" in output else None
             )
 
     @classmethod
