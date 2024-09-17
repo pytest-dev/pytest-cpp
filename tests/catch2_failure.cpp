@@ -13,6 +13,10 @@ TEST_CASE( "Factorials are computed", "[factorial]" ) {
     REQUIRE( Factorial(10) == 3628800 );
 }
 
+TEST_CASE( "Test fail macro" ) {
+    FAIL("This is a fail");
+}
+
 TEST_CASE( "Failed Sections" ) {
     SECTION( "failed 1" ) {
         REQUIRE(false);
