@@ -10,11 +10,8 @@ setup(
     entry_points={
         "pytest11": ["cpp = pytest_cpp.plugin"],
     },
-    install_requires=[
-        "pytest >=7.0",
-        "colorama",
-    ],
-    python_requires=">=3.7",
+    install_requires=["pytest"],
+    python_requires=">=3.8",
     author="Bruno Oliveira",
     author_email="nicoddemus@gmail.com",
     description="Use pytest's runner to discover and execute C++ tests",
@@ -30,7 +27,6 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
