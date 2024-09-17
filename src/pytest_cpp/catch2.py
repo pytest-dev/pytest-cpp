@@ -198,6 +198,7 @@ class Catch2Facade(AbstractFacade):
                                     fail_msg,
                                 )
                             )
+                    # These two tags contain the same attributes and can be treated the same
                     test_exception = test_case.findall(".//Exception")
                     test_failure = test_case.findall(".//Failure")
                     for exception in test_exception + test_failure:
