@@ -199,11 +199,12 @@ class Catch2Facade(AbstractFacade):
                                 )
                             )
                     test_exception = test_case.findall(".//Exception")
-                    for exception in test_exception:
+                    test_failure = test_case.findall(".//Failure")
+                    for exception in (test_exception + test_failure):
                         file_name = exception.attrib["filename"]
                         line_num = int(exception.attrib["line"])
 
-                        fail_msg = f"Error: {exception.text}"
+                        fail_msg = f"Error: {exception.text.strip()}"
                         failures.append(
                             (
                                 file_name,
