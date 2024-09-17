@@ -204,7 +204,7 @@ class Catch2Facade(AbstractFacade):
                         file_name = exception.attrib["filename"]
                         line_num = int(exception.attrib["line"])
 
-                        fail_msg = f"Error: {exception.text.strip()}"
+                        fail_msg = f"Error: {exception.text}"
                         failures.append(
                             (
                                 file_name,
