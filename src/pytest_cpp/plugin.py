@@ -6,7 +6,6 @@ import sys
 from fnmatch import fnmatch
 from pathlib import Path
 from typing import Any
-from typing import cast
 from typing import Iterator
 from typing import Sequence
 from typing import Type
@@ -143,11 +142,8 @@ class CppFile(pytest.File):
         arguments: Sequence[str],
         **kwargs: Any,
     ) -> CppFile:
-        return cast(
-            CppFile,
-            super().from_parent(
-                parent=parent, path=path, facade=facade, arguments=arguments
-            ),
+        return super().from_parent(
+            parent=parent, path=path, facade=facade, arguments=arguments
         )
 
     def collect(self) -> Iterator[CppItem]:
@@ -188,11 +184,8 @@ class CppItem(pytest.Item):
         arguments: Sequence[str],
         **kwargs: Any,
     ) -> CppItem:
-        return cast(
-            CppItem,
-            super().from_parent(
-                name=name, parent=parent, facade=facade, arguments=arguments, **kwargs
-            ),
+        return super().from_parent(
+            name=name, parent=parent, facade=facade, arguments=arguments, **kwargs
         )
 
     def runtest(self) -> None:

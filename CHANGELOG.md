@@ -1,6 +1,9 @@
-# UNRELEASED
+# 2.6.0
+
+*2024-09-17*
 
 - Catch2: recognize `FAIL()` calls ([#147](https://github.com/pytest-dev/pytest-cpp/pull/147)).
+- Dropped support for EOL Python 3.7.
 
 # 2.5.0 (2023-11-01)
 

@@ -40,4 +40,4 @@ repos:
         files: src/
         args: []
         additional_dependencies:
-          - pytest>=7
+          - pytest
