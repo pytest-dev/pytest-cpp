@@ -25,9 +25,9 @@ jobs:
         gtest_ver: [ "1.11.0" ]
 
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
       - name: Set up Python
-        uses: actions/setup-python@v5.2.0
+        uses: actions/setup-python@v5.3.0
         with:
           python-version: "3.8"
       - name: Install GoogleTest
@@ -64,7 +64,7 @@ jobs:
   package:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
       - name: Build and Check Package
         uses: hynek/build-and-inspect-python-package@v2.9.0
 
@@ -78,9 +78,9 @@ jobs:
         python: ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
     steps:
-    - uses: actions/checkout@v4.2.1
+    - uses: actions/checkout@v4.2.2
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.3.0
       with:
         python-version: ${{ matrix.python }}
 
