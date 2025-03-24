@@ -49,7 +49,7 @@ jobs:
           pip install scons
           scons -j4 -C tests
       - name: Upload compilation results
-        uses: actions/upload-artifact@v4.6.1
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: tests
           if-no-files-found: error
@@ -85,13 +85,13 @@ jobs:
         python-version: ${{ matrix.python }}
 
     - name: Download compiled tests
-      uses: actions/download-artifact@v4.1.9
+      uses: actions/download-artifact@v4.2.1
       with:
         name: tests
         path: tests
 
     - name: Download Package
-      uses: actions/download-artifact@v4.1.9
+      uses: actions/download-artifact@v4.2.1
       with:
         name: Packages
         path: dist
