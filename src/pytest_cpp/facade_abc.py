@@ -32,6 +32,7 @@ class AbstractFacade(ABC):
         test_id: str,
         test_args: Sequence[str] = (),
         harness: Sequence[str] = (),
+        deployed: bool = False,
     ) -> tuple[Sequence[CppTestFailure] | None, str]:
         """
         Runs a test and returns the results.

@@ -81,6 +81,7 @@ class GoogleTestFacade(AbstractFacade):
         test_id: str,
         test_args: Sequence[str] = (),
         harness: Sequence[str] = (),
+        deployed: bool = False,
     ) -> tuple[list[GoogleTestFailure] | None, str]:
         with tempfile.TemporaryDirectory(prefix="pytest-cpp") as temp_dir:
             # On Windows, ValueError is raised when path and start are on different drives.
@@ -88,6 +89,8 @@ class GoogleTestFacade(AbstractFacade):
             try:
                 xml_filename = os.path.join(os.path.relpath(temp_dir), "cpp-report.xml")
             except ValueError:
+                xml_filename = os.path.join(temp_dir, "cpp-report.xml")
+            if deployed:
                 xml_filename = os.path.join(temp_dir, "cpp-report.xml")
             args = list(
                 make_cmdline(
@@ -120,6 +123,15 @@ class GoogleTestFacade(AbstractFacade):
                     )
 
                     return [failure], output
+
+            if deployed:
+                subprocess.run(
+                    f"ez-scp :{xml_filename} {xml_filename}",
+                    shell=True,
+                    check=True,
+                    text=True,
+                    capture_output=True,
+                )
 
             results = self._parse_xml(xml_filename)
 

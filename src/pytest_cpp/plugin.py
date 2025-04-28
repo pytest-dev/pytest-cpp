@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import stat
+import subprocess
 import sys
 from fnmatch import fnmatch
 from pathlib import Path
@@ -56,6 +57,8 @@ def pytest_collect_file(
     masks = config.getini("cpp_files")
     test_args = config.getini("cpp_arguments")
     cpp_ignore_py_files = config.getini("cpp_ignore_py_files")
+    cpp_deploy_path = Path(config.getini("cpp_deploy_path")[0])
+    cpp_deploy_cmd = str(config.getini("cpp_deploy_cmd")[0])
 
     # don't attempt to check *.py files even if they were given as explicit arguments
     if cpp_ignore_py_files and fnmatch(file_path.name, "*.py"):
@@ -67,6 +70,11 @@ def pytest_collect_file(
         return None
 
     harness_collect = parent.config.getini("cpp_harness_collect")
+    if cpp_deploy_path:
+        deployed_file_path = cpp_deploy_path / f"{file_path.name}"
+        cmd = f"{cpp_deploy_cmd} {file_path} :{deployed_file_path}"
+        subprocess.run(cmd, check=True, shell=True, text=True, capture_output=True)
+        file_path = deployed_file_path
     for facade_class in FACADES:
         if facade_class.is_test_suite(str(file_path), harness_collect=harness_collect):
             return CppFile.from_parent(
@@ -115,6 +123,18 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         type="bool",
         default=False,
         help="print the test output right after it ran, requires -s",
+    )
+    parser.addini(
+        "cpp_deploy_path",
+        type="args",
+        default=(),
+        help="path to which test binary should be deployed before test collection/execution",
+    )
+    parser.addini(
+        "cpp_deploy_cmd",
+        type="args",
+        default=(),
+        help="cmd to deploy",
     )
 
 
@@ -194,6 +214,7 @@ class CppItem(pytest.Item):
             self.name,
             self._arguments,
             harness=self.config.getini("cpp_harness"),
+            deployed=bool(self.config.getini("cpp_deploy_path")),
         )
         # Report the c++ output in its own sections
         self.add_report_section("call", "c++", output)
