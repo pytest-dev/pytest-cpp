@@ -16,7 +16,7 @@ repos:
       args: ['--application-directories=.:src']
       name: reorder python imports
   - repo: https://github.com/psf/black
-    rev: 25.1.0
+    rev: 25.9.0
     hooks:
       - id: black
         args: [--safe, --quiet]
@@ -34,7 +34,7 @@ repos:
         language: python
         additional_dependencies: [pygments, restructuredtext_lint]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.18.1
+    rev: v1.18.2
     hooks:
     -   id: mypy
         files: src/
