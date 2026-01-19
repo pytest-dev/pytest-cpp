@@ -15,7 +15,6 @@ from pytest_cpp.error import Markup
 from pytest_cpp.facade_abc import AbstractFacade
 from pytest_cpp.helpers import make_cmdline
 
-
 # Map each special character's Unicode ordinal to the escaped character.
 _special_chars_map: dict[int, str] = {i: "\\" + chr(i) for i in b'[]*,~\\"'}
 

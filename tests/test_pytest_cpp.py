@@ -342,12 +342,10 @@ def test_cpp_files_option(testdir, exes):
     result = testdir.runpytest("--collect-only")
     result.stdout.fnmatch_lines("* no tests *")
 
-    testdir.makeini(
-        """
+    testdir.makeini("""
         [pytest]
         cpp_files = gtest* boost*
-    """
-    )
+    """)
     result = testdir.runpytest("--collect-only")
     result.stdout.fnmatch_lines(
         [
@@ -364,12 +362,10 @@ def test_cpp_files_option(testdir, exes):
 def test_cpp_ignore_py_files(testdir, exes):
     file_name = "cpptest_success.py"
     exes.get("gtest", "cpptest_success.py")
-    testdir.makeini(
-        """
+    testdir.makeini("""
         [pytest]
         cpp_files = cpptest_*
-    """
-    )
+    """)
 
     result = testdir.runpytest("--collect-only")
     result.stdout.fnmatch_lines("* no tests *")
@@ -388,24 +384,20 @@ def test_cpp_ignore_py_files(testdir, exes):
 
 
 def test_google_one_argument(testdir, exes):
-    testdir.makeini(
-        """
+    testdir.makeini("""
         [pytest]
         cpp_arguments = argument1
-    """
-    )
+    """)
 
     result = testdir.inline_run(exes.get("gtest_args"), "-k", "ArgsTest.one_argument")
     assert_outcomes(result, [("ArgsTest.one_argument", "passed")])
 
 
 def test_google_two_arguments(testdir, exes):
-    testdir.makeini(
-        """
+    testdir.makeini("""
         [pytest]
         cpp_arguments = argument1 argument2
-    """
-    )
+    """)
 
     result = testdir.inline_run(exes.get("gtest_args"), "-k", "ArgsTest.two_arguments")
     assert_outcomes(result, [("ArgsTest.two_arguments", "passed")])
@@ -434,12 +426,10 @@ def test_google_two_arguments_via_option(testdir, exes):
 
 
 def test_argument_option_priority(testdir, exes):
-    testdir.makeini(
-        """
+    testdir.makeini("""
         [pytest]
         cpp_arguments = argument2
-    """
-    )
+    """)
     result = testdir.inline_run(
         exes.get("gtest_args"),
         "-k",
@@ -466,24 +456,20 @@ def test_google_cpp_harness_via_option(testdir, exes):
 
 
 def test_boost_one_argument(testdir, exes):
-    testdir.makeini(
-        """
+    testdir.makeini("""
         [pytest]
         cpp_arguments = argument1
-    """
-    )
+    """)
 
     result = testdir.inline_run(exes.get("boost_one_argument"))
     assert_outcomes(result, [("boost_one_argument", "passed")])
 
 
 def test_boost_two_arguments(testdir, exes):
-    testdir.makeini(
-        """
+    testdir.makeini("""
         [pytest]
         cpp_arguments = argument1 argument2
-    """
-    )
+    """)
 
     result = testdir.inline_run(exes.get("boost_two_arguments"))
     assert_outcomes(result, [("boost_two_arguments", "passed")])
@@ -569,12 +555,10 @@ def test_output_section(testdir, exes):
     exes.get("boost_failure")
     exes.get("gtest")
 
-    testdir.makeini(
-        """
+    testdir.makeini("""
         [pytest]
         cpp_files = gtest* boost*
-    """
-    )
+    """)
     result = testdir.runpytest("-k", "failure")
     result.stdout.fnmatch_lines(
         [
@@ -589,12 +573,10 @@ def test_cpp_verbose(testdir, exes):
     exes.get("boost_success")
     exes.get("gtest")
 
-    testdir.makeini(
-        """
+    testdir.makeini("""
         [pytest]
         cpp_files = gtest* boost*
-    """
-    )
+    """)
     result = testdir.runpytest("-k", "success", "-s", "-o", "cpp_verbose=true")
     result.stdout.fnmatch_lines(
         ["*Just saying hi from boost", "*Just saying hi from gtest"]
