@@ -1,6 +1,5 @@
 from setuptools import setup
 
-
 setup(
     name="pytest-cpp",
     use_scm_version=True,

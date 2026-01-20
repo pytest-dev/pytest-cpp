@@ -133,7 +133,7 @@ class CppFile(pytest.File):
         self._arguments = arguments
 
     @classmethod
-    def from_parent(  # type:ignore[override]
+    def from_parent(  # type: ignore[override]
         cls,
         *,
         parent: pytest.Collector,
@@ -175,7 +175,7 @@ class CppItem(pytest.Item):
         self._arguments = arguments
 
     @classmethod
-    def from_parent(  # type:ignore[override]
+    def from_parent(  # type: ignore[override]
         cls,
         *,
         parent: pytest.Collector,
@@ -204,7 +204,7 @@ class CppItem(pytest.Item):
         if failures:
             raise CppFailureError(failures)
 
-    def repr_failure(  # type:ignore[override]
+    def repr_failure(  # type: ignore[override]
         self, excinfo: pytest.ExceptionInfo[BaseException]
     ) -> str | TerminalRepr | CppFailureRepr:
         if isinstance(excinfo.value, CppFailureError):
