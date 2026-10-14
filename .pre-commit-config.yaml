@@ -1,5 +1,5 @@
 default_language_version:
-  python: "3.10"
+  python: "3.12"
 repos:
   - repo: https://github.com/PyCQA/autoflake
     rev: v2.4.0
@@ -10,13 +10,13 @@ repos:
         language: python
         files: \.py$
   - repo: https://github.com/asottile/reorder-python-imports
-    rev: v3.17.0
+    rev: v3.18.0
     hooks:
     - id: reorder-python-imports
       args: ['--application-directories=.:src']
       name: reorder python imports
   - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 26.10.0
+    rev: 26.10.1
     hooks:
       - id: black
         args: [--safe, --quiet]
