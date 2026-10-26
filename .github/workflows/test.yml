@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Set up Python
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7.1.0
         with:
           python-version: "3.8"
       - name: Install GoogleTest
@@ -66,7 +66,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Build and Check Package
-        uses: hynek/build-and-inspect-python-package@v3.0.1
+        uses: hynek/build-and-inspect-python-package@v3.0.2
 
   test:
     needs: [compile, package]
@@ -80,7 +80,7 @@ jobs:
     steps:
     - uses: actions/checkout@v7.0.1
     - name: Set up Python
-      uses: actions/setup-python@v7.0.0
+      uses: actions/setup-python@v7.1.0
       with:
         python-version: ${{ matrix.python }}
 
