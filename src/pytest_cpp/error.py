@@ -4,8 +4,7 @@ import os
 import string
 from abc import ABC
 from abc import abstractmethod
-from typing import Sequence
-from typing import Tuple
+from collections.abc import Sequence
 
 from _pytest._code.code import ReprFileLocation
 from _pytest._io import TerminalWriter
@@ -20,7 +19,7 @@ class CppFailureError(Exception):
         self.failures = list(failures)
 
 
-Markup = Tuple[str, ...]
+Markup = tuple[str, ...]
 
 
 class CppTestFailure(ABC):
@@ -49,7 +48,7 @@ class CppTestFailure(ABC):
         """
 
 
-class CppFailureRepr(object):
+class CppFailureRepr:
     """
     "repr" object for pytest that knows how to print a CppFailure instance
     into both terminal and files.
@@ -65,7 +64,7 @@ class CppFailureRepr(object):
         for failure in self.failures:
             pure_lines = "\n".join(x[0] for x in failure.get_lines())
             repr_loc = self._get_repr_file_location(failure)
-            reprs.append("%s\n%s" % (pure_lines, repr_loc))
+            reprs.append(f"{pure_lines}\n{repr_loc}")
         return self.failure_sep.join(reprs)
 
     def _get_repr_file_location(self, failure: CppTestFailure) -> ReprFileLocation:

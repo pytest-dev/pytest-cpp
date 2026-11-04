@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import subprocess
 import tempfile
-from typing import Sequence
+from collections.abc import Sequence
 from xml.etree import ElementTree
 
 import pytest
@@ -30,7 +30,7 @@ class GoogleTestFacade(AbstractFacade):
             output = subprocess.check_output(
                 args,
                 stderr=subprocess.STDOUT,
-                universal_newlines=True,
+                text=True,
             )
         except (subprocess.CalledProcessError, OSError):
             return False
@@ -55,7 +55,7 @@ class GoogleTestFacade(AbstractFacade):
         output = subprocess.check_output(
             args,
             stderr=subprocess.STDOUT,
-            universal_newlines=True,
+            text=True,
         )
 
         def strip_comment(x: str) -> str:
@@ -100,7 +100,7 @@ class GoogleTestFacade(AbstractFacade):
 
             try:
                 output = subprocess.check_output(
-                    args, stderr=subprocess.STDOUT, universal_newlines=True
+                    args, stderr=subprocess.STDOUT, text=True
                 )
             except subprocess.CalledProcessError as e:
                 output = e.output

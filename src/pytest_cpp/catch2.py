@@ -4,8 +4,7 @@ import enum
 import os
 import subprocess
 import tempfile
-from typing import Optional
-from typing import Sequence
+from collections.abc import Sequence
 from xml.etree import ElementTree
 
 import pytest
@@ -39,13 +38,13 @@ class Catch2Facade(AbstractFacade):
         cls,
         executable: str,
         harness_collect: Sequence[str] = (),
-    ) -> Optional[Catch2Version]:
+    ) -> Catch2Version | None:
         args = make_cmdline(harness_collect, executable, ["--help"])
         try:
             output = subprocess.check_output(
                 args,
                 stderr=subprocess.STDOUT,
-                universal_newlines=True,
+                text=True,
             )
         except (subprocess.CalledProcessError, OSError):
             return None
@@ -91,7 +90,7 @@ class Catch2Facade(AbstractFacade):
             output = subprocess.check_output(
                 args,
                 stderr=subprocess.STDOUT,
-                universal_newlines=True,
+                text=True,
             )
         except subprocess.CalledProcessError as e:
             output = e.output
@@ -132,7 +131,7 @@ class Catch2Facade(AbstractFacade):
 
             try:
                 output = subprocess.check_output(
-                    args, stderr=subprocess.STDOUT, universal_newlines=True
+                    args, stderr=subprocess.STDOUT, text=True
                 )
             except subprocess.CalledProcessError as e:
                 output = e.output
