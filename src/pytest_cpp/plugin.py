@@ -3,12 +3,11 @@ from __future__ import annotations
 import os
 import stat
 import sys
+from collections.abc import Iterator
+from collections.abc import Sequence
 from fnmatch import fnmatch
 from pathlib import Path
 from typing import Any
-from typing import Iterator
-from typing import Sequence
-from typing import Type
 from typing import TYPE_CHECKING
 
 import pytest
@@ -24,7 +23,7 @@ if TYPE_CHECKING:
     from _pytest._code.code import TerminalRepr
 
 
-FACADES: Sequence[Type[AbstractFacade]] = (
+FACADES: Sequence[type[AbstractFacade]] = (
     GoogleTestFacade,
     BoostTestFacade,
     Catch2Facade,
@@ -123,7 +122,7 @@ class CppFile(pytest.File):
         self,
         *,
         path: Path,
-        parent: pytest.Item,
+        parent: pytest.Collector,
         facade: AbstractFacade,
         arguments: Sequence[str],
         **kwargs: Any,

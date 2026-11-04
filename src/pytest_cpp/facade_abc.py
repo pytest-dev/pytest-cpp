@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC
 from abc import abstractmethod
-from typing import Sequence
+from collections.abc import Sequence
 
 from pytest_cpp.error import CppTestFailure
 

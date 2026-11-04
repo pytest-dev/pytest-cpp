@@ -1,3 +1,8 @@
+# UNRELEASED
+
+- Dropped support for EOL Python 3.8, 3.9, and 3.10.
+- Added support for Python 3.13, 3.14, and 3.15.
+
 # 2.6.0
 
 *2024-09-17*
