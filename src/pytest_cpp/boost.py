@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import io
 import os
 import subprocess
 import tempfile
-from typing import Sequence
+from collections.abc import Sequence
 from xml.etree import ElementTree
 
 from pytest_cpp.error import CppTestFailure
@@ -29,7 +28,7 @@ class BoostTestFacade(AbstractFacade):
             output = subprocess.check_output(
                 args,
                 stderr=subprocess.STDOUT,
-                universal_newlines=True,
+                text=True,
             )
         except (subprocess.CalledProcessError, OSError):
             return False
@@ -55,9 +54,9 @@ class BoostTestFacade(AbstractFacade):
     ) -> tuple[Sequence[BoostTestFailure] | None, str]:
         def read_file(name: str) -> str:
             try:
-                with io.open(name) as f:
+                with open(name) as f:
                     return f.read()
-            except IOError:
+            except OSError:
                 return ""
 
         with tempfile.TemporaryDirectory(prefix="pytest-cpp") as temp_dir:
@@ -128,7 +127,7 @@ class BoostTestFacade(AbstractFacade):
         # Boosttest will sometimes generate unparseable XML
         # so we surround it with xml tags.
         parsed_elements = []
-        log = "<xml>{}</xml>".format(log)
+        log = f"<xml>{log}</xml>"
 
         log_root = ElementTree.fromstring(log)
         testlog = log_root.find("TestLog")

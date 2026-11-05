@@ -27,9 +27,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Set up Python
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7.1.0
         with:
-          python-version: "3.8"
+          python-version: "3.11"
       - name: Install GoogleTest
         run: |
           wget https://github.com/google/googletest/archive/release-${{ matrix.gtest_ver }}.tar.gz
@@ -37,7 +37,7 @@ jobs:
           cd googletest-release-${{ matrix.gtest_ver }}
           mkdir build
           cd build
-          cmake ..
+          cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
           sudo make install
       - name: Install Boost.Test
         run: |
@@ -66,7 +66,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Build and Check Package
-        uses: hynek/build-and-inspect-python-package@v3.0.1
+        uses: hynek/build-and-inspect-python-package@v3.0.2
 
   test:
     needs: [compile, package]
@@ -75,12 +75,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python: ["3.11", "3.12", "3.13", "3.14", "3.15"]
 
     steps:
     - uses: actions/checkout@v7.0.1
     - name: Set up Python
-      uses: actions/setup-python@v7.0.0
+      uses: actions/setup-python@v7.1.0
       with:
         python-version: ${{ matrix.python }}
 
